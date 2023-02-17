@@ -1,6 +1,6 @@
-# ai_pencil_flutter
+# Ai Pencil
 
-Flutter version of Ai Pencil
+The official Ai Pencil client
 
 ## Run code generation
 We're using [json_serializable](https://pub.dev/packages/json_serializable/example) which generates boilerplate code to encode and decode models to json. 
@@ -30,5 +30,3 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
-
-# ai_pencil_flutter
