@@ -16,9 +16,6 @@ class CustomTheme {
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(
         foregroundColor: Colors.white,
-        textStyle: TextStyle(
-          color: Colors.white,
-        ),
       ),
     ),
   );
@@ -26,7 +23,7 @@ class CustomTheme {
   static const appBar = AppBarTheme(
     centerTitle: false,
     elevation: 2,
-    surfaceTintColor: Colors.black87,
+    backgroundColor: Colors.black12,
     titleTextStyle: TextStyle(
       fontSize: 24,
       fontWeight: FontWeight.bold,

@@ -1,7 +1,9 @@
+import 'package:ai_pencil/screens/drawing_page.dart';
 import 'package:ai_pencil/screens/select_screen.dart';
 import 'package:ai_pencil/themes.dart';
 import 'package:flutter/material.dart';
 
+// TODO: separate into constant file
 class Routes {
   static const SELECT_SCREEN_ROUTE = "select";
   static const DRAW_SCREEN_ROUTE = "draw";
@@ -22,9 +24,11 @@ class MainApp extends StatelessWidget {
       theme: CustomTheme.lightTheme,
       darkTheme: CustomTheme.darkTheme,
       themeMode: ThemeMode.dark,
-      initialRoute: Routes.SELECT_SCREEN_ROUTE,
+      initialRoute: Routes.DRAW_SCREEN_ROUTE,
       routes: {
         Routes.SELECT_SCREEN_ROUTE: (context) => const SelectProjectScreen(),
+        // Routes.DRAW_SCREEN_ROUTE: (context) => const DrawScreen(),
+        Routes.DRAW_SCREEN_ROUTE: (context) => const DrawingPage()
       },
       debugShowCheckedModeBanner: false,
     );

@@ -18,6 +18,9 @@ To generate new icon, replace the `icon.png` file and run:
 flutter pub run flutter_launcher_icons
 ```
 
+## Font Awesome Icons
+We'll use [Font Awesome](https://fontawesome.com/) for icons rather than Material. Browse from their home page. 
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.

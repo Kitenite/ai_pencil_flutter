@@ -29,7 +29,7 @@ class _SelectProjectScreenState extends State<SelectProjectScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Text("Hello"),
+            Text("Select screen"),
           ],
         ),
       ),
