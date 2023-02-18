@@ -1,16 +1,20 @@
+import 'package:ai_pencil/constants.dart';
 import 'package:ai_pencil/screens/drawing_page.dart';
 import 'package:ai_pencil/screens/select_screen.dart';
 import 'package:ai_pencil/themes.dart';
 import 'package:flutter/material.dart';
-
-// TODO: separate into constant file
-class Routes {
-  static const SELECT_SCREEN_ROUTE = "select";
-  static const DRAW_SCREEN_ROUTE = "draw";
-}
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
 void main() {
+  setupFirebase();
   runApp(const MainApp());
+}
+
+void setupFirebase() async {
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 }
 
 class MainApp extends StatelessWidget {
