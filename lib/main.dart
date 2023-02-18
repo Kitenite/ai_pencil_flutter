@@ -1,3 +1,5 @@
+import 'package:ai_pencil/screens/select_screen.dart';
+import 'package:ai_pencil/themes.dart';
 import 'package:flutter/material.dart';
 
 class Routes {
@@ -16,48 +18,15 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        brightness: Brightness.light,
-      ),
-      darkTheme: ThemeData(
-        brightness: Brightness.dark,
-      ),
+      title: 'Ai Pencil',
+      theme: CustomTheme.lightTheme,
+      darkTheme: CustomTheme.darkTheme,
       themeMode: ThemeMode.dark,
       initialRoute: Routes.SELECT_SCREEN_ROUTE,
       routes: {
         Routes.SELECT_SCREEN_ROUTE: (context) => const SelectProjectScreen(),
       },
       debugShowCheckedModeBanner: false,
-    );
-  }
-}
-
-class SelectProjectScreen extends StatefulWidget {
-  const SelectProjectScreen({super.key});
-
-  @override
-  State<SelectProjectScreen> createState() => _SelectProjectScreenState();
-}
-
-class _SelectProjectScreenState extends State<SelectProjectScreen> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          "Ai Pencil",
-        ),
-        centerTitle: false,
-        elevation: 0,
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Text("Hello"),
-          ],
-        ),
-      ),
     );
   }
 }
