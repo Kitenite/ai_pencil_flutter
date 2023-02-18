@@ -72,6 +72,7 @@ class DrawingCanvas extends HookWidget {
   }
 
   void onPointerMove(PointerMoveEvent details, BuildContext context) {
+    // TODO: If outside of current widget, don't draw
     final box = context.findRenderObject() as RenderBox;
     final offset = box.globalToLocal(details.position);
     final points = List<Offset>.from(currentSketch.value?.points ?? [])
@@ -124,6 +125,10 @@ class DrawingCanvas extends HookWidget {
   }
 
   Widget buildCurrentPath(BuildContext context) {
+    if (drawingMode.value == DrawingMode.pan) {
+      return const SizedBox.shrink();
+    }
+
     return Listener(
       onPointerDown: (details) => onPointerDown(details, context),
       onPointerMove: (details) => onPointerMove(details, context),

@@ -1,6 +1,5 @@
 import 'package:ai_pencil/constants.dart';
 import 'package:ai_pencil/screens/draw_screen.dart';
-import 'package:ai_pencil/screens/drawing_page.dart';
 import 'package:ai_pencil/screens/select_screen.dart';
 import 'package:ai_pencil/themes.dart';
 import 'package:flutter/foundation.dart';
@@ -10,6 +9,7 @@ import 'package:logging/logging.dart';
 import 'firebase_options.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   setupFirebase();
   setupLogging();
   runApp(const MainApp());

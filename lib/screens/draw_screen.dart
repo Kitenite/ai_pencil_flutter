@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:ai_pencil/constants.dart';
@@ -94,23 +95,38 @@ class DrawScreen extends HookWidget {
             subdivisions: 1,
             child: Container(),
           ),
-          AspectRatio(
-            aspectRatio: 1,
-            child: DrawingCanvas(
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height,
-              drawingMode: drawingMode,
-              selectedColor: selectedColor,
-              strokeSize: strokeSize,
-              eraserSize: eraserSize,
-              sideBarController: animationController,
-              currentSketch: currentSketch,
-              allSketches: allSketches,
-              canvasGlobalKey: canvasGlobalKey,
-              filled: filled,
-              polygonSides: polygonSides,
-              backgroundImage: backgroundImage,
-            ),
+          InteractiveViewer(
+            // TODO: Enable interaction option only during pan mode
+            constrained: true,
+            boundaryMargin: const EdgeInsets.all(1000.0),
+            minScale: 0.01,
+            maxScale: 10,
+            panEnabled: drawingMode.value == DrawingMode.pan,
+            scaleEnabled: drawingMode.value == DrawingMode.pan,
+            child: SizedBox(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: DrawingCanvas(
+                  width: min(
+                    MediaQuery.of(context).size.width,
+                    MediaQuery.of(context).size.height,
+                  ),
+                  height: min(
+                    MediaQuery.of(context).size.width,
+                    MediaQuery.of(context).size.height,
+                  ),
+                  drawingMode: drawingMode,
+                  selectedColor: selectedColor,
+                  strokeSize: strokeSize,
+                  eraserSize: eraserSize,
+                  sideBarController: animationController,
+                  currentSketch: currentSketch,
+                  allSketches: allSketches,
+                  canvasGlobalKey: canvasGlobalKey,
+                  filled: filled,
+                  polygonSides: polygonSides,
+                  backgroundImage: backgroundImage,
+                )),
           ),
         ]),
       ),

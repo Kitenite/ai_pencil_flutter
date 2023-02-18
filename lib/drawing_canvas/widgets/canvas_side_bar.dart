@@ -128,6 +128,12 @@ class CanvasSideBar extends HookWidget {
                   onTap: () => drawingMode.value = DrawingMode.circle,
                   tooltip: 'Circle',
                 ),
+                _IconBox(
+                  iconData: FontAwesomeIcons.fingerprint,
+                  selected: drawingMode.value == DrawingMode.pan,
+                  onTap: () => drawingMode.value = DrawingMode.pan,
+                  tooltip: 'Pan',
+                ),
               ],
             ),
             const SizedBox(height: 8),
