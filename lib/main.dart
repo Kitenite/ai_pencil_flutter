@@ -2,12 +2,15 @@ import 'package:ai_pencil/constants.dart';
 import 'package:ai_pencil/screens/drawing_page.dart';
 import 'package:ai_pencil/screens/select_screen.dart';
 import 'package:ai_pencil/themes.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:logging/logging.dart';
 import 'firebase_options.dart';
 
 void main() {
   setupFirebase();
+  setupLogging();
   runApp(const MainApp());
 }
 
@@ -17,10 +20,19 @@ void setupFirebase() async {
   );
 }
 
+void setupLogging() {
+  // https://pub.dev/packages/logging
+  Logger.root.level = Level.ALL;
+  Logger.root.onRecord.listen((record) {
+    if (kDebugMode) {
+      print('${record.level.name}: ${record.time}: ${record.message}');
+    }
+  });
+}
+
 class MainApp extends StatelessWidget {
   const MainApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

@@ -29,6 +29,13 @@
             {
               "client_id": "63376744840-lslsa2tm3deeeo9smi9mt49adpbrttmg.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "63376744840-pnrtl8q14mvluqbjf8215kkif10v9l37.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "io.aipencil"
+              }
             }
           ]
         }
