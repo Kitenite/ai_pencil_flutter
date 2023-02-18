@@ -83,12 +83,19 @@ class DrawScreen extends HookWidget {
         ),
         actions: trailingActions,
       ),
-      body: Stack(
-        children: [
-          Container(
-            // color: CustomColors.canvasColor,
-            width: double.maxFinite,
-            height: double.maxFinite,
+      body: SizedBox(
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height,
+        child: Stack(children: [
+          GridPaper(
+            color: const Color.fromARGB(10, 255, 255, 255),
+            interval: 30,
+            divisions: 1,
+            subdivisions: 1,
+            child: Container(),
+          ),
+          AspectRatio(
+            aspectRatio: 1,
             child: DrawingCanvas(
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.height,
@@ -105,8 +112,7 @@ class DrawScreen extends HookWidget {
               backgroundImage: backgroundImage,
             ),
           ),
-          // _CustomAppBar(animationController: animationController),
-        ],
+        ]),
       ),
     );
   }

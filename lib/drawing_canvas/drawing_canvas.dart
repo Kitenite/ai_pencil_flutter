@@ -8,8 +8,8 @@ import 'package:ai_pencil/drawing_canvas/models/sketch.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
 class DrawingCanvas extends HookWidget {
-  final double height;
-  final double width;
+  final double height; // TODO: Listen for changes for this to rebuild
+  final double width; // TODO: Listen for changes for this to rebuild
   final ValueNotifier<Color> selectedColor;
   final ValueNotifier<double> strokeSize;
   final ValueNotifier<Image?> backgroundImage;

@@ -53,12 +53,12 @@ class CanvasSideBar extends HookWidget {
     return Container(
       width: 300,
       height: MediaQuery.of(context).size.height < 680 ? 450 : 610,
-      decoration: BoxDecoration(
-        borderRadius: const BorderRadius.horizontal(right: Radius.circular(10)),
+      decoration: const BoxDecoration(
+        borderRadius: BorderRadius.horizontal(right: Radius.circular(10)),
         boxShadow: [
           BoxShadow(
             blurRadius: 3,
-            offset: const Offset(3, 3),
+            offset: Offset(3, 3),
           ),
         ],
       ),
