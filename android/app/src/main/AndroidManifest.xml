@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.ai_pencil_flutter">
+    package="io.aipencil">
    <application
-        android:label="ai_pencil_flutter"
+        android:label="aipencil"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

@@ -1,4 +1,4 @@
-package com.example.ai_pencil_flutter
+package io.aipencil
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -89,13 +89,13 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "com.example" "\0"
-            VALUE "FileDescription", "ai_pencil_flutter" "\0"
+            VALUE "CompanyName", "io" "\0"
+            VALUE "FileDescription", "aipencil" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "ai_pencil_flutter" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2023 com.example. All rights reserved." "\0"
-            VALUE "OriginalFilename", "ai_pencil_flutter.exe" "\0"
-            VALUE "ProductName", "ai_pencil_flutter" "\0"
+            VALUE "InternalName", "aipencil" "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2023 io. All rights reserved." "\0"
+            VALUE "OriginalFilename", "aipencil.exe" "\0"
+            VALUE "ProductName", "aipencil" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

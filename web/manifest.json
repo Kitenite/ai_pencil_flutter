@@ -1,6 +1,6 @@
 {
-    "name": "ai_pencil_flutter",
-    "short_name": "ai_pencil_flutter",
+    "name": "aipencil",
+    "short_name": "aipencil",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
