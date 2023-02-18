@@ -54,11 +54,9 @@ class CanvasSideBar extends HookWidget {
       width: 300,
       height: MediaQuery.of(context).size.height < 680 ? 450 : 610,
       decoration: BoxDecoration(
-        color: Colors.white,
         borderRadius: const BorderRadius.horizontal(right: Radius.circular(10)),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.shade200,
             blurRadius: 3,
             offset: const Offset(3, 3),
           ),
@@ -147,7 +145,6 @@ class CanvasSideBar extends HookWidget {
                 ),
               ],
             ),
-
             AnimatedSwitcher(
               duration: const Duration(milliseconds: 150),
               child: drawingMode.value == DrawingMode.polygon
@@ -291,17 +288,6 @@ class CanvasSideBar extends HookWidget {
                   ),
                 ),
               ],
-            ),
-            // add about me button or follow buttons
-            const Divider(),
-            Center(
-              child: GestureDetector(
-                onTap: () => _launchUrl('https://github.com/JideGuru'),
-                child: const Text(
-                  'Made with 💙 by JideGuru',
-                  style: TextStyle(fontSize: 12),
-                ),
-              ),
             ),
           ],
         ),

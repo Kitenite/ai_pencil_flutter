@@ -1,4 +1,5 @@
 import 'package:ai_pencil/constants.dart';
+import 'package:ai_pencil/screens/draw_screen.dart';
 import 'package:ai_pencil/screens/drawing_page.dart';
 import 'package:ai_pencil/screens/select_screen.dart';
 import 'package:ai_pencil/themes.dart';
@@ -32,7 +33,6 @@ void setupLogging() {
 
 class MainApp extends StatelessWidget {
   const MainApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -43,8 +43,8 @@ class MainApp extends StatelessWidget {
       initialRoute: Routes.DRAW_SCREEN_ROUTE,
       routes: {
         Routes.SELECT_SCREEN_ROUTE: (context) => const SelectProjectScreen(),
-        // Routes.DRAW_SCREEN_ROUTE: (context) => const DrawScreen(),
-        Routes.DRAW_SCREEN_ROUTE: (context) => const DrawingPage()
+        Routes.DRAW_SCREEN_ROUTE: (context) => const DrawScreen(),
+        // Routes.DRAW_SCREEN_ROUTE: (context) => const DrawingPage()
       },
       debugShowCheckedModeBanner: false,
     );

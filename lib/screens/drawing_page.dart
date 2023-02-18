@@ -2,7 +2,6 @@ import 'dart:ui';
 
 import 'package:ai_pencil/constants.dart';
 import 'package:flutter/material.dart' hide Image;
-import 'package:ai_pencil/main.dart';
 import 'package:ai_pencil/drawing_canvas/drawing_canvas.dart';
 import 'package:ai_pencil/drawing_canvas/models/drawing_mode.dart';
 import 'package:ai_pencil/drawing_canvas/models/sketch.dart';
@@ -31,6 +30,7 @@ class DrawingPage extends HookWidget {
       duration: const Duration(milliseconds: 150),
       initialValue: 1,
     );
+
     return Scaffold(
       body: SafeArea(
         child: Stack(
@@ -110,13 +110,6 @@ class _CustomAppBar extends StatelessWidget {
                 }
               },
               icon: const Icon(Icons.menu),
-            ),
-            const Text(
-              'Let\'s Draw',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 19,
-              ),
             ),
             const SizedBox.shrink(),
           ],
