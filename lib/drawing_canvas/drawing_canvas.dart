@@ -75,13 +75,25 @@ class DrawingCanvas extends HookWidget {
   void onPointerMove(PointerMoveEvent details, BuildContext context) {
     // TODO: If outside of current widget, don't draw
     final box = context.findRenderObject() as RenderBox;
-    final offset = box.globalToLocal(details.position);
-    if (offset.dx < 0 ||
-        offset.dy < 0 ||
-        offset.dx > box.size.width ||
-        offset.dy > box.size.width) {
-      return;
+    var offset = box.globalToLocal(details.position);
+
+    // Ensure drawings are not out of bounds
+    double maxWidth = box.size.width;
+    double maxHeight =
+        box.size.width; // TODO: Max height for some reason is not the same
+    if (offset.dx < 0) {
+      offset = offset.translate(-offset.dx, 0.0);
     }
+    if (offset.dy < 0) {
+      offset = offset.translate(0.0, -offset.dy);
+    }
+    if (offset.dx > maxWidth) {
+      offset = offset.translate(maxWidth - offset.dx, 0.0);
+    }
+    if (offset.dy > maxHeight) {
+      offset = offset.translate(0.0, maxHeight - offset.dy);
+    }
+
     final points = List<Offset>.from(currentSketch.value?.points ?? [])
       ..add(offset);
     currentSketch.value = Sketch.fromDrawingMode(
