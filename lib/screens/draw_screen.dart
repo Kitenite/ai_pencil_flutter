@@ -1,18 +1,20 @@
 import 'dart:math';
 import 'dart:ui';
 
-import 'package:ai_pencil/constants.dart';
+import 'package:ai_pencil/drawing_canvas/widgets/icon_box.dart';
 import 'package:flutter/material.dart' hide Image;
 import 'package:ai_pencil/drawing_canvas/drawing_canvas.dart';
 import 'package:ai_pencil/drawing_canvas/models/drawing_mode.dart';
 import 'package:ai_pencil/drawing_canvas/models/sketch.dart';
 import 'package:ai_pencil/drawing_canvas/widgets/canvas_side_bar.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class DrawScreen extends HookWidget {
   const DrawScreen({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
+    // Drawing tools state
     final selectedColor = useState(Colors.black);
     final strokeSize = useState<double>(10);
     final eraserSize = useState<double>(30);
@@ -32,6 +34,24 @@ class DrawScreen extends HookWidget {
     );
 
     var trailingActions = [
+      IconBox(
+        iconData: FontAwesomeIcons.upDownLeftRight,
+        selected: drawingMode.value == DrawingMode.pan,
+        onTap: () => drawingMode.value = DrawingMode.pan,
+        tooltip: 'Pan',
+      ),
+      IconBox(
+        iconData: FontAwesomeIcons.eraser,
+        selected: drawingMode.value == DrawingMode.eraser,
+        onTap: () => drawingMode.value = DrawingMode.eraser,
+        tooltip: 'Eraser',
+      ),
+      IconBox(
+        iconData: FontAwesomeIcons.pencil,
+        selected: drawingMode.value == DrawingMode.pencil,
+        onTap: () => drawingMode.value = DrawingMode.pencil,
+        tooltip: 'Pencil',
+      ),
       TextButton(
         onPressed: () {
           showModalBottomSheet(
@@ -74,11 +94,11 @@ class DrawScreen extends HookWidget {
           children: [
             IconButton(
               onPressed: () {},
-              icon: Icon(Icons.photo_outlined),
+              icon: const Icon(FontAwesomeIcons.image),
             ),
             IconButton(
               onPressed: () {},
-              icon: Icon(Icons.ios_share),
+              icon: const Icon(FontAwesomeIcons.arrowUpFromBracket),
             ),
           ],
         ),

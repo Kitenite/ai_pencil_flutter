@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:ui' as ui;
 
+import 'package:ai_pencil/drawing_canvas/widgets/icon_box.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:file_saver/file_saver.dart';
 import 'package:flutter/foundation.dart';
@@ -81,13 +82,13 @@ class CanvasSideBar extends HookWidget {
               spacing: 5,
               runSpacing: 5,
               children: [
-                _IconBox(
+                IconBox(
                   iconData: FontAwesomeIcons.pencil,
                   selected: drawingMode.value == DrawingMode.pencil,
                   onTap: () => drawingMode.value = DrawingMode.pencil,
                   tooltip: 'Pencil',
                 ),
-                _IconBox(
+                IconBox(
                   selected: drawingMode.value == DrawingMode.line,
                   onTap: () => drawingMode.value = DrawingMode.line,
                   tooltip: 'Line',
@@ -104,31 +105,31 @@ class CanvasSideBar extends HookWidget {
                     ],
                   ),
                 ),
-                _IconBox(
+                IconBox(
                   iconData: Icons.hexagon_outlined,
                   selected: drawingMode.value == DrawingMode.polygon,
                   onTap: () => drawingMode.value = DrawingMode.polygon,
                   tooltip: 'Polygon',
                 ),
-                _IconBox(
+                IconBox(
                   iconData: FontAwesomeIcons.eraser,
                   selected: drawingMode.value == DrawingMode.eraser,
                   onTap: () => drawingMode.value = DrawingMode.eraser,
                   tooltip: 'Eraser',
                 ),
-                _IconBox(
+                IconBox(
                   iconData: FontAwesomeIcons.square,
                   selected: drawingMode.value == DrawingMode.square,
                   onTap: () => drawingMode.value = DrawingMode.square,
                   tooltip: 'Square',
                 ),
-                _IconBox(
+                IconBox(
                   iconData: FontAwesomeIcons.circle,
                   selected: drawingMode.value == DrawingMode.circle,
                   onTap: () => drawingMode.value = DrawingMode.circle,
                   tooltip: 'Circle',
                 ),
-                _IconBox(
+                IconBox(
                   iconData: FontAwesomeIcons.fingerprint,
                   selected: drawingMode.value == DrawingMode.pan,
                   onTap: () => drawingMode.value = DrawingMode.pan,
@@ -372,55 +373,6 @@ class CanvasSideBar extends HookWidget {
     ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
     Uint8List? pngBytes = byteData?.buffer.asUint8List();
     return pngBytes;
-  }
-}
-
-class _IconBox extends StatelessWidget {
-  final IconData? iconData;
-  final Widget? child;
-  final bool selected;
-  final VoidCallback onTap;
-  final String? tooltip;
-
-  const _IconBox({
-    Key? key,
-    this.iconData,
-    this.child,
-    this.tooltip,
-    required this.selected,
-    required this.onTap,
-  })  : assert(child != null || iconData != null),
-        super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          height: 35,
-          width: 35,
-          decoration: BoxDecoration(
-            border: Border.all(
-              color: selected ? Colors.grey[900]! : Colors.grey,
-              width: 1.5,
-            ),
-            borderRadius: const BorderRadius.all(Radius.circular(5)),
-          ),
-          child: Tooltip(
-            message: tooltip,
-            preferBelow: false,
-            child: child ??
-                Icon(
-                  iconData,
-                  color: selected ? Colors.grey[900] : Colors.grey,
-                  size: 20,
-                ),
-          ),
-        ),
-      ),
-    );
   }
 }
 
