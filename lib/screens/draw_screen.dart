@@ -107,48 +107,51 @@ class DrawScreen extends HookWidget {
       body: SizedBox(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
-        child: Stack(children: [
-          GridPaper(
-            color: const Color.fromARGB(10, 255, 255, 255),
-            interval: 30,
-            divisions: 1,
-            subdivisions: 1,
-            child: Container(),
-          ),
-          InteractiveViewer(
-            // TODO: Enable interaction option only during pan mode
-            constrained: true,
-            boundaryMargin: const EdgeInsets.all(1000.0),
-            minScale: 0.01,
-            maxScale: 10,
-            panEnabled: drawingMode.value == DrawingMode.pan,
-            scaleEnabled: drawingMode.value == DrawingMode.pan,
-            child: SizedBox(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: DrawingCanvas(
-                  width: min(
-                    MediaQuery.of(context).size.width,
-                    MediaQuery.of(context).size.height,
-                  ),
-                  height: min(
-                    MediaQuery.of(context).size.width,
-                    MediaQuery.of(context).size.height,
-                  ),
-                  drawingMode: drawingMode,
-                  selectedColor: selectedColor,
-                  strokeSize: strokeSize,
-                  eraserSize: eraserSize,
-                  sideBarController: animationController,
-                  currentSketch: currentSketch,
-                  allSketches: allSketches,
-                  canvasGlobalKey: canvasGlobalKey,
-                  filled: filled,
-                  polygonSides: polygonSides,
-                  backgroundImage: backgroundImage,
-                )),
-          ),
-        ]),
+        child: Stack(
+          children: [
+            GridPaper(
+              color: const Color.fromARGB(10, 255, 255, 255),
+              interval: 30,
+              divisions: 1,
+              subdivisions: 1,
+              child: Container(),
+            ),
+            InteractiveViewer(
+              constrained: true,
+              boundaryMargin: const EdgeInsets.all(1000.0),
+              minScale: 0.01,
+              maxScale: 10,
+              panEnabled: drawingMode.value == DrawingMode.pan,
+              scaleEnabled: drawingMode.value == DrawingMode.pan,
+              child: SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  child: Center(
+                    child: DrawingCanvas(
+                      width: min(
+                        MediaQuery.of(context).size.width,
+                        MediaQuery.of(context).size.height,
+                      ),
+                      height: min(
+                        MediaQuery.of(context).size.width,
+                        MediaQuery.of(context).size.height,
+                      ),
+                      drawingMode: drawingMode,
+                      selectedColor: selectedColor,
+                      strokeSize: strokeSize,
+                      eraserSize: eraserSize,
+                      sideBarController: animationController,
+                      currentSketch: currentSketch,
+                      allSketches: allSketches,
+                      canvasGlobalKey: canvasGlobalKey,
+                      filled: filled,
+                      polygonSides: polygonSides,
+                      backgroundImage: backgroundImage,
+                    ),
+                  )),
+            ),
+          ],
+        ),
       ),
     );
   }
