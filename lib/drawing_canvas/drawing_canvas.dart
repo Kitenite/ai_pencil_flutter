@@ -62,7 +62,8 @@ class DrawingCanvas extends HookWidget {
             ? eraserSize.value
             : strokeSize.value,
         color: drawingMode.value == DrawingMode.eraser
-            ? CustomColors.canvasColor
+            ? CustomColors
+                .canvasColor // TODO: Eraser doesn't actually erase, it just paints over
             : selectedColor.value,
         sides: polygonSides.value,
       ),
@@ -75,6 +76,12 @@ class DrawingCanvas extends HookWidget {
     // TODO: If outside of current widget, don't draw
     final box = context.findRenderObject() as RenderBox;
     final offset = box.globalToLocal(details.position);
+    if (offset.dx < 0 ||
+        offset.dy < 0 ||
+        offset.dx > box.size.width ||
+        offset.dy > box.size.width) {
+      return;
+    }
     final points = List<Offset>.from(currentSketch.value?.points ?? [])
       ..add(offset);
     currentSketch.value = Sketch.fromDrawingMode(
