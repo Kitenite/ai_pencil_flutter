@@ -1,12 +1,14 @@
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:ai_pencil/drawing_canvas/widgets/color_palette.dart';
 import 'package:ai_pencil/drawing_canvas/widgets/icon_box.dart';
 import 'package:flutter/material.dart' hide Image;
 import 'package:ai_pencil/drawing_canvas/drawing_canvas.dart';
 import 'package:ai_pencil/drawing_canvas/models/drawing_mode.dart';
 import 'package:ai_pencil/drawing_canvas/models/sketch.dart';
 import 'package:ai_pencil/drawing_canvas/widgets/canvas_side_bar.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -34,24 +36,6 @@ class DrawScreen extends HookWidget {
     );
 
     var trailingActions = [
-      IconBox(
-        iconData: FontAwesomeIcons.upDownLeftRight,
-        selected: drawingMode.value == DrawingMode.pan,
-        onTap: () => drawingMode.value = DrawingMode.pan,
-        tooltip: 'Pan',
-      ),
-      IconBox(
-        iconData: FontAwesomeIcons.eraser,
-        selected: drawingMode.value == DrawingMode.eraser,
-        onTap: () => drawingMode.value = DrawingMode.eraser,
-        tooltip: 'Eraser',
-      ),
-      IconBox(
-        iconData: FontAwesomeIcons.pencil,
-        selected: drawingMode.value == DrawingMode.pencil,
-        onTap: () => drawingMode.value = DrawingMode.pencil,
-        tooltip: 'Pencil',
-      ),
       TextButton(
         onPressed: () {
           showModalBottomSheet(
@@ -104,6 +88,71 @@ class DrawScreen extends HookWidget {
         ),
         actions: trailingActions,
       ),
+      bottomNavigationBar: BottomAppBar(
+          child: Row(
+        children: [
+          Spacer(),
+          IconBox(
+            iconData: FontAwesomeIcons.upDownLeftRight,
+            selected: drawingMode.value == DrawingMode.pan,
+            onTap: () => drawingMode.value = DrawingMode.pan,
+            tooltip: 'Pan',
+          ),
+          IconBox(
+            iconData: FontAwesomeIcons.eraser,
+            selected: drawingMode.value == DrawingMode.eraser,
+            onTap: () => drawingMode.value = DrawingMode.eraser,
+            tooltip: 'Eraser',
+          ),
+          IconBox(
+            iconData: FontAwesomeIcons.pencil,
+            selected: drawingMode.value == DrawingMode.pencil,
+            onTap: () => drawingMode.value = DrawingMode.pencil,
+            tooltip: 'Pencil',
+          ),
+          ElevatedButton(
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text(
+                      'Color',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    content: SingleChildScrollView(
+                      child: ColorPicker(
+                        pickerColor: selectedColor.value,
+                        onColorChanged: (value) {
+                          selectedColor.value = value;
+                        },
+                      ),
+                    ),
+                    actions: <Widget>[
+                      TextButton(
+                        child: const Text('Done'),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+            style: OutlinedButton.styleFrom(
+              shape: const CircleBorder(),
+              backgroundColor: selectedColor.value,
+              side: const BorderSide(
+                width: 2.0,
+                color: Color.fromARGB(127, 255, 255, 255),
+              ),
+            ),
+            child: SizedBox.shrink(),
+          )
+        ],
+      )),
       body: SizedBox(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
