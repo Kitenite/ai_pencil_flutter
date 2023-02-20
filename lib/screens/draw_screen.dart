@@ -1,7 +1,7 @@
 import 'dart:math';
 import 'dart:ui';
 
-import 'package:ai_pencil/drawing_canvas/widgets/color_palette.dart';
+import 'package:ai_pencil/drawing_canvas/models/undo_redo_stack.dart';
 import 'package:ai_pencil/drawing_canvas/widgets/icon_box.dart';
 import 'package:flutter/material.dart' hide Image;
 import 'package:ai_pencil/drawing_canvas/drawing_canvas.dart';
@@ -29,6 +29,10 @@ class DrawScreen extends HookWidget {
 
     ValueNotifier<Sketch?> currentSketch = useState(null);
     ValueNotifier<List<Sketch>> allSketches = useState([]);
+    final undoRedoStack = useState(UndoRedoStack(
+      sketchesNotifier: allSketches,
+      currentSketchNotifier: currentSketch,
+    ));
 
     final animationController = useAnimationController(
       duration: const Duration(milliseconds: 150),
@@ -89,70 +93,98 @@ class DrawScreen extends HookWidget {
         actions: trailingActions,
       ),
       bottomNavigationBar: BottomAppBar(
-          child: Row(
-        children: [
-          Spacer(),
-          IconBox(
-            iconData: FontAwesomeIcons.upDownLeftRight,
-            selected: drawingMode.value == DrawingMode.pan,
-            onTap: () => drawingMode.value = DrawingMode.pan,
-            tooltip: 'Pan',
-          ),
-          IconBox(
-            iconData: FontAwesomeIcons.eraser,
-            selected: drawingMode.value == DrawingMode.eraser,
-            onTap: () => drawingMode.value = DrawingMode.eraser,
-            tooltip: 'Eraser',
-          ),
-          IconBox(
-            iconData: FontAwesomeIcons.pencil,
-            selected: drawingMode.value == DrawingMode.pencil,
-            onTap: () => drawingMode.value = DrawingMode.pencil,
-            tooltip: 'Pencil',
-          ),
-          ElevatedButton(
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: const Text(
-                      'Color',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    content: SingleChildScrollView(
-                      child: ColorPicker(
-                        pickerColor: selectedColor.value,
-                        onColorChanged: (value) {
-                          selectedColor.value = value;
-                        },
-                      ),
-                    ),
-                    actions: <Widget>[
-                      TextButton(
-                        child: const Text('Done'),
-                        onPressed: () => Navigator.pop(context),
-                      ),
-                    ],
-                  );
-                },
-              );
-            },
-            style: OutlinedButton.styleFrom(
-              shape: const CircleBorder(),
-              backgroundColor: selectedColor.value,
-              side: const BorderSide(
-                width: 2.0,
-                color: Color.fromARGB(127, 255, 255, 255),
-              ),
+        child: Row(
+          children: [
+            const SizedBox(width: 10),
+            IconBox(
+              iconData: FontAwesomeIcons.arrowRotateLeft,
+              selected: allSketches.value.isNotEmpty,
+              onTap: allSketches.value.isNotEmpty
+                  ? () => undoRedoStack.value.undo()
+                  : () {},
+              tooltip: 'Undo',
             ),
-            child: SizedBox.shrink(),
-          )
-        ],
-      )),
+            ValueListenableBuilder<bool>(
+              valueListenable: undoRedoStack.value.canRedo,
+              builder: (_, canRedo, __) {
+                return IconBox(
+                  iconData: FontAwesomeIcons.arrowRotateRight,
+                  selected: canRedo,
+                  onTap: canRedo ? () => undoRedoStack.value.redo() : () {},
+                  tooltip: 'Redo',
+                );
+              },
+            ),
+            IconBox(
+              iconData: FontAwesomeIcons.trash,
+              selected: true,
+              onTap: () => undoRedoStack.value.clear(),
+              tooltip: 'Clear',
+            ),
+            const Spacer(),
+            IconBox(
+              iconData: FontAwesomeIcons.upDownLeftRight,
+              selected: drawingMode.value == DrawingMode.pan,
+              onTap: () => drawingMode.value = DrawingMode.pan,
+              tooltip: 'Pan',
+            ),
+            IconBox(
+              iconData: FontAwesomeIcons.eraser,
+              selected: drawingMode.value == DrawingMode.eraser,
+              onTap: () => drawingMode.value = DrawingMode.eraser,
+              tooltip: 'Eraser',
+            ),
+            IconBox(
+              iconData: FontAwesomeIcons.pencil,
+              selected: drawingMode.value == DrawingMode.pencil,
+              onTap: () => drawingMode.value = DrawingMode.pencil,
+              tooltip: 'Pencil',
+            ),
+            ElevatedButton(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text(
+                        'Color',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      content: SingleChildScrollView(
+                        child: ColorPicker(
+                          pickerColor: selectedColor.value,
+                          onColorChanged: (value) {
+                            selectedColor.value = value;
+                          },
+                        ),
+                      ),
+                      actions: <Widget>[
+                        TextButton(
+                          child: const Text('Done'),
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+              style: OutlinedButton.styleFrom(
+                shape: const CircleBorder(),
+                backgroundColor: selectedColor.value,
+                side: const BorderSide(
+                  width: 2.0,
+                  color: Color.fromARGB(127, 255, 255, 255),
+                ),
+              ),
+              child: const SizedBox.shrink(),
+            ),
+            const SizedBox(width: 10),
+          ],
+        ),
+      ),
       body: SizedBox(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,

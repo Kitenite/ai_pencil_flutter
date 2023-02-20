@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:ui' as ui;
 
+import 'package:ai_pencil/drawing_canvas/models/undo_redo_stack.dart';
 import 'package:ai_pencil/drawing_canvas/widgets/icon_box.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:file_saver/file_saver.dart';
@@ -46,7 +47,7 @@ class CanvasSideBar extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final undoRedoStack = useState(_UndoRedoStack(
+    final undoRedoStack = useState(UndoRedoStack(
       sketchesNotifier: allSketches,
       currentSketchNotifier: currentSketch,
     ));
@@ -237,7 +238,7 @@ class CanvasSideBar extends HookWidget {
                   child: const Text('Undo'),
                 ),
                 ValueListenableBuilder<bool>(
-                  valueListenable: undoRedoStack.value._canRedo,
+                  valueListenable: undoRedoStack.value.canRedo,
                   builder: (_, canRedo, __) {
                     return TextButton(
                       onPressed:
@@ -373,68 +374,5 @@ class CanvasSideBar extends HookWidget {
     ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
     Uint8List? pngBytes = byteData?.buffer.asUint8List();
     return pngBytes;
-  }
-}
-
-///A data structure for undoing and redoing sketches.
-class _UndoRedoStack {
-  _UndoRedoStack({
-    required this.sketchesNotifier,
-    required this.currentSketchNotifier,
-  }) {
-    _sketchCount = sketchesNotifier.value.length;
-    sketchesNotifier.addListener(_sketchesCountListener);
-  }
-
-  final ValueNotifier<List<Sketch>> sketchesNotifier;
-  final ValueNotifier<Sketch?> currentSketchNotifier;
-
-  ///Collection of sketches that can be redone.
-  late final List<Sketch> _redoStack = [];
-
-  ///Whether redo operation is possible.
-  ValueNotifier<bool> get canRedo => _canRedo;
-  late final ValueNotifier<bool> _canRedo = ValueNotifier(false);
-
-  late int _sketchCount;
-
-  void _sketchesCountListener() {
-    if (sketchesNotifier.value.length > _sketchCount) {
-      //if a new sketch is drawn,
-      //history is invalidated so clear redo stack
-      _redoStack.clear();
-      _canRedo.value = false;
-      _sketchCount = sketchesNotifier.value.length;
-    }
-  }
-
-  void clear() {
-    _sketchCount = 0;
-    sketchesNotifier.value = [];
-    _canRedo.value = false;
-    currentSketchNotifier.value = null;
-  }
-
-  void undo() {
-    final sketches = List<Sketch>.from(sketchesNotifier.value);
-    if (sketches.isNotEmpty) {
-      _sketchCount--;
-      _redoStack.add(sketches.removeLast());
-      sketchesNotifier.value = sketches;
-      _canRedo.value = true;
-      currentSketchNotifier.value = null;
-    }
-  }
-
-  void redo() {
-    if (_redoStack.isEmpty) return;
-    final sketch = _redoStack.removeLast();
-    _canRedo.value = _redoStack.isNotEmpty;
-    _sketchCount++;
-    sketchesNotifier.value = [...sketchesNotifier.value, sketch];
-  }
-
-  void dispose() {
-    sketchesNotifier.removeListener(_sketchesCountListener);
   }
 }

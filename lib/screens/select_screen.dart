@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class SelectProjectScreen extends StatefulWidget {
   const SelectProjectScreen({super.key});
@@ -22,13 +23,13 @@ class _SelectProjectScreenState extends State<SelectProjectScreen> {
           ),
           IconButton(
             onPressed: () {},
-            icon: const Icon(Icons.add),
+            icon: const Icon(FontAwesomeIcons.plus),
           )
         ],
       ),
       body: SingleChildScrollView(
         child: Column(
-          children: [
+          children: const [
             Text("Select screen"),
           ],
         ),

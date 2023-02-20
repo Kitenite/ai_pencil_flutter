@@ -21,9 +21,9 @@ class IconBox extends StatelessWidget {
   Widget build(BuildContext context) {
     return MouseRegion(
       cursor: SystemMouseCursors.click,
-      child: GestureDetector(
+      child: InkWell(
         onTap: onTap,
-        child: Container(
+        child: SizedBox(
           height: 35,
           width: 35,
           child: Tooltip(
