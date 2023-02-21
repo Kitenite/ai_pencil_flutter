@@ -33,6 +33,7 @@ class Sketch {
       type: () {
         switch (drawingMode) {
           case DrawingMode.eraser:
+            return SketchType.eraser;
           case DrawingMode.pencil:
             return SketchType.scribble;
           case DrawingMode.line:
@@ -76,7 +77,14 @@ class Sketch {
   }
 }
 
-enum SketchType { scribble, line, square, circle, polygon }
+enum SketchType {
+  scribble,
+  line,
+  square,
+  circle,
+  polygon,
+  eraser,
+}
 
 extension SketchTypeX on SketchType {
   toRegularString() => toString().split('.')[1];
