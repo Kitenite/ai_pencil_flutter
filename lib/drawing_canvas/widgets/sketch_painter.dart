@@ -16,6 +16,8 @@ class SketchPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    canvas.saveLayer(Rect.fromLTWH(0, 0, size.width, size.height), Paint());
+
     if (backgroundImage != null) {
       canvas.drawImageRect(
         backgroundImage!,
@@ -25,7 +27,6 @@ class SketchPainter extends CustomPainter {
         Paint(),
       );
     }
-    canvas.saveLayer(Rect.fromLTWH(0, 0, size.width, size.height), Paint());
     for (Sketch sketch in sketches) {
       final points = sketch.points;
       if (points.isEmpty) return;
