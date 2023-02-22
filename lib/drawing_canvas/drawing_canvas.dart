@@ -8,7 +8,8 @@ import 'package:ai_pencil/drawing_canvas/models/sketch.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
 class DrawingCanvas extends HookWidget {
-  final double height;
+  final double
+      height; // TODO: To handle screen resize, should use ValueNotifier for width and height to repaint correctly.
   final double width;
   final ValueNotifier<Color> selectedColor;
   final ValueNotifier<double> strokeSize;

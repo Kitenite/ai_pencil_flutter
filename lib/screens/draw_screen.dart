@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'dart:ui';
 
 import 'package:ai_pencil/drawing_canvas/models/undo_redo_stack.dart';
@@ -15,6 +14,9 @@ class DrawScreen extends HookWidget {
   const DrawScreen({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
+    // TODO: Inputs to pass into widget
+    const aspectRatio = 16 / 9;
+
     // Drawing tools state
     final selectedColor = useState(Colors.black);
     final strokeSize = useState<double>(10);
@@ -28,6 +30,9 @@ class DrawScreen extends HookWidget {
 
     ValueNotifier<Sketch?> currentSketch = useState(null);
     ValueNotifier<List<Sketch>> allSketches = useState([]);
+
+    ValueNotifier<bool> sliderModalVisible = useState<bool>(false);
+
     final undoRedoStack = useState(UndoRedoStack(
       sketchesNotifier: allSketches,
       currentSketchNotifier: currentSketch,
@@ -37,6 +42,43 @@ class DrawScreen extends HookWidget {
       duration: const Duration(milliseconds: 150),
       initialValue: 1,
     );
+
+    Widget getSizeSlider() {
+      if (drawingMode.value == DrawingMode.pencil ||
+          drawingMode.value == DrawingMode.line) {
+        return Slider(
+          value: strokeSize.value,
+          min: 0,
+          max: 50,
+          onChanged: (val) {
+            strokeSize.value = val;
+          },
+          onChangeStart: (value) {
+            sliderModalVisible.value = true;
+          },
+          onChangeEnd: (value) {
+            sliderModalVisible.value = false;
+          },
+        );
+      } else if (drawingMode.value == DrawingMode.eraser) {
+        return Slider(
+          value: eraserSize.value,
+          min: 0,
+          max: 80,
+          onChanged: (val) {
+            eraserSize.value = val;
+          },
+        );
+      }
+      return Slider(
+        value: strokeSize.value,
+        min: 0,
+        max: 50,
+        onChanged: (val) {
+          strokeSize.value = val;
+        },
+      );
+    }
 
     var trailingActions = [
       TextButton(
@@ -75,6 +117,46 @@ class DrawScreen extends HookWidget {
       ),
     ];
 
+    var sliderModal = IgnorePointer(
+      child: AnimatedOpacity(
+        opacity: sliderModalVisible.value ? 1.0 : 0.0,
+        duration: const Duration(milliseconds: 300),
+        child: Container(
+          width: 100.0,
+          height: 100.0,
+          padding: const EdgeInsets.all(5),
+          decoration: BoxDecoration(
+            color: Colors.black87,
+            border: Border.all(
+              width: 3,
+              color: Colors.black,
+            ),
+            borderRadius: const BorderRadius.all(
+              Radius.circular(20),
+            ),
+          ),
+          child: Center(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text("Size ${strokeSize.value.round()}"),
+                Expanded(
+                  child: Container(
+                    width: strokeSize.value,
+                    height: strokeSize.value,
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
     return Scaffold(
       appBar: AppBar(
         title: Row(
@@ -100,6 +182,7 @@ class DrawScreen extends HookWidget {
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
         child: Stack(
+          alignment: Alignment.center,
           children: [
             GridPaper(
               color: const Color.fromARGB(10, 255, 255, 255),
@@ -120,16 +203,10 @@ class DrawScreen extends HookWidget {
                   height: MediaQuery.of(context).size.height,
                   child: Center(
                     child: AspectRatio(
-                      aspectRatio: 1, // TODO: Add different aspect ratios
+                      aspectRatio: aspectRatio,
                       child: DrawingCanvas(
-                        width: min(
-                          MediaQuery.of(context).size.width,
-                          MediaQuery.of(context).size.height,
-                        ),
-                        height: min(
-                          MediaQuery.of(context).size.width,
-                          MediaQuery.of(context).size.height,
-                        ),
+                        width: MediaQuery.of(context).size.width,
+                        height: MediaQuery.of(context).size.height,
                         drawingMode: drawingMode,
                         selectedColor: selectedColor,
                         strokeSize: strokeSize,
@@ -144,6 +221,39 @@ class DrawScreen extends HookWidget {
                       ),
                     ),
                   )),
+            ),
+            sliderModal,
+            Positioned(
+              bottom: 0,
+              child: Row(
+                children: [
+                  Row(
+                    children: [
+                      const Text(
+                        'Size',
+                        style: TextStyle(fontSize: 12),
+                      ),
+                      getSizeSlider(),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      const Text(
+                        'Opacity',
+                        style: TextStyle(fontSize: 12),
+                      ),
+                      Slider(
+                        value: eraserSize.value,
+                        min: 0,
+                        max: 80,
+                        onChanged: (val) {
+                          eraserSize.value = val;
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ],
         ),

@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 class CustomColors {
-  static const canvasColor = Color.fromARGB(60, 255, 255, 255);
+  static const canvasColor = Color.fromARGB(255, 255, 255, 255);
 }
 
 class Routes {
