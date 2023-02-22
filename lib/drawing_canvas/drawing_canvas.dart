@@ -15,6 +15,8 @@ class DrawingCanvas extends HookWidget {
   final ValueNotifier<double> strokeSize;
   final ValueNotifier<Image?> backgroundImage;
   final ValueNotifier<double> eraserSize;
+  final ValueNotifier<double>
+      strokeOpacity; // TODO: Opacity doesn't apply to the latest stroke for some reason.
   final ValueNotifier<DrawingMode> drawingMode;
   final AnimationController sideBarController;
   final ValueNotifier<Sketch?> currentSketch;
@@ -30,6 +32,7 @@ class DrawingCanvas extends HookWidget {
     required this.selectedColor,
     required this.strokeSize,
     required this.eraserSize,
+    required this.strokeOpacity,
     required this.drawingMode,
     required this.sideBarController,
     required this.currentSketch,
@@ -64,6 +67,7 @@ class DrawingCanvas extends HookWidget {
             : strokeSize.value,
         color: selectedColor.value,
         sides: polygonSides.value,
+        opacity: strokeOpacity.value,
       ),
       drawingMode.value,
       filled.value,
@@ -100,6 +104,7 @@ class DrawingCanvas extends HookWidget {
             : strokeSize.value,
         color: selectedColor.value,
         sides: polygonSides.value,
+        opacity: strokeOpacity.value,
       ),
       drawingMode.value,
       filled.value,

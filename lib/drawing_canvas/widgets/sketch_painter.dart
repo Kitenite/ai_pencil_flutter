@@ -56,7 +56,7 @@ class SketchPainter extends CustomPainter {
       }
 
       Paint paint = Paint()
-        ..color = sketch.color
+        ..color = sketch.color.withOpacity(sketch.opacity)
         ..strokeCap = StrokeCap.round;
 
       if (sketch.type == SketchType.eraser) {

@@ -10,6 +10,14 @@ import 'package:ai_pencil/drawing_canvas/widgets/canvas_side_bar.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+enum SliderType {
+  opacity,
+  lineSize,
+  pencilSize,
+  paintSize,
+  eraser,
+}
+
 class DrawScreen extends HookWidget {
   const DrawScreen({Key? key}) : super(key: key);
   @override
@@ -21,6 +29,7 @@ class DrawScreen extends HookWidget {
     final selectedColor = useState(Colors.black);
     final strokeSize = useState<double>(10);
     final eraserSize = useState<double>(30);
+    final strokeOpacity = useState<double>(0);
     final drawingMode = useState(DrawingMode.pencil);
     final filled = useState<bool>(false);
     final polygonSides = useState<int>(3);
@@ -32,6 +41,8 @@ class DrawScreen extends HookWidget {
     ValueNotifier<List<Sketch>> allSketches = useState([]);
 
     ValueNotifier<bool> sliderModalVisible = useState<bool>(false);
+    ValueNotifier<SliderType> activeSlider =
+        useState<SliderType>(SliderType.pencilSize);
 
     final undoRedoStack = useState(UndoRedoStack(
       sketchesNotifier: allSketches,
@@ -44,39 +55,78 @@ class DrawScreen extends HookWidget {
     );
 
     Widget getSizeSlider() {
-      if (drawingMode.value == DrawingMode.pencil ||
-          drawingMode.value == DrawingMode.line) {
-        return Slider(
-          value: strokeSize.value,
-          min: 0,
-          max: 50,
-          onChanged: (val) {
-            strokeSize.value = val;
-          },
-          onChangeStart: (value) {
-            sliderModalVisible.value = true;
-          },
-          onChangeEnd: (value) {
-            sliderModalVisible.value = false;
-          },
-        );
-      } else if (drawingMode.value == DrawingMode.eraser) {
-        return Slider(
-          value: eraserSize.value,
-          min: 0,
-          max: 80,
-          onChanged: (val) {
-            eraserSize.value = val;
-          },
-        );
+      double value = strokeSize.value;
+      double minValue = 0;
+      double maxValue = 80;
+      SliderType type = SliderType.pencilSize;
+      var onChanged = (val) => {strokeSize.value = val};
+
+      switch (drawingMode.value) {
+        case DrawingMode.pencil:
+          onChanged = (val) => {strokeSize.value = val};
+          type = SliderType.pencilSize;
+          break;
+
+        case DrawingMode.eraser:
+          value = eraserSize.value;
+          onChanged = (val) => {eraserSize.value = val};
+          type = SliderType.eraser;
+          break;
+        default:
+          break;
       }
       return Slider(
-        value: strokeSize.value,
-        min: 0,
-        max: 50,
-        onChanged: (val) {
-          strokeSize.value = val;
+        value: value,
+        min: minValue,
+        max: maxValue,
+        onChanged: onChanged,
+        onChangeStart: (value) {
+          activeSlider.value = type;
+          sliderModalVisible.value = true;
         },
+        onChangeEnd: (value) {
+          sliderModalVisible.value = false;
+        },
+      );
+    }
+
+    Widget getSliderPreviewModal() {
+      String modalText = "Size ${strokeSize.value.round()}";
+      double previewSize = strokeSize.value;
+      Color previewColor = Colors.white;
+
+      switch (activeSlider.value) {
+        case SliderType.eraser:
+          modalText = "Size ${eraserSize.value.round()}";
+          previewSize = eraserSize.value;
+          break;
+        case SliderType.opacity:
+          modalText = "Opacity ${(strokeOpacity.value * 100).round()}%";
+          previewSize = 50;
+          previewColor = previewColor.withOpacity(strokeOpacity.value);
+          break;
+        default:
+          break;
+      }
+
+      return Center(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(modalText),
+            Expanded(
+              child: Container(
+                width: previewSize,
+                height: previewSize,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(strokeOpacity.value),
+                  shape: BoxShape.circle,
+                ),
+              ),
+            ),
+          ],
+        ),
       );
     }
 
@@ -122,8 +172,8 @@ class DrawScreen extends HookWidget {
         opacity: sliderModalVisible.value ? 1.0 : 0.0,
         duration: const Duration(milliseconds: 300),
         child: Container(
-          width: 100.0,
-          height: 100.0,
+          width: 150.0,
+          height: 150.0,
           padding: const EdgeInsets.all(5),
           decoration: BoxDecoration(
             color: Colors.black87,
@@ -135,25 +185,7 @@ class DrawScreen extends HookWidget {
               Radius.circular(20),
             ),
           ),
-          child: Center(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text("Size ${strokeSize.value.round()}"),
-                Expanded(
-                  child: Container(
-                    width: strokeSize.value,
-                    height: strokeSize.value,
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
+          child: getSliderPreviewModal(),
         ),
       ),
     );
@@ -174,10 +206,11 @@ class DrawScreen extends HookWidget {
         actions: trailingActions,
       ),
       bottomNavigationBar: DrawingToolBar(
-          allSketches: allSketches,
-          undoRedoStack: undoRedoStack,
-          drawingMode: drawingMode,
-          selectedColor: selectedColor),
+        allSketches: allSketches,
+        undoRedoStack: undoRedoStack,
+        drawingMode: drawingMode,
+        selectedColor: selectedColor,
+      ),
       body: SizedBox(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
@@ -211,6 +244,7 @@ class DrawScreen extends HookWidget {
                         selectedColor: selectedColor,
                         strokeSize: strokeSize,
                         eraserSize: eraserSize,
+                        strokeOpacity: strokeOpacity,
                         sideBarController: animationController,
                         currentSketch: currentSketch,
                         allSketches: allSketches,
@@ -243,11 +277,18 @@ class DrawScreen extends HookWidget {
                         style: TextStyle(fontSize: 12),
                       ),
                       Slider(
-                        value: eraserSize.value,
+                        value: strokeOpacity.value,
                         min: 0,
-                        max: 80,
+                        max: 1,
                         onChanged: (val) {
-                          eraserSize.value = val;
+                          strokeOpacity.value = val;
+                        },
+                        onChangeStart: (value) {
+                          activeSlider.value = SliderType.opacity;
+                          sliderModalVisible.value = true;
+                        },
+                        onChangeEnd: (value) {
+                          sliderModalVisible.value = false;
                         },
                       ),
                     ],

@@ -4,6 +4,7 @@ import 'package:ai_pencil/drawing_canvas/models/drawing_mode.dart';
 class Sketch {
   final List<Offset> points;
   final Color color;
+  final double opacity;
   final double size;
   final SketchType type;
   final bool filled;
@@ -12,6 +13,7 @@ class Sketch {
   Sketch({
     required this.points,
     this.color = Colors.black,
+    this.opacity = 1,
     this.type = SketchType.scribble,
     this.filled = true,
     this.sides = 3,
@@ -23,6 +25,7 @@ class Sketch {
     return Sketch(
       points: sketch.points,
       color: sketch.color,
+      opacity: sketch.opacity,
       size: sketch.size,
       filled: drawingMode == DrawingMode.line ||
               drawingMode == DrawingMode.pencil ||
@@ -56,6 +59,7 @@ class Sketch {
     return {
       'points': pointsMap,
       'color': color.toHex(),
+      'opacity': opacity,
       'size': size,
       'filled': filled,
       'type': type.toRegularString(),
@@ -69,6 +73,7 @@ class Sketch {
     return Sketch(
       points: points,
       color: (json['color'] as String).toColor(),
+      opacity: json['opacity'],
       size: json['size'],
       filled: json['filled'],
       type: (json['type'] as String).toSketchTypeEnum(),
