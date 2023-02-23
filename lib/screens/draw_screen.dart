@@ -1,7 +1,10 @@
+import 'dart:convert';
 import 'dart:ui';
 
 import 'package:ai_pencil/drawing_canvas/models/undo_redo_stack.dart';
 import 'package:ai_pencil/drawing_canvas/widgets/drawing_tools.dart';
+import 'package:ai_pencil/model/drawing_layer.dart';
+import 'package:ai_pencil/model/drawing_project.dart';
 import 'package:flutter/material.dart' hide Image;
 import 'package:ai_pencil/drawing_canvas/drawing_canvas.dart';
 import 'package:ai_pencil/drawing_canvas/models/drawing_mode.dart';
@@ -9,6 +12,7 @@ import 'package:ai_pencil/drawing_canvas/models/sketch.dart';
 import 'package:ai_pencil/drawing_canvas/widgets/canvas_side_bar.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 enum SliderType {
   opacity,
@@ -19,10 +23,17 @@ enum SliderType {
 }
 
 class DrawScreen extends HookWidget {
-  const DrawScreen({Key? key}) : super(key: key);
+  final DrawingProject project;
+  final int projectIndex;
+
+  const DrawScreen({
+    Key? key,
+    required this.project,
+    required this.projectIndex,
+  }) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    // TODO: Inputs to pass into widget
     const aspectRatio = 16 / 9;
 
     // Drawing tools state
@@ -38,8 +49,8 @@ class DrawScreen extends HookWidget {
     final canvasGlobalKey = GlobalKey();
 
     ValueNotifier<Sketch?> currentSketch = useState(null);
-    ValueNotifier<List<Sketch>> allSketches = useState([]);
-
+    ValueNotifier<List<Sketch>> allSketches =
+        useState(project.layers[project.activeLayerIndex].sketches);
     ValueNotifier<bool> sliderModalVisible = useState<bool>(false);
     ValueNotifier<SliderType> activeSlider =
         useState<SliderType>(SliderType.pencilSize);
@@ -53,6 +64,23 @@ class DrawScreen extends HookWidget {
       duration: const Duration(milliseconds: 150),
       initialValue: 1,
     );
+
+    void saveProject() async {
+      // TODO: this logic should be a callback passed by select project screen
+      var prefs = await SharedPreferences.getInstance();
+      var updatedProject = DrawingProject(
+        title: project.title,
+        layers: [
+          DrawingLayer(
+            sketches: allSketches.value,
+          ),
+        ],
+        activeLayerIndex: 0,
+      );
+      var projects = prefs.getStringList('projects') ?? [];
+      projects[projectIndex] = jsonEncode(updatedProject.toJson());
+      prefs.setStringList('projects', projects);
+    }
 
     Widget getSizeSlider() {
       double value = strokeSize.value;
@@ -156,7 +184,9 @@ class DrawScreen extends HookWidget {
         ),
       ),
       TextButton(
-        onPressed: () {},
+        onPressed: () {
+          saveProject();
+        },
         child: const Text(
           "AI",
           style: TextStyle(
@@ -191,6 +221,10 @@ class DrawScreen extends HookWidget {
     );
     return Scaffold(
       appBar: AppBar(
+        leading: BackButton(onPressed: () {
+          saveProject();
+          Navigator.pop(context);
+        }),
         title: Row(
           children: [
             IconButton(

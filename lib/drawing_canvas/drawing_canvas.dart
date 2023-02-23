@@ -1,8 +1,9 @@
-import 'dart:ui';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
 
 import 'package:ai_pencil/constants.dart';
 import 'package:ai_pencil/drawing_canvas/widgets/sketch_painter.dart';
-import 'package:flutter/material.dart' hide Image;
+import 'package:flutter/material.dart';
 import 'package:ai_pencil/drawing_canvas/models/drawing_mode.dart';
 import 'package:ai_pencil/drawing_canvas/models/sketch.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -13,7 +14,7 @@ class DrawingCanvas extends HookWidget {
   final double width;
   final ValueNotifier<Color> selectedColor;
   final ValueNotifier<double> strokeSize;
-  final ValueNotifier<Image?> backgroundImage;
+  final ValueNotifier<ui.Image?> backgroundImage;
   final ValueNotifier<double> eraserSize;
   final ValueNotifier<double>
       strokeOpacity; // TODO: Opacity doesn't apply to the latest stroke for some reason.
@@ -42,6 +43,26 @@ class DrawingCanvas extends HookWidget {
     required this.polygonSides,
     required this.backgroundImage,
   }) : super(key: key);
+
+  Future<Int8List?> getDrawingAsPngBytes() async {
+    ui.Image image = await renderedImage;
+    var pngByteData = await image.toByteData(format: ui.ImageByteFormat.png);
+    Int8List? pngBytesList = pngByteData?.buffer.asInt8List();
+    return pngBytesList;
+  }
+
+  Future<ui.Image> get renderedImage {
+    // Create a new canvas with a PictureRecorder, paint it with all sketches,
+    // and then return the image
+    ui.PictureRecorder recorder = ui.PictureRecorder();
+    Canvas canvas = Canvas(recorder);
+    SketchPainter painter = SketchPainter(sketches: allSketches.value);
+    var size = Size(width, height);
+    painter.paint(canvas, size);
+    return recorder
+        .endRecording()
+        .toImage(size.width.floor(), size.height.floor());
+  }
 
   @override
   Widget build(BuildContext context) {

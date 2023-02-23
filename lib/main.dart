@@ -40,10 +40,10 @@ class MainApp extends StatelessWidget {
       theme: CustomTheme.lightTheme,
       darkTheme: CustomTheme.darkTheme,
       themeMode: ThemeMode.dark,
-      initialRoute: Routes.DRAW_SCREEN_ROUTE,
+      initialRoute: Routes.SELECT_SCREEN_ROUTE,
       routes: {
         Routes.SELECT_SCREEN_ROUTE: (context) => const SelectProjectScreen(),
-        Routes.DRAW_SCREEN_ROUTE: (context) => const DrawScreen(),
+        //Routes.DRAW_SCREEN_ROUTE: (context) => const DrawScreen(),
         // Routes.DRAW_SCREEN_ROUTE: (context) => const DrawingPage()
       },
       debugShowCheckedModeBanner: false,
