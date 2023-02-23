@@ -1,26 +1,19 @@
 import 'dart:convert';
 import 'dart:ui';
 
+import 'package:ai_pencil/drawing_canvas/models/slider_type.dart';
 import 'package:ai_pencil/drawing_canvas/models/undo_redo_stack.dart';
 import 'package:ai_pencil/drawing_canvas/widgets/drawing_tools.dart';
 import 'package:ai_pencil/model/drawing_layer.dart';
 import 'package:ai_pencil/model/drawing_project.dart';
+import 'package:ai_pencil/screens/inference_screen.dart';
 import 'package:flutter/material.dart' hide Image;
 import 'package:ai_pencil/drawing_canvas/drawing_canvas.dart';
 import 'package:ai_pencil/drawing_canvas/models/drawing_mode.dart';
 import 'package:ai_pencil/drawing_canvas/models/sketch.dart';
-import 'package:ai_pencil/drawing_canvas/widgets/canvas_side_bar.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-enum SliderType {
-  opacity,
-  lineSize,
-  pencilSize,
-  paintSize,
-  eraser,
-}
 
 class DrawScreen extends HookWidget {
   final DrawingProject project;
@@ -34,6 +27,8 @@ class DrawScreen extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
+    // TODO: Eraser undo takes 2 clicks
+
     const aspectRatio = 16 / 9;
 
     // Drawing tools state
@@ -45,7 +40,6 @@ class DrawScreen extends HookWidget {
     final filled = useState<bool>(false);
     final polygonSides = useState<int>(3);
     final backgroundImage = useState<Image?>(null);
-
     final canvasGlobalKey = GlobalKey();
 
     ValueNotifier<Sketch?> currentSketch = useState(null);
@@ -161,31 +155,10 @@ class DrawScreen extends HookWidget {
     var trailingActions = [
       TextButton(
         onPressed: () {
-          showModalBottomSheet(
-            context: context,
-            builder: (context) {
-              return CanvasSideBar(
-                drawingMode: drawingMode,
-                selectedColor: selectedColor,
-                strokeSize: strokeSize,
-                eraserSize: eraserSize,
-                currentSketch: currentSketch,
-                allSketches: allSketches,
-                canvasGlobalKey: canvasGlobalKey,
-                filled: filled,
-                polygonSides: polygonSides,
-                backgroundImage: backgroundImage,
-              );
-            },
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const InferenceScreen()),
           );
-        },
-        child: const Text(
-          "Tools",
-        ),
-      ),
-      TextButton(
-        onPressed: () {
-          saveProject();
         },
         child: const Text(
           "AI",
