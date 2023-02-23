@@ -27,19 +27,17 @@ import 'package:flutter/services.dart';
 class DrawScreen extends HookWidget {
   final DrawingProject project;
   final int projectIndex;
-
+  final double aspectRatio;
   const DrawScreen({
     Key? key,
     required this.project,
     required this.projectIndex,
+    this.aspectRatio = 1,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     // TODO: Eraser undo takes 2 clicks
-
-    // Future inputs to the widget
-    const double aspectRatio = 1;
 
     // Drawing tools state
     final selectedColor = useState(Colors.black);

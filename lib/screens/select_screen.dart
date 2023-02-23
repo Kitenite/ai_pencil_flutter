@@ -49,6 +49,22 @@ class _SelectProjectScreenState extends State<SelectProjectScreen> {
         return projects;
       });
     });
+    navigateToProject(projects.length - 1, newProject);
+  }
+
+  void navigateToProject(int idx, DrawingProject project) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => DrawScreen(
+          project: project,
+          projectIndex: idx,
+        ),
+      ),
+    ).then((_) {
+      // Update projects after returning from draw screen
+      updateProjectList();
+    });
   }
 
   @override
@@ -72,45 +88,34 @@ class _SelectProjectScreenState extends State<SelectProjectScreen> {
         ],
       ),
       body: SingleChildScrollView(
-        child: FutureBuilder(
-          future: _jsonEncodedProjects,
-          builder: (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
-            if (snapshot.hasData) {
-              return Column(
-                children: snapshot.data!.asMap().entries.map((entry) {
-                  int idx = entry.key;
-                  String jsonEncodedProject = entry.value;
-                  Map<String, dynamic> project = json.decode(jsonEncodedProject);
-                  return ListTile(
-                    title: Text(project['title']),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => DrawScreen(
-                            project: DrawingProject.fromJson(project),
-                            projectIndex: idx,
-                          ),
-                        ),
-                      ).then((_) {
-                        // Update projects after returning from draw screen
-                        updateProjectList();
-                      });
-                    },
-                  );
-                }).toList(),
-              );
-            } else {
-              return const Padding(
-                padding: EdgeInsets.only(top: 20),
-                child: Center(
-                  child: CircularProgressIndicator(),
-                ),
-              );
-            }
-          },
-        )
-      ),
+          child: FutureBuilder(
+        future: _jsonEncodedProjects,
+        builder: (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
+          if (snapshot.hasData) {
+            return Column(
+              children: snapshot.data!.asMap().entries.map((entry) {
+                int idx = entry.key;
+                String jsonEncodedProject = entry.value;
+                DrawingProject project =
+                    DrawingProject.fromJson(json.decode(jsonEncodedProject));
+                return ListTile(
+                  title: Text(project.title),
+                  onTap: () {
+                    navigateToProject(idx, project);
+                  },
+                );
+              }).toList(),
+            );
+          } else {
+            return const Padding(
+              padding: EdgeInsets.only(top: 20),
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
+          }
+        },
+      )),
     );
   }
 }
