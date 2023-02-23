@@ -1,5 +1,7 @@
 import 'dart:convert';
-import 'dart:ui';
+import 'dart:async';
+import 'dart:io';
+import 'dart:ui' as ui;
 
 import 'package:ai_pencil/drawing_canvas/models/slider_type.dart';
 import 'package:ai_pencil/drawing_canvas/models/undo_redo_stack.dart';
@@ -7,13 +9,20 @@ import 'package:ai_pencil/drawing_canvas/widgets/drawing_tools.dart';
 import 'package:ai_pencil/model/drawing_layer.dart';
 import 'package:ai_pencil/model/drawing_project.dart';
 import 'package:ai_pencil/screens/inference_screen.dart';
+import 'package:file_saver/file_saver.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' hide Image;
 import 'package:ai_pencil/drawing_canvas/drawing_canvas.dart';
 import 'package:ai_pencil/drawing_canvas/models/drawing_mode.dart';
 import 'package:ai_pencil/drawing_canvas/models/sketch.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:universal_html/html.dart' as html;
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter/services.dart';
 
 class DrawScreen extends HookWidget {
   final DrawingProject project;
@@ -29,17 +38,18 @@ class DrawScreen extends HookWidget {
   Widget build(BuildContext context) {
     // TODO: Eraser undo takes 2 clicks
 
-    const aspectRatio = 16 / 9;
+    // Future inputs to the widget
+    const double aspectRatio = 1;
 
     // Drawing tools state
     final selectedColor = useState(Colors.black);
     final strokeSize = useState<double>(10);
     final eraserSize = useState<double>(30);
-    final strokeOpacity = useState<double>(0);
+    final strokeOpacity = useState<double>(1);
     final drawingMode = useState(DrawingMode.pencil);
     final filled = useState<bool>(false);
     final polygonSides = useState<int>(3);
-    final backgroundImage = useState<Image?>(null);
+    final backgroundImage = useState<ui.Image?>(null);
     final canvasGlobalKey = GlobalKey();
 
     ValueNotifier<Sketch?> currentSketch = useState(null);
@@ -152,6 +162,68 @@ class DrawScreen extends HookWidget {
       );
     }
 
+    Future<ui.Image> getImage() async {
+      final completer = Completer<ui.Image>();
+      if (!kIsWeb && !Platform.isAndroid && !Platform.isIOS) {
+        final file = await FilePicker.platform.pickFiles(
+          type: FileType.image,
+          allowMultiple: false,
+        );
+        if (file != null) {
+          final filePath = file.files.single.path;
+          final bytes = filePath == null
+              ? file.files.first.bytes
+              : File(filePath).readAsBytesSync();
+          if (bytes != null) {
+            completer.complete(decodeImageFromList(bytes));
+          } else {
+            completer.completeError('No image selected');
+          }
+        }
+      } else {
+        final image =
+            await ImagePicker().pickImage(source: ImageSource.gallery);
+        if (image != null) {
+          final bytes = await image.readAsBytes();
+          completer.complete(
+            decodeImageFromList(bytes),
+          );
+        } else {
+          completer.completeError('No image selected');
+        }
+      }
+
+      return completer.future;
+    }
+
+    Future<Uint8List?> getBytes() async {
+      RenderRepaintBoundary boundary = canvasGlobalKey.currentContext
+          ?.findRenderObject() as RenderRepaintBoundary;
+      ui.Image image = await boundary.toImage();
+      ByteData? byteData =
+          await image.toByteData(format: ui.ImageByteFormat.png);
+      Uint8List? pngBytes = byteData?.buffer.asUint8List();
+      return pngBytes;
+    }
+
+    void saveFile(Uint8List bytes, String extension) async {
+      if (kIsWeb) {
+        html.AnchorElement()
+          ..href = '${Uri.dataFromBytes(bytes, mimeType: 'image/$extension')}'
+          ..download =
+              'FlutterLetsDraw-${DateTime.now().toIso8601String()}.$extension'
+          ..style.display = 'none'
+          ..click();
+      } else {
+        await FileSaver.instance.saveFile(
+          'FlutterLetsDraw-${DateTime.now().toIso8601String()}.$extension',
+          bytes,
+          extension,
+          mimeType: extension == 'png' ? MimeType.PNG : MimeType.JPEG,
+        );
+      }
+    }
+
     var trailingActions = [
       TextButton(
         onPressed: () {
@@ -201,12 +273,25 @@ class DrawScreen extends HookWidget {
         title: Row(
           children: [
             IconButton(
-              onPressed: () {},
+              onPressed: () async {
+                if (backgroundImage.value != null) {
+                  backgroundImage.value = null;
+                } else {
+                  backgroundImage.value = await getImage();
+                }
+              },
               icon: const Icon(FontAwesomeIcons.image),
             ),
             IconButton(
-              onPressed: () {},
-              icon: const Icon(FontAwesomeIcons.arrowUpFromBracket),
+              onPressed: () async {
+                const snackBar = SnackBar(
+                  content: Text('Drawing saved'),
+                );
+                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                Uint8List? pngBytes = await getBytes();
+                if (pngBytes != null) saveFile(pngBytes, 'png');
+              },
+              icon: const Icon(FontAwesomeIcons.download),
             ),
           ],
         ),
@@ -265,46 +350,34 @@ class DrawScreen extends HookWidget {
             ),
             sliderModal,
             Positioned(
-              bottom: 0,
-              child: Card(
-                color: Colors.black54,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Row(
-                    children: [
-                      Row(
-                        children: [
-                          const Text(
-                            'Size',
-                            style: TextStyle(fontSize: 12),
-                          ),
-                          getSizeSlider(),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          const Text(
-                            'Opacity',
-                            style: TextStyle(fontSize: 12),
-                          ),
-                          Slider(
-                            value: strokeOpacity.value,
-                            min: 0,
-                            max: 1,
-                            onChanged: (val) {
-                              strokeOpacity.value = val;
-                            },
-                            onChangeStart: (value) {
-                              activeSlider.value = SliderType.opacity;
-                              sliderModalVisible.value = true;
-                            },
-                            onChangeEnd: (value) {
-                              sliderModalVisible.value = false;
-                            },
-                          ),
-                        ],
-                      ),
-                    ],
+              bottom: -4,
+              child: AnimatedOpacity(
+                opacity: sliderModalVisible.value ? 1.0 : 0.5,
+                duration: const Duration(milliseconds: 300),
+                child: Card(
+                  color: Colors.black54,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Row(
+                      children: [
+                        getSizeSlider(),
+                        Slider(
+                          value: strokeOpacity.value,
+                          min: 0,
+                          max: 1,
+                          onChanged: (val) {
+                            strokeOpacity.value = val;
+                          },
+                          onChangeStart: (value) {
+                            activeSlider.value = SliderType.opacity;
+                            sliderModalVisible.value = true;
+                          },
+                          onChangeEnd: (value) {
+                            sliderModalVisible.value = false;
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
