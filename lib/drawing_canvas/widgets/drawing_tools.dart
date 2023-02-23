@@ -70,13 +70,6 @@ class DrawingToolBar extends StatelessWidget {
             onTap: () => drawingMode.value = DrawingMode.pencil,
             tooltip: 'Pencil',
           ),
-          // TODO: Add painting tool
-          IconBox(
-            iconData: FontAwesomeIcons.brush,
-            selected: drawingMode.value == DrawingMode.arrow,
-            onTap: () => drawingMode.value = DrawingMode.pencil,
-            tooltip: 'Pencil',
-          ),
           ElevatedButton(
             onPressed: () {
               showDialog(

@@ -293,41 +293,47 @@ class DrawScreen extends HookWidget {
             sliderModal,
             Positioned(
               bottom: 0,
-              child: Row(
-                children: [
-                  Row(
+              child: Card(
+                color: Colors.black54,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Row(
                     children: [
-                      const Text(
-                        'Size',
-                        style: TextStyle(fontSize: 12),
+                      Row(
+                        children: [
+                          const Text(
+                            'Size',
+                            style: TextStyle(fontSize: 12),
+                          ),
+                          getSizeSlider(),
+                        ],
                       ),
-                      getSizeSlider(),
+                      Row(
+                        children: [
+                          const Text(
+                            'Opacity',
+                            style: TextStyle(fontSize: 12),
+                          ),
+                          Slider(
+                            value: strokeOpacity.value,
+                            min: 0,
+                            max: 1,
+                            onChanged: (val) {
+                              strokeOpacity.value = val;
+                            },
+                            onChangeStart: (value) {
+                              activeSlider.value = SliderType.opacity;
+                              sliderModalVisible.value = true;
+                            },
+                            onChangeEnd: (value) {
+                              sliderModalVisible.value = false;
+                            },
+                          ),
+                        ],
+                      ),
                     ],
                   ),
-                  Row(
-                    children: [
-                      const Text(
-                        'Opacity',
-                        style: TextStyle(fontSize: 12),
-                      ),
-                      Slider(
-                        value: strokeOpacity.value,
-                        min: 0,
-                        max: 1,
-                        onChanged: (val) {
-                          strokeOpacity.value = val;
-                        },
-                        onChangeStart: (value) {
-                          activeSlider.value = SliderType.opacity;
-                          sliderModalVisible.value = true;
-                        },
-                        onChangeEnd: (value) {
-                          sliderModalVisible.value = false;
-                        },
-                      ),
-                    ],
-                  ),
-                ],
+                ),
               ),
             ),
           ],
