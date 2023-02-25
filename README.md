@@ -2,6 +2,17 @@
 
 The official Ai Pencil client
 
+## Web deployment
+The project is set up with CI/CD for web. See our [Firebase hosting site](https://console.firebase.google.com/project/ai-pencil/hosting/sites) for more information. Push or merges to main are automatically deployed.
+
+For manual deployment from local, run:
+```
+flutter build web
+firebase deploy
+```
+
+Deployment configuration changes can be made in `.github/workflows`. We may want to change our release branch in the future.
+
 ## Run code generation
 We're using [json_serializable](https://pub.dev/packages/json_serializable/example) which generates boilerplate code to encode and decode models to json. 
 
