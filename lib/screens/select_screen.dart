@@ -38,6 +38,7 @@ class _SelectProjectScreenState extends State<SelectProjectScreen> {
   }
 
   void addProject() async {
+    // TODO: Add aspect ratio
     SharedPreferences prefs = await _prefs;
     var projects = prefs.getStringList('projects') ?? [];
     DrawingProject newProject = DrawingProject(

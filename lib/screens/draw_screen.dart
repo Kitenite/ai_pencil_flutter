@@ -37,6 +37,8 @@ class DrawScreen extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
+    // TODO: Add paint tool
+    // TODO: Add lines and shapes tool
     // TODO: Eraser undo takes 2 clicks
 
     // Drawing tools state
