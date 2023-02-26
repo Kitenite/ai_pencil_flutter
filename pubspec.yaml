@@ -52,6 +52,7 @@ dependencies:
   json_serializable: ^6.6.1
   uuid: ^3.0.7
   shared_preferences: ^2.0.17
+  image_cropper: ^3.0.1
 
 dev_dependencies:
   flutter_test:

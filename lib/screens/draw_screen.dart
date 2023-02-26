@@ -1,39 +1,33 @@
 import 'dart:convert';
-import 'dart:async';
-import 'dart:io';
 import 'dart:ui' as ui;
 
 import 'package:ai_pencil/drawing_canvas/models/slider_type.dart';
 import 'package:ai_pencil/drawing_canvas/models/undo_redo_stack.dart';
+import 'package:ai_pencil/drawing_canvas/utils/image_helpers.dart';
 import 'package:ai_pencil/drawing_canvas/widgets/drawing_tools.dart';
 import 'package:ai_pencil/drawing_canvas/widgets/icon_box.dart';
 import 'package:ai_pencil/model/drawing_layer.dart';
 import 'package:ai_pencil/model/drawing_project.dart';
 import 'package:ai_pencil/screens/inference_screen.dart';
-import 'package:file_saver/file_saver.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' hide Image;
 import 'package:ai_pencil/drawing_canvas/drawing_canvas.dart';
 import 'package:ai_pencil/drawing_canvas/models/drawing_mode.dart';
 import 'package:ai_pencil/drawing_canvas/models/sketch.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:universal_html/html.dart' as html;
-import 'package:file_picker/file_picker.dart';
-import 'package:flutter/services.dart';
 
 class DrawScreen extends HookWidget {
   final DrawingProject project;
   final int projectIndex;
-  final double aspectRatio;
+  final double aspectWidth;
+  final double aspectHeight;
   const DrawScreen({
     Key? key,
     required this.project,
     required this.projectIndex,
-    this.aspectRatio = 1,
+    this.aspectWidth = 1,
+    this.aspectHeight = 1,
   }) : super(key: key);
 
   @override
@@ -163,68 +157,6 @@ class DrawScreen extends HookWidget {
       );
     }
 
-    Future<ui.Image> getImage() async {
-      final completer = Completer<ui.Image>();
-      if (!kIsWeb && !Platform.isAndroid && !Platform.isIOS) {
-        final file = await FilePicker.platform.pickFiles(
-          type: FileType.image,
-          allowMultiple: false,
-        );
-        if (file != null) {
-          final filePath = file.files.single.path;
-          final bytes = filePath == null
-              ? file.files.first.bytes
-              : File(filePath).readAsBytesSync();
-          if (bytes != null) {
-            completer.complete(decodeImageFromList(bytes));
-          } else {
-            completer.completeError('No image selected');
-          }
-        }
-      } else {
-        final image =
-            await ImagePicker().pickImage(source: ImageSource.gallery);
-        if (image != null) {
-          final bytes = await image.readAsBytes();
-          completer.complete(
-            decodeImageFromList(bytes),
-          );
-        } else {
-          completer.completeError('No image selected');
-        }
-      }
-
-      return completer.future;
-    }
-
-    Future<Uint8List?> getBytes() async {
-      RenderRepaintBoundary boundary = canvasGlobalKey.currentContext
-          ?.findRenderObject() as RenderRepaintBoundary;
-      ui.Image image = await boundary.toImage();
-      ByteData? byteData =
-          await image.toByteData(format: ui.ImageByteFormat.png);
-      Uint8List? pngBytes = byteData?.buffer.asUint8List();
-      return pngBytes;
-    }
-
-    void saveFile(Uint8List bytes, String extension) async {
-      if (kIsWeb) {
-        html.AnchorElement()
-          ..href = '${Uri.dataFromBytes(bytes, mimeType: 'image/$extension')}'
-          ..download =
-              'FlutterLetsDraw-${DateTime.now().toIso8601String()}.$extension'
-          ..style.display = 'none'
-          ..click();
-      } else {
-        await FileSaver.instance.saveFile(
-          'FlutterLetsDraw-${DateTime.now().toIso8601String()}.$extension',
-          bytes,
-          extension,
-          mimeType: extension == 'png' ? MimeType.PNG : MimeType.JPEG,
-        );
-      }
-    }
-
     var trailingActions = [
       TextButton(
         onPressed: () {
@@ -265,6 +197,7 @@ class DrawScreen extends HookWidget {
         ),
       ),
     );
+
     return Scaffold(
       appBar: AppBar(
         leading: BackButton(onPressed: () {
@@ -277,11 +210,11 @@ class DrawScreen extends HookWidget {
               iconData: FontAwesomeIcons.image,
               selected: true,
               onTap: () async {
-                if (backgroundImage.value != null) {
-                  backgroundImage.value = null;
-                } else {
-                  backgroundImage.value = await getImage();
-                }
+                backgroundImage.value = await ImageHelper.getImageFromDevice(
+                  aspectWidth,
+                  aspectHeight,
+                  context,
+                );
               },
               tooltip: 'Add image',
             ),
@@ -293,8 +226,7 @@ class DrawScreen extends HookWidget {
                   content: Text('Drawing saved'),
                 );
                 ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                Uint8List? pngBytes = await getBytes();
-                if (pngBytes != null) saveFile(pngBytes, 'png');
+                ImageHelper.downloadCanvasImage(canvasGlobalKey);
               },
               tooltip: 'Download image',
             ),
@@ -333,7 +265,7 @@ class DrawScreen extends HookWidget {
                   height: MediaQuery.of(context).size.height,
                   child: Center(
                     child: AspectRatio(
-                      aspectRatio: aspectRatio,
+                      aspectRatio: aspectWidth / aspectHeight,
                       child: DrawingCanvas(
                         width: MediaQuery.of(context).size.width,
                         height: MediaQuery.of(context).size.height,

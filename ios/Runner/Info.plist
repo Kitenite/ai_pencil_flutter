@@ -47,5 +47,9 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Need photos access to upload photos to projects</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Need camera access to upload photos to projects</string>
 </dict>
 </plist>
