@@ -8,6 +8,7 @@ import 'package:ai_pencil/drawing_canvas/widgets/drawing_tools.dart';
 import 'package:ai_pencil/drawing_canvas/widgets/icon_box.dart';
 import 'package:ai_pencil/model/drawing_layer.dart';
 import 'package:ai_pencil/model/drawing_project.dart';
+import 'package:ai_pencil/model/drawing_tools.dart';
 import 'package:ai_pencil/screens/inference_screen.dart';
 import 'package:flutter/material.dart' hide Image;
 import 'package:ai_pencil/drawing_canvas/drawing_canvas.dart';
@@ -16,139 +17,6 @@ import 'package:ai_pencil/drawing_canvas/models/sketch.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-class DrawingTools {
-  final pencilSize = useState<double>(10);
-  final pencilOpacity = useState<double>(1);
-  final pencilColor = useState<Color>(Colors.black);
-  final double pencilMinSize = 1;
-  final double pencilMaxSize = 80;
-
-  final paintSize = useState<double>(20);
-  final paintOpacity = useState<double>(1);
-  final paintColor = useState<Color>(Colors.blue);
-  final double paintMinSize = 10;
-  final double paintMaxSize = 100;
-
-  final eraserSize = useState<double>(30);
-  final double eraserMinSize = 1;
-  final double eraserMaxSize = 100;
-
-  final usedColors = useState<List<Color>>([]);
-
-  final drawingMode = useState(DrawingMode.pencil);
-
-  ValueNotifier<Color> getSelectedColorNotifier() {
-    switch (drawingMode.value) {
-      case DrawingMode.pencil:
-        return pencilColor;
-      default:
-        return pencilColor;
-    }
-  }
-
-  Color getSelectedColor() {
-    switch (drawingMode.value) {
-      case DrawingMode.pencil:
-        return pencilColor.value;
-      default:
-        return pencilColor.value;
-    }
-  }
-
-  double getMinStrokeSize() {
-    switch (drawingMode.value) {
-      case DrawingMode.pencil:
-        return pencilMinSize;
-      case DrawingMode.paint:
-        return paintMinSize;
-      case DrawingMode.eraser:
-        return eraserMinSize;
-      default:
-        return pencilMinSize;
-    }
-  }
-
-  double getMaxStrokeSize() {
-    switch (drawingMode.value) {
-      case DrawingMode.pencil:
-        return pencilMaxSize;
-      case DrawingMode.paint:
-        return paintMaxSize;
-      case DrawingMode.eraser:
-        return eraserMaxSize;
-      default:
-        return pencilMinSize;
-    }
-  }
-
-  double getStrokeSize() {
-    switch (drawingMode.value) {
-      case DrawingMode.pencil:
-        return pencilSize.value;
-      case DrawingMode.paint:
-        return paintSize.value;
-      case DrawingMode.eraser:
-        return eraserSize.value;
-      default:
-        return pencilSize.value;
-    }
-  }
-
-  double getOpacity() {
-    switch (drawingMode.value) {
-      case DrawingMode.pencil:
-        return pencilOpacity.value;
-      case DrawingMode.paint:
-        return pencilOpacity.value;
-      default:
-        return pencilOpacity.value;
-    }
-  }
-
-  void setSelectedColor(Color color) {
-    switch (drawingMode.value) {
-      case DrawingMode.pencil:
-        pencilColor.value = color;
-        break;
-      case DrawingMode.paint:
-        pencilColor.value = color;
-        break;
-      default:
-        pencilColor.value = color;
-        break;
-    }
-  }
-
-  void setOpacity(double opacity) {
-    switch (drawingMode.value) {
-      case DrawingMode.pencil:
-        pencilOpacity.value = opacity;
-        break;
-      case DrawingMode.paint:
-        pencilOpacity.value = opacity;
-        break;
-      default:
-        pencilOpacity.value = opacity;
-    }
-  }
-
-  void setStrokeSize(double size) {
-    switch (drawingMode.value) {
-      case DrawingMode.pencil:
-        pencilSize.value = size;
-        break;
-      case DrawingMode.paint:
-        paintSize.value = size;
-        break;
-      case DrawingMode.eraser:
-        eraserSize.value = size;
-        break;
-      default:
-        pencilSize.value = size;
-    }
-  }
-}
 
 class DrawScreen extends HookWidget {
   final DrawingProject project;
@@ -165,7 +33,6 @@ class DrawScreen extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: Add paint tool
     // TODO: Add lines and shapes tool
     // TODO: Eraser undo takes 2 clicks
 
@@ -228,8 +95,6 @@ class DrawScreen extends HookWidget {
           previewSize = 50;
           previewColor = previewColor.withOpacity(drawingTools.getOpacity());
           break;
-        default:
-          break;
       }
 
       return Center(
@@ -271,7 +136,7 @@ class DrawScreen extends HookWidget {
       ),
     ];
 
-    var sliderModal = IgnorePointer(
+    var sliderPreviewModal = IgnorePointer(
       child: AnimatedOpacity(
         opacity: sliderModalVisible.value ? 1.0 : 0.0,
         duration: const Duration(milliseconds: 300),
@@ -292,6 +157,62 @@ class DrawScreen extends HookWidget {
           child: getSliderPreviewModal(),
         ),
       ),
+    );
+
+    var slidersContainer = Positioned(
+      bottom: -4,
+      child: AnimatedOpacity(
+        opacity: sliderModalVisible.value ? 1.0 : 0.5,
+        duration: const Duration(milliseconds: 300),
+        child: Card(
+          color: Colors.black54,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Row(
+              children: [
+                Slider(
+                  value: drawingTools.getStrokeSize(),
+                  min: drawingTools.getMinStrokeSize(),
+                  max: drawingTools.getMaxStrokeSize(),
+                  onChanged: (val) {
+                    drawingTools.setStrokeSize(val);
+                  },
+                  onChangeStart: (value) {
+                    activeSlider.value = SliderType.strokeSize;
+                    sliderModalVisible.value = true;
+                  },
+                  onChangeEnd: (value) {
+                    sliderModalVisible.value = false;
+                  },
+                ),
+                Slider(
+                  value: drawingTools.getOpacity(),
+                  min: 0,
+                  max: 1,
+                  onChanged: (val) {
+                    drawingTools.setOpacity(val);
+                  },
+                  onChangeStart: (value) {
+                    activeSlider.value = SliderType.opacity;
+                    sliderModalVisible.value = true;
+                  },
+                  onChangeEnd: (value) {
+                    sliderModalVisible.value = false;
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    var gridBackground = GridPaper(
+      color: const Color.fromARGB(10, 255, 255, 255),
+      interval: 30,
+      divisions: 1,
+      subdivisions: 1,
+      child: Container(),
     );
 
     return Scaffold(
@@ -342,13 +263,7 @@ class DrawScreen extends HookWidget {
         child: Stack(
           alignment: Alignment.center,
           children: [
-            GridPaper(
-              color: const Color.fromARGB(10, 255, 255, 255),
-              interval: 30,
-              divisions: 1,
-              subdivisions: 1,
-              child: Container(),
-            ),
+            gridBackground,
             InteractiveViewer(
               constrained: true,
               boundaryMargin: const EdgeInsets.all(1000.0),
@@ -377,54 +292,8 @@ class DrawScreen extends HookWidget {
                     ),
                   )),
             ),
-            sliderModal,
-            Positioned(
-              bottom: -4,
-              child: AnimatedOpacity(
-                opacity: sliderModalVisible.value ? 1.0 : 0.5,
-                duration: const Duration(milliseconds: 300),
-                child: Card(
-                  color: Colors.black54,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Row(
-                      children: [
-                        Slider(
-                          value: drawingTools.getStrokeSize(),
-                          min: drawingTools.getMinStrokeSize(),
-                          max: drawingTools.getMaxStrokeSize(),
-                          onChanged: (val) {
-                            drawingTools.setStrokeSize(val);
-                          },
-                          onChangeStart: (value) {
-                            activeSlider.value = SliderType.strokeSize;
-                            sliderModalVisible.value = true;
-                          },
-                          onChangeEnd: (value) {
-                            sliderModalVisible.value = false;
-                          },
-                        ),
-                        Slider(
-                          value: drawingTools.getOpacity(),
-                          min: 0,
-                          max: 1,
-                          onChanged: (val) {
-                            drawingTools.setOpacity(val);
-                          },
-                          onChangeStart: (value) {
-                            activeSlider.value = SliderType.opacity;
-                            sliderModalVisible.value = true;
-                          },
-                          onChangeEnd: (value) {
-                            sliderModalVisible.value = false;
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
+            sliderPreviewModal,
+            slidersContainer,
           ],
         ),
       ),

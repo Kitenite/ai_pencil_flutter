@@ -3,7 +3,7 @@ import 'dart:ui' as ui;
 
 import 'package:ai_pencil/constants.dart';
 import 'package:ai_pencil/drawing_canvas/widgets/sketch_painter.dart';
-import 'package:ai_pencil/screens/draw_screen.dart';
+import 'package:ai_pencil/model/drawing_tools.dart';
 import 'package:flutter/material.dart';
 import 'package:ai_pencil/drawing_canvas/models/drawing_mode.dart';
 import 'package:ai_pencil/drawing_canvas/models/sketch.dart';
