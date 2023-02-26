@@ -36,26 +36,6 @@ class DrawingCanvas extends HookWidget {
     required this.backgroundImage,
   }) : super(key: key);
 
-  Future<Int8List?> getDrawingAsPngBytes() async {
-    ui.Image image = await renderedImage;
-    var pngByteData = await image.toByteData(format: ui.ImageByteFormat.png);
-    Int8List? pngBytesList = pngByteData?.buffer.asInt8List();
-    return pngBytesList;
-  }
-
-  Future<ui.Image> get renderedImage {
-    // Create a new canvas with a PictureRecorder, paint it with all sketches,
-    // and then return the image
-    ui.PictureRecorder recorder = ui.PictureRecorder();
-    Canvas canvas = Canvas(recorder);
-    SketchPainter painter = SketchPainter(sketches: allSketches.value);
-    var size = Size(width, height);
-    painter.paint(canvas, size);
-    return recorder
-        .endRecording()
-        .toImage(size.width.floor(), size.height.floor());
-  }
-
   @override
   Widget build(BuildContext context) {
     return MouseRegion(
@@ -149,7 +129,7 @@ class DrawingCanvas extends HookWidget {
             child: Container(
               height: height,
               width: width,
-              color: CustomColors.canvasColor,
+              color: Colors.transparent,
               child: CustomPaint(
                 painter: SketchPainter(
                   sketches: sketches,
