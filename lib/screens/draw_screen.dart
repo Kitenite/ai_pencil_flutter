@@ -6,6 +6,7 @@ import 'dart:ui' as ui;
 import 'package:ai_pencil/drawing_canvas/models/slider_type.dart';
 import 'package:ai_pencil/drawing_canvas/models/undo_redo_stack.dart';
 import 'package:ai_pencil/drawing_canvas/widgets/drawing_tools.dart';
+import 'package:ai_pencil/drawing_canvas/widgets/icon_box.dart';
 import 'package:ai_pencil/model/drawing_layer.dart';
 import 'package:ai_pencil/model/drawing_project.dart';
 import 'package:ai_pencil/screens/inference_screen.dart';
@@ -272,18 +273,22 @@ class DrawScreen extends HookWidget {
         }),
         title: Row(
           children: [
-            IconButton(
-              onPressed: () async {
+            IconBox(
+              iconData: FontAwesomeIcons.image,
+              selected: true,
+              onTap: () async {
                 if (backgroundImage.value != null) {
                   backgroundImage.value = null;
                 } else {
                   backgroundImage.value = await getImage();
                 }
               },
-              icon: const Icon(FontAwesomeIcons.image),
+              tooltip: 'Add image',
             ),
-            IconButton(
-              onPressed: () async {
+            IconBox(
+              iconData: FontAwesomeIcons.download,
+              selected: true,
+              onTap: () async {
                 const snackBar = SnackBar(
                   content: Text('Drawing saved'),
                 );
@@ -291,7 +296,7 @@ class DrawScreen extends HookWidget {
                 Uint8List? pngBytes = await getBytes();
                 if (pngBytes != null) saveFile(pngBytes, 'png');
               },
-              icon: const Icon(FontAwesomeIcons.download),
+              tooltip: 'Download image',
             ),
           ],
         ),
