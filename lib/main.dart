@@ -44,7 +44,7 @@ class MainApp extends StatelessWidget {
       routes: {
         Routes.SELECT_SCREEN_ROUTE: (context) => const SelectProjectScreen(),
         // Routes.DRAW_SCREEN_ROUTE: (context) => const DrawScreen(),
-        Routes.INFERENCE_SCREEN_ROUTE: (context) => const InferenceScreen()
+        // Routes.INFERENCE_SCREEN_ROUTE: (context) => const InferenceScreen()
       },
       debugShowCheckedModeBanner: false,
     );

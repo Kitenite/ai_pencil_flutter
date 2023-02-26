@@ -94,18 +94,20 @@ class _SelectProjectScreenState extends State<SelectProjectScreen> {
         builder: (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
           if (snapshot.hasData) {
             return Column(
-              children: snapshot.data!.asMap().entries.map((entry) {
-                int idx = entry.key;
-                String jsonEncodedProject = entry.value;
-                DrawingProject project =
-                    DrawingProject.fromJson(json.decode(jsonEncodedProject));
-                return ListTile(
-                  title: Text(project.title),
-                  onTap: () {
-                    navigateToProject(idx, project);
-                  },
-                );
-              }).toList(),
+              children: snapshot.data!.asMap().entries.map(
+                (entry) {
+                  int idx = entry.key;
+                  String jsonEncodedProject = entry.value;
+                  DrawingProject project =
+                      DrawingProject.fromJson(json.decode(jsonEncodedProject));
+                  return ListTile(
+                    title: Text(project.title),
+                    onTap: () {
+                      navigateToProject(idx, project);
+                    },
+                  );
+                },
+              ).toList(),
             );
           } else {
             return const Padding(

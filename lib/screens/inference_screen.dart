@@ -1,9 +1,18 @@
+import 'package:ai_pencil/drawing_canvas/utils/image_helpers.dart';
+import 'package:ai_pencil/model/drawing_project.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class InferenceScreen extends HookWidget {
-  const InferenceScreen({super.key});
+  final DrawingProject project;
+  final GlobalKey canvasGlobalKey;
+
+  const InferenceScreen({
+    super.key,
+    required this.project,
+    required this.canvasGlobalKey,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -24,10 +33,22 @@ class InferenceScreen extends HookWidget {
                 ),
               ),
             ),
-            const Padding(
-              padding: EdgeInsets.all(20.0),
-              child: Image(
-                image: AssetImage('icon/icon.png'),
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: FutureBuilder(
+                future: ImageHelper.getCanvasImage(canvasGlobalKey),
+                builder: (BuildContext context, AsyncSnapshot<Image> snapshot) {
+                  if (snapshot.hasData) {
+                    return snapshot.data!;
+                  } else {
+                    return const Padding(
+                      padding: EdgeInsets.only(top: 20),
+                      child: Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    );
+                  }
+                },
               ),
             ),
             const Padding(

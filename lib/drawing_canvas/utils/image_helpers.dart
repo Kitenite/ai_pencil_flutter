@@ -11,7 +11,21 @@ import 'package:file_saver/file_saver.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
 
+// TODO: There are 2 implementations of image: ui.Image and material Image. We should decide on using just one.
+
 class ImageHelper {
+  static Future<Image> getCanvasImage(GlobalKey canvasGlobalKey) async {
+    final completer = Completer<Image>();
+
+    Uint8List? bytes = await ImageHelper.getCanvasAsBytes(canvasGlobalKey);
+    if (bytes != null) {
+      completer.complete(Image.memory(Uint8List.fromList(bytes)));
+    } else {
+      completer.completeError('No image selected');
+    }
+    return completer.future;
+  }
+
   static void downloadCanvasImage(GlobalKey canvasGlobalKey) async {
     Uint8List? pngBytes = await ImageHelper.getCanvasAsBytes(canvasGlobalKey);
     if (pngBytes != null) ImageHelper.saveFile(pngBytes, 'png');

@@ -10,7 +10,7 @@ import 'package:ai_pencil/model/drawing_layer.dart';
 import 'package:ai_pencil/model/drawing_project.dart';
 import 'package:ai_pencil/model/drawing_tools.dart';
 import 'package:ai_pencil/screens/inference_screen.dart';
-import 'package:flutter/material.dart' hide Image;
+import 'package:flutter/material.dart';
 import 'package:ai_pencil/drawing_canvas/drawing_canvas.dart';
 import 'package:ai_pencil/drawing_canvas/models/drawing_mode.dart';
 import 'package:ai_pencil/drawing_canvas/models/sketch.dart';
@@ -123,7 +123,12 @@ class DrawScreen extends HookWidget {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const InferenceScreen()),
+            MaterialPageRoute(
+              builder: (context) => InferenceScreen(
+                project: project,
+                canvasGlobalKey: canvasGlobalKey,
+              ),
+            ),
           );
         },
         child: const Text(
