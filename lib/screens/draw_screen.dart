@@ -17,6 +17,139 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+class DrawingTools {
+  final pencilSize = useState<double>(10);
+  final pencilOpacity = useState<double>(1);
+  final pencilColor = useState<Color>(Colors.black);
+  final double pencilMinSize = 1;
+  final double pencilMaxSize = 80;
+
+  final paintSize = useState<double>(20);
+  final paintOpacity = useState<double>(1);
+  final paintColor = useState<Color>(Colors.blue);
+  final double paintMinSize = 10;
+  final double paintMaxSize = 100;
+
+  final eraserSize = useState<double>(30);
+  final double eraserMinSize = 1;
+  final double eraserMaxSize = 100;
+
+  final usedColors = useState<List<Color>>([]);
+
+  final drawingMode = useState(DrawingMode.pencil);
+
+  ValueNotifier<Color> getSelectedColorNotifier() {
+    switch (drawingMode.value) {
+      case DrawingMode.pencil:
+        return pencilColor;
+      default:
+        return pencilColor;
+    }
+  }
+
+  Color getSelectedColor() {
+    switch (drawingMode.value) {
+      case DrawingMode.pencil:
+        return pencilColor.value;
+      default:
+        return pencilColor.value;
+    }
+  }
+
+  double getMinStrokeSize() {
+    switch (drawingMode.value) {
+      case DrawingMode.pencil:
+        return pencilMinSize;
+      case DrawingMode.paint:
+        return paintMinSize;
+      case DrawingMode.eraser:
+        return eraserMinSize;
+      default:
+        return pencilMinSize;
+    }
+  }
+
+  double getMaxStrokeSize() {
+    switch (drawingMode.value) {
+      case DrawingMode.pencil:
+        return pencilMaxSize;
+      case DrawingMode.paint:
+        return paintMaxSize;
+      case DrawingMode.eraser:
+        return eraserMaxSize;
+      default:
+        return pencilMinSize;
+    }
+  }
+
+  double getStrokeSize() {
+    switch (drawingMode.value) {
+      case DrawingMode.pencil:
+        return pencilSize.value;
+      case DrawingMode.paint:
+        return paintSize.value;
+      case DrawingMode.eraser:
+        return eraserSize.value;
+      default:
+        return pencilSize.value;
+    }
+  }
+
+  double getOpacity() {
+    switch (drawingMode.value) {
+      case DrawingMode.pencil:
+        return pencilOpacity.value;
+      case DrawingMode.paint:
+        return pencilOpacity.value;
+      default:
+        return pencilOpacity.value;
+    }
+  }
+
+  void setSelectedColor(Color color) {
+    switch (drawingMode.value) {
+      case DrawingMode.pencil:
+        pencilColor.value = color;
+        break;
+      case DrawingMode.paint:
+        pencilColor.value = color;
+        break;
+      default:
+        pencilColor.value = color;
+        break;
+    }
+  }
+
+  void setOpacity(double opacity) {
+    switch (drawingMode.value) {
+      case DrawingMode.pencil:
+        pencilOpacity.value = opacity;
+        break;
+      case DrawingMode.paint:
+        pencilOpacity.value = opacity;
+        break;
+      default:
+        pencilOpacity.value = opacity;
+    }
+  }
+
+  void setStrokeSize(double size) {
+    switch (drawingMode.value) {
+      case DrawingMode.pencil:
+        pencilSize.value = size;
+        break;
+      case DrawingMode.paint:
+        paintSize.value = size;
+        break;
+      case DrawingMode.eraser:
+        eraserSize.value = size;
+        break;
+      default:
+        pencilSize.value = size;
+    }
+  }
+}
+
 class DrawScreen extends HookWidget {
   final DrawingProject project;
   final int projectIndex;
@@ -36,23 +169,22 @@ class DrawScreen extends HookWidget {
     // TODO: Add lines and shapes tool
     // TODO: Eraser undo takes 2 clicks
 
-    // Drawing tools state
-    final selectedColor = useState(Colors.black);
-    final strokeSize = useState<double>(10);
-    final eraserSize = useState<double>(30);
-    final strokeOpacity = useState<double>(1);
-    final drawingMode = useState(DrawingMode.pencil);
+    final drawingTools = DrawingTools();
+    // Unused - Polygon mode
     final filled = useState<bool>(false);
     final polygonSides = useState<int>(3);
+
     final backgroundImage = useState<ui.Image?>(null);
     final canvasGlobalKey = GlobalKey();
 
+    // Canvas sketches
     ValueNotifier<Sketch?> currentSketch = useState(null);
     ValueNotifier<List<Sketch>> allSketches =
         useState(project.layers[project.activeLayerIndex].sketches);
-    ValueNotifier<bool> sliderModalVisible = useState<bool>(false);
-    ValueNotifier<SliderType> activeSlider =
-        useState<SliderType>(SliderType.pencilSize);
+
+    // Sliders
+    final sliderModalVisible = useState<bool>(false);
+    final activeSlider = useState<SliderType>(SliderType.strokeSize);
 
     final undoRedoStack = useState(UndoRedoStack(
       sketchesNotifier: allSketches,
@@ -81,56 +213,20 @@ class DrawScreen extends HookWidget {
       prefs.setStringList('projects', projects);
     }
 
-    Widget getSizeSlider() {
-      double value = strokeSize.value;
-      double minValue = 0;
-      double maxValue = 80;
-      SliderType type = SliderType.pencilSize;
-      var onChanged = (val) => {strokeSize.value = val};
-
-      switch (drawingMode.value) {
-        case DrawingMode.pencil:
-          onChanged = (val) => {strokeSize.value = val};
-          type = SliderType.pencilSize;
-          break;
-
-        case DrawingMode.eraser:
-          value = eraserSize.value;
-          onChanged = (val) => {eraserSize.value = val};
-          type = SliderType.eraser;
-          break;
-        default:
-          break;
-      }
-      return Slider(
-        value: value,
-        min: minValue,
-        max: maxValue,
-        onChanged: onChanged,
-        onChangeStart: (value) {
-          activeSlider.value = type;
-          sliderModalVisible.value = true;
-        },
-        onChangeEnd: (value) {
-          sliderModalVisible.value = false;
-        },
-      );
-    }
-
     Widget getSliderPreviewModal() {
-      String modalText = "Size ${strokeSize.value.round()}";
-      double previewSize = strokeSize.value;
+      String modalText = "Size ${drawingTools.getStrokeSize().round()}";
+      double previewSize = drawingTools.getStrokeSize();
       Color previewColor = Colors.white;
 
       switch (activeSlider.value) {
-        case SliderType.eraser:
-          modalText = "Size ${eraserSize.value.round()}";
-          previewSize = eraserSize.value;
+        case SliderType.strokeSize:
+          modalText = "Size ${drawingTools.getStrokeSize().round()}";
+          previewSize = drawingTools.getStrokeSize();
           break;
         case SliderType.opacity:
-          modalText = "Opacity ${(strokeOpacity.value * 100).round()}%";
+          modalText = "Opacity ${(drawingTools.getOpacity() * 100).round()}%";
           previewSize = 50;
-          previewColor = previewColor.withOpacity(strokeOpacity.value);
+          previewColor = previewColor.withOpacity(drawingTools.getOpacity());
           break;
         default:
           break;
@@ -147,7 +243,7 @@ class DrawScreen extends HookWidget {
                 width: previewSize,
                 height: previewSize,
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(strokeOpacity.value),
+                  color: Colors.white.withOpacity(drawingTools.getOpacity()),
                   shape: BoxShape.circle,
                 ),
               ),
@@ -237,8 +333,8 @@ class DrawScreen extends HookWidget {
       bottomNavigationBar: DrawingToolBar(
         allSketches: allSketches,
         undoRedoStack: undoRedoStack,
-        drawingMode: drawingMode,
-        selectedColor: selectedColor,
+        drawingMode: drawingTools.drawingMode,
+        selectedColor: drawingTools.getSelectedColorNotifier(),
       ),
       body: SizedBox(
         width: MediaQuery.of(context).size.width,
@@ -258,8 +354,8 @@ class DrawScreen extends HookWidget {
               boundaryMargin: const EdgeInsets.all(1000.0),
               minScale: 0.01,
               maxScale: 10,
-              panEnabled: drawingMode.value == DrawingMode.pan,
-              scaleEnabled: drawingMode.value == DrawingMode.pan,
+              panEnabled: drawingTools.drawingMode.value == DrawingMode.pan,
+              scaleEnabled: drawingTools.drawingMode.value == DrawingMode.pan,
               child: SizedBox(
                   width: MediaQuery.of(context).size.width,
                   height: MediaQuery.of(context).size.height,
@@ -269,11 +365,7 @@ class DrawScreen extends HookWidget {
                       child: DrawingCanvas(
                         width: MediaQuery.of(context).size.width,
                         height: MediaQuery.of(context).size.height,
-                        drawingMode: drawingMode,
-                        selectedColor: selectedColor,
-                        strokeSize: strokeSize,
-                        eraserSize: eraserSize,
-                        strokeOpacity: strokeOpacity,
+                        drawingTools: drawingTools,
                         sideBarController: animationController,
                         currentSketch: currentSketch,
                         allSketches: allSketches,
@@ -297,13 +389,27 @@ class DrawScreen extends HookWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
                     child: Row(
                       children: [
-                        getSizeSlider(),
                         Slider(
-                          value: strokeOpacity.value,
+                          value: drawingTools.getStrokeSize(),
+                          min: drawingTools.getMinStrokeSize(),
+                          max: drawingTools.getMaxStrokeSize(),
+                          onChanged: (val) {
+                            drawingTools.setStrokeSize(val);
+                          },
+                          onChangeStart: (value) {
+                            activeSlider.value = SliderType.strokeSize;
+                            sliderModalVisible.value = true;
+                          },
+                          onChangeEnd: (value) {
+                            sliderModalVisible.value = false;
+                          },
+                        ),
+                        Slider(
+                          value: drawingTools.getOpacity(),
                           min: 0,
                           max: 1,
                           onChanged: (val) {
-                            strokeOpacity.value = val;
+                            drawingTools.setOpacity(val);
                           },
                           onChangeStart: (value) {
                             activeSlider.value = SliderType.opacity;

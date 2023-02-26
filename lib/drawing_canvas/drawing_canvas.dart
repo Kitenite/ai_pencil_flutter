@@ -3,6 +3,7 @@ import 'dart:ui' as ui;
 
 import 'package:ai_pencil/constants.dart';
 import 'package:ai_pencil/drawing_canvas/widgets/sketch_painter.dart';
+import 'package:ai_pencil/screens/draw_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:ai_pencil/drawing_canvas/models/drawing_mode.dart';
 import 'package:ai_pencil/drawing_canvas/models/sketch.dart';
@@ -12,13 +13,8 @@ class DrawingCanvas extends HookWidget {
   final double
       height; // TODO: To handle screen resize, should use ValueNotifier for width and height to repaint correctly.
   final double width;
-  final ValueNotifier<Color> selectedColor;
-  final ValueNotifier<double> strokeSize;
+  final DrawingTools drawingTools;
   final ValueNotifier<ui.Image?> backgroundImage;
-  final ValueNotifier<double> eraserSize;
-  final ValueNotifier<double>
-      strokeOpacity; // TODO: Opacity doesn't apply to the latest stroke for some reason.
-  final ValueNotifier<DrawingMode> drawingMode;
   final AnimationController sideBarController;
   final ValueNotifier<Sketch?> currentSketch;
   final ValueNotifier<List<Sketch>> allSketches;
@@ -30,11 +26,7 @@ class DrawingCanvas extends HookWidget {
     Key? key,
     required this.height,
     required this.width,
-    required this.selectedColor,
-    required this.strokeSize,
-    required this.eraserSize,
-    required this.strokeOpacity,
-    required this.drawingMode,
+    required this.drawingTools,
     required this.sideBarController,
     required this.currentSketch,
     required this.allSketches,
@@ -83,14 +75,12 @@ class DrawingCanvas extends HookWidget {
     currentSketch.value = Sketch.fromDrawingMode(
       Sketch(
         points: [offset],
-        size: drawingMode.value == DrawingMode.eraser
-            ? eraserSize.value
-            : strokeSize.value,
-        color: selectedColor.value,
+        size: drawingTools.getStrokeSize(),
+        color: drawingTools.getSelectedColor(),
         sides: polygonSides.value,
-        opacity: strokeOpacity.value,
+        opacity: drawingTools.getOpacity(),
       ),
-      drawingMode.value,
+      drawingTools.drawingMode.value,
       filled.value,
     );
   }
@@ -120,19 +110,17 @@ class DrawingCanvas extends HookWidget {
     currentSketch.value = Sketch.fromDrawingMode(
       Sketch(
         points: points,
-        size: drawingMode.value == DrawingMode.eraser
-            ? eraserSize.value
-            : strokeSize.value,
-        color: selectedColor.value,
+        size: drawingTools.getStrokeSize(),
+        color: drawingTools.getSelectedColor(),
         sides: polygonSides.value,
-        opacity: strokeOpacity.value,
+        opacity: drawingTools.getOpacity(),
       ),
-      drawingMode.value,
+      drawingTools.drawingMode.value,
       filled.value,
     );
 
     // TODO: This is an extremely hacky way to get real-time eraser working. Basically, we replace the last value of allSketches with currentSketch so that it triggers a repaint.
-    if (drawingMode.value == DrawingMode.eraser) {
+    if (drawingTools.drawingMode.value == DrawingMode.eraser) {
       if (currentSketch.value != null) {
         // For some reason, size is a good way to check if the last value of allSketches is the same as currentSketch.
         if (allSketches.value.last.size == currentSketch.value!.size) {
@@ -176,7 +164,7 @@ class DrawingCanvas extends HookWidget {
   }
 
   Widget buildCurrentPath(BuildContext context) {
-    if (drawingMode.value == DrawingMode.pan) {
+    if (drawingTools.drawingMode.value == DrawingMode.pan) {
       return const SizedBox.shrink();
     }
 
