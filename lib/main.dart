@@ -1,5 +1,4 @@
 import 'package:ai_pencil/constants.dart';
-import 'package:ai_pencil/screens/inference_screen.dart';
 import 'package:ai_pencil/screens/select_screen.dart';
 import 'package:ai_pencil/themes.dart';
 import 'package:flutter/foundation.dart';

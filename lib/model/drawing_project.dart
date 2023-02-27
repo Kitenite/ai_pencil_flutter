@@ -16,23 +16,27 @@ class DrawingProject {
 
   @Int8ListConverter()
   Int8List? thumbnailImageBytes;
-
-  // Optional
-  String prompt;
-  int activeLayerIndex;
   double aspectWidth;
   double aspectHeight;
+
+  // Optional
+  // TODO: Optionals are dangerous if we're rebuilding the project on callbacks. Easy to miss reassigning.
+  // Consider having a callback to return a clone of the project
+
+  String prompt;
+  int activeLayerIndex;
+
   //String selectedArtTypeKey;
   //List<String> selectedSubstyleKeys;
 
   DrawingProject({
     required this.title,
     required this.layers,
+    required this.aspectWidth,
+    required this.aspectHeight,
     this.thumbnailImageBytes,
     this.prompt = "",
     this.activeLayerIndex = 0,
-    this.aspectWidth = 1,
-    this.aspectHeight = 1,
     //this.selectedArtTypeKey = "None",
     //this.selectedSubstyleKeys = const ["None", "None", "None", "None"],
   });

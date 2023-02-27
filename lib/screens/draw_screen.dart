@@ -61,6 +61,7 @@ class DrawScreen extends HookWidget {
 
     void saveProject() async {
       // TODO: this logic should be a callback passed by select project screen
+      // TODO: Add prompt
       var prefs = await SharedPreferences.getInstance();
       var updatedProject = DrawingProject(
         title: project.title,
@@ -70,6 +71,8 @@ class DrawScreen extends HookWidget {
           ),
         ],
         activeLayerIndex: 0,
+        aspectWidth: project.aspectWidth,
+        aspectHeight: project.aspectHeight,
       );
       var projects = prefs.getStringList('projects') ?? [];
       projects[projectIndex] = jsonEncode(updatedProject.toJson());
