@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+// TODO: Add select, move, resize drawing tool
+
 class DrawingToolBar extends StatelessWidget {
   const DrawingToolBar({
     super.key,

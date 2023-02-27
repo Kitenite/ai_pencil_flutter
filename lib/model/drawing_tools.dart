@@ -6,16 +6,16 @@ class DrawingTools {
   final drawingMode = useState(DrawingMode.pencil);
   final usedColors = useState<List<Color>>([]);
 
-  final pencilSize = useState<double>(10);
+  final pencilSize = useState<double>(3);
   final pencilOpacity = useState<double>(1);
   final pencilColor = useState<Color>(Colors.black);
   final double pencilMinSize = 1;
-  final double pencilMaxSize = 80;
+  final double pencilMaxSize = 20;
 
   final paintSize = useState<double>(50);
   final paintOpacity = useState<double>(0.5);
   final paintColor = useState<Color>(Colors.blue);
-  final double paintMinSize = 10;
+  final double paintMinSize = 20;
   final double paintMaxSize = 100;
 
   final eraserSize = useState<double>(30);
