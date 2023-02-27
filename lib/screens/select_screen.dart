@@ -7,6 +7,17 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+enum DrawingAspectRatio {
+  square,
+  twoByThree,
+  threeByTwo,
+  threeByFour,
+  fourByThree,
+  nineBySixteen,
+  sixteenByNine,
+  screenSize,
+}
+
 class SelectProjectScreen extends StatefulWidget {
   const SelectProjectScreen({super.key});
 
@@ -37,12 +48,16 @@ class _SelectProjectScreenState extends State<SelectProjectScreen> {
     });
   }
 
-  void addProject() async {
+  void addProject(double aspectWidth, double aspectHeight) async {
     // TODO: Add aspect ratio
     SharedPreferences prefs = await _prefs;
     var projects = prefs.getStringList('projects') ?? [];
     DrawingProject newProject = DrawingProject(
-        title: 'Project ${projects.length + 1}', layers: [DrawingLayer()]);
+      title: 'Project ${projects.length + 1}',
+      layers: [DrawingLayer()],
+      aspectHeight: aspectHeight,
+      aspectWidth: aspectWidth,
+    );
     projects.add(jsonEncode(newProject.toJson()));
     setState(() {
       _jsonEncodedProjects =
@@ -70,6 +85,81 @@ class _SelectProjectScreenState extends State<SelectProjectScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var addProjectButton = PopupMenuButton<DrawingAspectRatio>(
+      initialValue: null,
+      icon: const Icon(FontAwesomeIcons.plus),
+      onSelected: (DrawingAspectRatio item) {
+        switch (item) {
+          case DrawingAspectRatio.square:
+            addProject(1, 1);
+            break;
+          case DrawingAspectRatio.twoByThree:
+            addProject(2, 3);
+            break;
+          case DrawingAspectRatio.threeByFour:
+            addProject(3, 4);
+            break;
+          case DrawingAspectRatio.nineBySixteen:
+            addProject(9, 16);
+            break;
+          case DrawingAspectRatio.threeByTwo:
+            addProject(3, 2);
+            break;
+          case DrawingAspectRatio.fourByThree:
+            addProject(4, 3);
+            break;
+          case DrawingAspectRatio.sixteenByNine:
+            addProject(16, 9);
+            break;
+          case DrawingAspectRatio.screenSize:
+            addProject(
+              MediaQuery.of(context).size.width,
+              MediaQuery.of(context).size.height,
+            );
+            break;
+        }
+      },
+      itemBuilder: (BuildContext context) =>
+          <PopupMenuEntry<DrawingAspectRatio>>[
+        const PopupMenuItem<DrawingAspectRatio>(
+          value: DrawingAspectRatio.square,
+          child: Text('Square (1x1)'),
+        ),
+        const PopupMenuDivider(),
+        const PopupMenuItem<DrawingAspectRatio>(
+          value: DrawingAspectRatio.twoByThree,
+          child: Text('Portrait (2x3)'),
+        ),
+        const PopupMenuItem<DrawingAspectRatio>(
+          value: DrawingAspectRatio.threeByFour,
+          child: Text('Portrait (3x4)'),
+        ),
+        const PopupMenuItem<DrawingAspectRatio>(
+          value: DrawingAspectRatio.nineBySixteen,
+          child: Text('Portrait (9x16)'),
+        ),
+        const PopupMenuDivider(),
+        const PopupMenuItem<DrawingAspectRatio>(
+          value: DrawingAspectRatio.threeByTwo,
+          child: Text('Landscape (3x2)'),
+        ),
+        const PopupMenuItem<DrawingAspectRatio>(
+          value: DrawingAspectRatio.fourByThree,
+          child: Text('Landscape (4x3)'),
+        ),
+        const PopupMenuItem<DrawingAspectRatio>(
+          value: DrawingAspectRatio.sixteenByNine,
+          child: Text('Landscape (16x9)'),
+        ),
+        const PopupMenuDivider(),
+        PopupMenuItem<DrawingAspectRatio>(
+          value: DrawingAspectRatio.screenSize,
+          child: Text(
+              'Screen size (${MediaQuery.of(context).size.width}x${MediaQuery.of(context).size.height})'),
+        ),
+      ],
+    );
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -80,12 +170,7 @@ class _SelectProjectScreenState extends State<SelectProjectScreen> {
             onPressed: () {},
             child: const Text("Select"),
           ),
-          IconButton(
-            onPressed: () {
-              addProject();
-            },
-            icon: const Icon(FontAwesomeIcons.plus),
-          )
+          addProjectButton
         ],
       ),
       body: SingleChildScrollView(
@@ -94,20 +179,26 @@ class _SelectProjectScreenState extends State<SelectProjectScreen> {
         builder: (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
           if (snapshot.hasData) {
             return Column(
-              children: snapshot.data!.asMap().entries.map(
-                (entry) {
-                  int idx = entry.key;
-                  String jsonEncodedProject = entry.value;
-                  DrawingProject project =
-                      DrawingProject.fromJson(json.decode(jsonEncodedProject));
-                  return ListTile(
-                    title: Text(project.title),
-                    onTap: () {
-                      navigateToProject(idx, project);
+              children: snapshot.data!
+                  .asMap()
+                  .entries
+                  .map(
+                    (entry) {
+                      int idx = entry.key;
+                      String jsonEncodedProject = entry.value;
+                      DrawingProject project = DrawingProject.fromJson(
+                          json.decode(jsonEncodedProject));
+                      return ListTile(
+                        title: Text(project.title),
+                        onTap: () {
+                          navigateToProject(idx, project);
+                        },
+                      );
                     },
-                  );
-                },
-              ).toList(),
+                  )
+                  .toList()
+                  .reversed
+                  .toList(),
             );
           } else {
             return const Padding(

@@ -20,6 +20,8 @@ class DrawingProject {
   // Optional
   String prompt;
   int activeLayerIndex;
+  double aspectWidth;
+  double aspectHeight;
   //String selectedArtTypeKey;
   //List<String> selectedSubstyleKeys;
 
@@ -29,6 +31,8 @@ class DrawingProject {
     this.thumbnailImageBytes,
     this.prompt = "",
     this.activeLayerIndex = 0,
+    this.aspectWidth = 1,
+    this.aspectHeight = 1,
     //this.selectedArtTypeKey = "None",
     //this.selectedSubstyleKeys = const ["None", "None", "None", "None"],
   });

@@ -21,14 +21,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 class DrawScreen extends HookWidget {
   final DrawingProject project;
   final int projectIndex;
-  final double aspectWidth;
-  final double aspectHeight;
   const DrawScreen({
     Key? key,
     required this.project,
     required this.projectIndex,
-    this.aspectWidth = 1,
-    this.aspectHeight = 1,
   }) : super(key: key);
 
   @override
@@ -233,8 +229,8 @@ class DrawScreen extends HookWidget {
               selected: true,
               onTap: () async {
                 backgroundImage.value = await ImageHelper.getImageFromDevice(
-                  aspectWidth,
-                  aspectHeight,
+                  project.aspectWidth,
+                  project.aspectHeight,
                   context,
                 );
               },
@@ -281,7 +277,7 @@ class DrawScreen extends HookWidget {
                   height: MediaQuery.of(context).size.height,
                   child: Center(
                     child: AspectRatio(
-                      aspectRatio: aspectWidth / aspectHeight,
+                      aspectRatio: project.aspectWidth / project.aspectHeight,
                       child: DrawingCanvas(
                         width: MediaQuery.of(context).size.width,
                         height: MediaQuery.of(context).size.height,
