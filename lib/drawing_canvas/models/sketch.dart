@@ -28,6 +28,7 @@ class Sketch {
       opacity: sketch.opacity,
       size: sketch.size,
       filled: drawingMode == DrawingMode.line ||
+              drawingMode == DrawingMode.paint ||
               drawingMode == DrawingMode.pencil ||
               drawingMode == DrawingMode.eraser
           ? false
@@ -35,6 +36,8 @@ class Sketch {
       sides: sketch.sides,
       type: () {
         switch (drawingMode) {
+          case DrawingMode.paint:
+            return SketchType.scribble;
           case DrawingMode.eraser:
             return SketchType.eraser;
           case DrawingMode.pencil:

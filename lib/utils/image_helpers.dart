@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:ui' as ui;
 import 'dart:async';
 import 'dart:io';
@@ -14,6 +15,20 @@ import 'package:file_picker/file_picker.dart';
 // TODO: There are 2 implementations of image: ui.Image and material Image. We should decide on using just one.
 
 class ImageHelper {
+  static Future<String> imageToBase64String(ui.Image image) async {
+    ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+    Uint8List? pngBytes = byteData?.buffer.asUint8List();
+    String base64Image = base64Encode(pngBytes!);
+    return base64Image;
+  }
+
+  static Future<ui.Image> base64StringToImage(String base64String) async {
+    Uint8List bytes = base64Decode(base64String);
+    ui.Codec codec = await ui.instantiateImageCodec(bytes);
+    ui.FrameInfo fi = await codec.getNextFrame();
+    return fi.image;
+  }
+
   static Future<Image> getCanvasImage(GlobalKey canvasGlobalKey) async {
     final completer = Completer<Image>();
 

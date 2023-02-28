@@ -1,5 +1,5 @@
-import 'package:ai_pencil/drawing_canvas/utils/image_helpers.dart';
-import 'package:ai_pencil/model/drawing_project.dart';
+import 'package:ai_pencil/utils/image_helpers.dart';
+import 'package:ai_pencil/model/drawing/drawing_project.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';

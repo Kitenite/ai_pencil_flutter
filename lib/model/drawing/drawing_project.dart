@@ -1,5 +1,5 @@
 import 'dart:typed_data';
-import 'package:ai_pencil/model/drawing_layer.dart';
+import 'package:ai_pencil/model/drawing/drawing_layer.dart';
 import 'package:ai_pencil/serialization/int8_list_converter.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:uuid/uuid.dart';

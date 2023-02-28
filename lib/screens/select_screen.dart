@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:ai_pencil/model/drawing_layer.dart';
-import 'package:ai_pencil/model/drawing_project.dart';
+import 'package:ai_pencil/model/drawing/drawing_layer.dart';
+import 'package:ai_pencil/model/drawing/drawing_project.dart';
 import 'package:ai_pencil/screens/draw_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';

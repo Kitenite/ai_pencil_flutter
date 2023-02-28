@@ -27,6 +27,7 @@ class SketchPainter extends CustomPainter {
         Paint(),
       );
     }
+
     for (Sketch sketch in sketches) {
       final points = sketch.points;
       if (points.isEmpty) return;

@@ -3,12 +3,12 @@ import 'dart:ui' as ui;
 
 import 'package:ai_pencil/drawing_canvas/models/slider_type.dart';
 import 'package:ai_pencil/drawing_canvas/models/undo_redo_stack.dart';
-import 'package:ai_pencil/drawing_canvas/utils/image_helpers.dart';
+import 'package:ai_pencil/utils/image_helpers.dart';
 import 'package:ai_pencil/drawing_canvas/widgets/drawing_tools.dart';
 import 'package:ai_pencil/drawing_canvas/widgets/icon_box.dart';
-import 'package:ai_pencil/model/drawing_layer.dart';
-import 'package:ai_pencil/model/drawing_project.dart';
-import 'package:ai_pencil/model/drawing_tools.dart';
+import 'package:ai_pencil/model/drawing/drawing_layer.dart';
+import 'package:ai_pencil/model/drawing/drawing_project.dart';
+import 'package:ai_pencil/model/drawing/drawing_tools.dart';
 import 'package:ai_pencil/screens/inference_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:ai_pencil/drawing_canvas/drawing_canvas.dart';

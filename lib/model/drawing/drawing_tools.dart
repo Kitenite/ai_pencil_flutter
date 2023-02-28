@@ -66,7 +66,7 @@ class DrawingTools {
       case DrawingMode.eraser:
         return eraserMaxSize;
       default:
-        return pencilMinSize;
+        return pencilMaxSize;
     }
   }
 
@@ -116,7 +116,7 @@ class DrawingTools {
         pencilOpacity.value = opacity;
         break;
       case DrawingMode.paint:
-        pencilOpacity.value = opacity;
+        paintOpacity.value = opacity;
         break;
       case DrawingMode.eraser:
         break;

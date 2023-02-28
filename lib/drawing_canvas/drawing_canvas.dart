@@ -3,7 +3,7 @@ import 'dart:ui' as ui;
 
 import 'package:ai_pencil/constants.dart';
 import 'package:ai_pencil/drawing_canvas/widgets/sketch_painter.dart';
-import 'package:ai_pencil/model/drawing_tools.dart';
+import 'package:ai_pencil/model/drawing/drawing_tools.dart';
 import 'package:flutter/material.dart';
 import 'package:ai_pencil/drawing_canvas/models/drawing_mode.dart';
 import 'package:ai_pencil/drawing_canvas/models/sketch.dart';
@@ -171,7 +171,7 @@ class DrawingCanvas extends HookWidget {
     return Listener(
       onPointerDown: (details) => onPointerDown(details, context),
       onPointerMove: (details) => onPointerMove(details, context),
-      onPointerUp: onPointerUp,
+      onPointerUp: (details) => onPointerUp(details),
       child: ValueListenableBuilder(
         valueListenable: currentSketch,
         builder: (context, sketch, child) {
