@@ -10,12 +10,15 @@ import 'package:ai_pencil/model/drawing/drawing_layer.dart';
 import 'package:ai_pencil/model/drawing/drawing_project.dart';
 import 'package:ai_pencil/model/drawing/drawing_tools.dart';
 import 'package:ai_pencil/screens/inference_screen.dart';
+import 'package:ai_pencil/screens/layer_popover.dart';
 import 'package:flutter/material.dart';
 import 'package:ai_pencil/drawing_canvas/drawing_canvas.dart';
 import 'package:ai_pencil/drawing_canvas/models/drawing_mode.dart';
 import 'package:ai_pencil/drawing_canvas/models/sketch.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:popover/popover.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DrawScreen extends HookWidget {
@@ -44,6 +47,8 @@ class DrawScreen extends HookWidget {
     ValueNotifier<Sketch?> currentSketch = useState(null);
     ValueNotifier<List<Sketch>> allSketches =
         useState(project.layers[project.activeLayerIndex].sketches);
+    ValueNotifier<int> activeLayerIndex = useState(project.activeLayerIndex);
+    ValueNotifier<List<DrawingLayer>> layers = useState(project.layers);
 
     // Sliders
     final sliderModalVisible = useState<bool>(false);
@@ -59,24 +64,99 @@ class DrawScreen extends HookWidget {
       initialValue: 1,
     );
 
-    void saveProject() async {
+    void saveActiveLayer() {
+      if (activeLayerIndex.value >= layers.value.length) {
+        return;
+      }
+      layers.value[activeLayerIndex.value].sketches = allSketches.value;
+      layers.value[activeLayerIndex.value]
+          .updateImage(canvasGlobalKey.currentContext?.size);
+      layers.value = layers.value.toList(); // notify listeners of change
+    }
+
+    Future<void> persistProject() async {
       // TODO: this logic should be a callback passed by select project screen
+      saveActiveLayer();
       // TODO: Add prompt
       var prefs = await SharedPreferences.getInstance();
       var updatedProject = DrawingProject(
         title: project.title,
-        layers: [
-          DrawingLayer(
-            sketches: allSketches.value,
-          ),
-        ],
-        activeLayerIndex: 0,
+        layers: layers.value,
+        activeLayerIndex: activeLayerIndex.value,
         aspectWidth: project.aspectWidth,
         aspectHeight: project.aspectHeight,
       );
       var projects = prefs.getStringList('projects') ?? [];
       projects[projectIndex] = jsonEncode(updatedProject.toJson());
       prefs.setStringList('projects', projects);
+    }
+
+    void selectLayer(int idx) {
+      activeLayerIndex.value = idx;
+      allSketches.value = layers.value[idx].sketches;
+      layers.value[activeLayerIndex.value].isVisible = true;
+      layers.value = layers.value.toList(); // notify listeners of change
+    }
+
+    void saveThenSelectLayer(int idx) {
+      saveActiveLayer();
+      selectLayer(idx);
+    }
+
+    void moveLayer(int oldIndex, int newIndex) {
+      saveActiveLayer();
+      if (oldIndex < newIndex) {
+        newIndex -= 1;
+      }
+      if (oldIndex == activeLayerIndex.value) {
+        activeLayerIndex.value = newIndex;
+      } else if (oldIndex > activeLayerIndex.value &&
+          newIndex <= activeLayerIndex.value) {
+        activeLayerIndex.value += 1;
+      } else if (oldIndex < activeLayerIndex.value &&
+          newIndex >= activeLayerIndex.value) {
+        activeLayerIndex.value -= 1;
+      }
+      var layer = layers.value.removeAt(oldIndex);
+      layers.value.insert(newIndex, layer);
+      layers.value = layers.value.toList(); // notify listeners of change
+    }
+
+    void addLayer() {
+      var newLayerIndex = layers.value.length;
+      layers.value = [
+        ...layers.value,
+        DrawingLayer(
+          title: "Layer ${newLayerIndex + 1}",
+        )
+      ];
+      saveThenSelectLayer(newLayerIndex);
+    }
+
+    void removeLayer(int idx) {
+      if (layers.value.length == 1) {
+        // Can't remove the last layer
+        return;
+      }
+      layers.value.removeAt(idx);
+      if (idx < activeLayerIndex.value) {
+        activeLayerIndex.value -= 1;
+      } else if (idx == activeLayerIndex.value) {
+        selectLayer(0);
+      }
+      layers.value = layers.value.toList(); // notify listeners of change
+    }
+
+    void toggleLayerVisibility(int idx) {
+      if (idx != activeLayerIndex.value) {
+        layers.value[idx].isVisible = !layers.value[idx].isVisible;
+        layers.value = layers.value.toList(); // notify listeners of change
+      }
+    }
+
+    // TODO: add rename button to layer tile
+    void renameLayer(int idx, String title) {
+      layers.value[idx].title = title;
     }
 
     Widget getSliderPreviewModal() {
@@ -222,7 +302,7 @@ class DrawScreen extends HookWidget {
     return Scaffold(
       appBar: AppBar(
         leading: BackButton(onPressed: () {
-          saveProject();
+          persistProject();
           Navigator.pop(context);
         }),
         title: Row(
@@ -251,6 +331,23 @@ class DrawScreen extends HookWidget {
               },
               tooltip: 'Download image',
             ),
+            GestureDetector(
+                child: Icon(FontAwesomeIcons.layerGroup),
+                onTap: () {
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (context) => LayerPopover(
+                      layers: layers,
+                      activeLayerIndex: activeLayerIndex,
+                      onSelectLayer: saveThenSelectLayer,
+                      onMoveLayer: moveLayer,
+                      onAddLayer: addLayer,
+                      onRemoveLayer: removeLayer,
+                      onRenameLayer: renameLayer,
+                      onToggleLayerVisibility: toggleLayerVisibility,
+                    ),
+                  );
+                }),
           ],
         ),
         actions: trailingActions,
@@ -269,33 +366,77 @@ class DrawScreen extends HookWidget {
           children: [
             gridBackground,
             InteractiveViewer(
-              constrained: true,
-              boundaryMargin: const EdgeInsets.all(1000.0),
-              minScale: 0.01,
-              maxScale: 10,
-              panEnabled: drawingTools.drawingMode.value == DrawingMode.pan,
-              scaleEnabled: drawingTools.drawingMode.value == DrawingMode.pan,
-              child: SizedBox(
+                constrained: true,
+                boundaryMargin: const EdgeInsets.all(1000.0),
+                minScale: 0.01,
+                maxScale: 10,
+                panEnabled: drawingTools.drawingMode.value == DrawingMode.pan,
+                scaleEnabled: drawingTools.drawingMode.value == DrawingMode.pan,
+                child: SizedBox(
                   width: MediaQuery.of(context).size.width,
                   height: MediaQuery.of(context).size.height,
                   child: Center(
-                    child: AspectRatio(
-                      aspectRatio: project.aspectWidth / project.aspectHeight,
-                      child: DrawingCanvas(
-                        width: MediaQuery.of(context).size.width,
-                        height: MediaQuery.of(context).size.height,
-                        drawingTools: drawingTools,
-                        sideBarController: animationController,
-                        currentSketch: currentSketch,
-                        allSketches: allSketches,
-                        canvasGlobalKey: canvasGlobalKey,
-                        filled: filled,
-                        polygonSides: polygonSides,
-                        backgroundImage: backgroundImage,
-                      ),
-                    ),
-                  )),
-            ),
+                      child: AspectRatio(
+                          aspectRatio:
+                              project.aspectWidth / project.aspectHeight,
+                          child: Container(
+                            color: Colors.white,
+                            child: Stack(children: [
+                              SizedBox(
+                                  child: IgnorePointer(
+                                      child: Stack(
+                                children: layers.value
+                                    .take(activeLayerIndex.value)
+                                    .map((layer) {
+                                  var imageBytes = layer.getImagePngBytes();
+                                  if (layer ==
+                                          layers
+                                              .value[activeLayerIndex.value] ||
+                                      !layer.isVisible ||
+                                      imageBytes.isEmpty) {
+                                    return Container();
+                                  } else {
+                                    return Image.memory(
+                                      imageBytes,
+                                    );
+                                  }
+                                }).toList(),
+                              ))),
+                              DrawingCanvas(
+                                width: MediaQuery.of(context).size.width,
+                                height: MediaQuery.of(context).size.height,
+                                drawingTools: drawingTools,
+                                sideBarController: animationController,
+                                currentSketch: currentSketch,
+                                allSketches: allSketches,
+                                canvasGlobalKey: canvasGlobalKey,
+                                filled: filled,
+                                polygonSides: polygonSides,
+                                backgroundImage: backgroundImage,
+                              ),
+                              SizedBox(
+                                  child: IgnorePointer(
+                                      child: Stack(
+                                children: layers.value
+                                    .skip(activeLayerIndex.value)
+                                    .map((layer) {
+                                  var imageBytes = layer.getImagePngBytes();
+                                  if (layer ==
+                                          layers
+                                              .value[activeLayerIndex.value] ||
+                                      !layer.isVisible ||
+                                      imageBytes.isEmpty) {
+                                    return Container();
+                                  } else {
+                                    return Image.memory(
+                                      imageBytes,
+                                    );
+                                  }
+                                }).toList(),
+                              )))
+                            ]),
+                          ))),
+                )),
             sliderPreviewModal,
             slidersContainer,
           ],

@@ -14,8 +14,8 @@ DrawingProject _$DrawingProjectFromJson(Map<String, dynamic> json) =>
           .toList(),
       aspectWidth: (json['aspectWidth'] as num).toDouble(),
       aspectHeight: (json['aspectHeight'] as num).toDouble(),
-      thumbnailImageBytes: _$JsonConverterFromJson<List<int>, Int8List>(
-          json['thumbnailImageBytes'], const Int8ListConverter().fromJson),
+      thumbnailImageBytes: _$JsonConverterFromJson<List<dynamic>, Uint8List>(
+          json['thumbnailImageBytes'], const Uint8ListConverter().fromJson),
       prompt: json['prompt'] as String? ?? "",
       activeLayerIndex: json['activeLayerIndex'] as int? ?? 0,
     )
@@ -28,8 +28,8 @@ Map<String, dynamic> _$DrawingProjectToJson(DrawingProject instance) =>
       'createdDate': instance.createdDate.toIso8601String(),
       'title': instance.title,
       'layers': instance.layers,
-      'thumbnailImageBytes': _$JsonConverterToJson<List<int>, Int8List>(
-          instance.thumbnailImageBytes, const Int8ListConverter().toJson),
+      'thumbnailImageBytes': _$JsonConverterToJson<List<dynamic>, Uint8List>(
+          instance.thumbnailImageBytes, const Uint8ListConverter().toJson),
       'aspectWidth': instance.aspectWidth,
       'aspectHeight': instance.aspectHeight,
       'prompt': instance.prompt,

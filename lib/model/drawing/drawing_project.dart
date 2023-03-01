@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 import 'package:ai_pencil/model/drawing/drawing_layer.dart';
-import 'package:ai_pencil/serialization/int8_list_converter.dart';
+import 'package:ai_pencil/serialization/uint8_list_converter.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:uuid/uuid.dart';
 part 'drawing_project.g.dart';
@@ -14,8 +14,8 @@ class DrawingProject {
   String title;
   List<DrawingLayer> layers;
 
-  @Int8ListConverter()
-  Int8List? thumbnailImageBytes;
+  @Uint8ListConverter()
+  Uint8List? thumbnailImageBytes;
   double aspectWidth;
   double aspectHeight;
 

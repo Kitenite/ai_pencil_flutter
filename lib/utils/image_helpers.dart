@@ -3,6 +3,8 @@ import 'dart:ui' as ui;
 import 'dart:async';
 import 'dart:io';
 
+import 'package:ai_pencil/drawing_canvas/models/sketch.dart';
+import 'package:ai_pencil/drawing_canvas/widgets/sketch_painter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -53,6 +55,25 @@ class ImageHelper {
     ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
     Uint8List? pngBytes = byteData?.buffer.asUint8List();
     return pngBytes;
+  }
+
+  static Future<Uint8List?> getPngBytesFromSketches(List<Sketch> sketches, Size size) async {
+    ui.Image image = await _getImageFromSketches(sketches, size);
+    var pngByteData = await image.toByteData(format: ui.ImageByteFormat.png);
+    Uint8List? pngBytesList = pngByteData?.buffer.asUint8List();
+    return pngBytesList;
+  }
+
+  static Future<ui.Image> _getImageFromSketches(List<Sketch> sketches, Size size) async {
+    // Create a new canvas with a PictureRecorder, paint it with all sketches,
+    // and then return the image
+    ui.PictureRecorder recorder = ui.PictureRecorder();
+    Canvas canvas = Canvas(recorder);
+    SketchPainter painter = SketchPainter(sketches: sketches);
+    painter.paint(canvas, Size(size.width, size.height));
+    return recorder
+        .endRecording()
+        .toImage(size.width.floor(), size.height.floor());
   }
 
   static void saveFile(Uint8List bytes, String extension) async {
