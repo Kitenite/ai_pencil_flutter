@@ -1,21 +1,22 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'image_to_image_request.dart';
+part of 'generate_image_request.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-ImageToImageRequest _$ImageToImageRequestFromJson(Map<String, dynamic> json) =>
-    ImageToImageRequest(
-      image: json['image'] as String,
+GenerateImageRequest _$GenerateImageRequestFromJson(
+        Map<String, dynamic> json) =>
+    GenerateImageRequest(
       prompt: json['prompt'] as String,
       advancedOptions: AdvancedOptions.fromJson(
           json['advancedOptions'] as Map<String, dynamic>),
+      image: json['image'] as String?,
     );
 
-Map<String, dynamic> _$ImageToImageRequestToJson(
-        ImageToImageRequest instance) =>
+Map<String, dynamic> _$GenerateImageRequestToJson(
+        GenerateImageRequest instance) =>
     <String, dynamic>{
       'image': instance.image,
       'prompt': instance.prompt,

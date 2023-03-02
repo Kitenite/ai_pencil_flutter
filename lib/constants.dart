@@ -15,6 +15,6 @@ class Routes {
 }
 
 class Apis {
-  static const BASE_API = "waw35mmbsj.execute-api.us-east-1.amazonaws.com/dev";
-  static const IMAGE_TO_IMAGE_ROUTE = "inference-v2";
+  static const BASE_API = "waw35mmbsj.execute-api.us-east-1.amazonaws.com";
+  static const GENERATE_IMAGE_ROUTE = "dev/inference-v2";
 }

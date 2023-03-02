@@ -1,8 +1,11 @@
+import 'package:ai_pencil/api/generate_image.dart';
 import 'package:ai_pencil/utils/image_helpers.dart';
 import 'package:ai_pencil/model/drawing/drawing_project.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'dart:ui' as ui;
 
 class InferenceScreen extends HookWidget {
   final DrawingProject project;
@@ -16,6 +19,8 @@ class InferenceScreen extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
+    final promptTextController = useTextEditingController();
+
     Widget imageToImageTab = Padding(
       padding: const EdgeInsets.all(8.0),
       child: SingleChildScrollView(
@@ -61,11 +66,12 @@ class InferenceScreen extends HookWidget {
                 ),
               ),
             ),
-            const TextField(
+            TextField(
+              controller: promptTextController,
               autocorrect: true,
               maxLines: null,
               maxLength: 350,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 hintText: 'Be as descriptive as you can',
               ),
@@ -123,7 +129,11 @@ class InferenceScreen extends HookWidget {
               ),
             ),
             OutlinedButton(
-              onPressed: () {},
+              onPressed: () {
+                GenerateImageHelper.textToImage(
+                  promptTextController.text,
+                );
+              },
               style: OutlinedButton.styleFrom(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(15),

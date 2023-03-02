@@ -1,19 +1,19 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'image_to_image_response.dart';
+part of 'generate_image_response.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-ImageToImageResponse _$ImageToImageResponseFromJson(
+GenerateImageResponse _$GenerateImageResponseFromJson(
         Map<String, dynamic> json) =>
-    ImageToImageResponse(
+    GenerateImageResponse(
       image: json['image'] as String,
     );
 
-Map<String, dynamic> _$ImageToImageResponseToJson(
-        ImageToImageResponse instance) =>
+Map<String, dynamic> _$GenerateImageResponseToJson(
+        GenerateImageResponse instance) =>
     <String, dynamic>{
       'image': instance.image,
     };

@@ -2,23 +2,13 @@ import 'dart:convert';
 
 import 'package:ai_pencil/constants.dart';
 import 'package:ai_pencil/model/drawing/advanced_options.dart';
+import 'package:ai_pencil/model/drawing/aspect_ratio.dart';
 import 'package:ai_pencil/model/drawing/drawing_layer.dart';
 import 'package:ai_pencil/model/drawing/drawing_project.dart';
 import 'package:ai_pencil/screens/draw_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-enum DrawingAspectRatio {
-  square,
-  twoByThree,
-  threeByTwo,
-  threeByFour,
-  fourByThree,
-  nineBySixteen,
-  sixteenByNine,
-  screenSize,
-}
 
 class SelectProjectScreen extends StatefulWidget {
   const SelectProjectScreen({super.key});
