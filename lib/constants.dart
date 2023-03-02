@@ -1,5 +1,9 @@
 import 'dart:ui';
 
+class Constants {
+  static const String PROJECTS_KEY = 'projects';
+}
+
 class CustomColors {
   static const canvasColor = Color.fromARGB(255, 255, 255, 255);
 }

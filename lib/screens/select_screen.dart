@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:ai_pencil/constants.dart';
 import 'package:ai_pencil/model/drawing/drawing_layer.dart';
 import 'package:ai_pencil/model/drawing/drawing_project.dart';
 import 'package:ai_pencil/screens/draw_screen.dart';
@@ -33,16 +34,17 @@ class _SelectProjectScreenState extends State<SelectProjectScreen> {
   void initState() {
     super.initState();
     _jsonEncodedProjects = _prefs.then((SharedPreferences prefs) {
-      return prefs.getStringList('projects') ?? [];
+      return prefs.getStringList(Constants.PROJECTS_KEY) ?? [];
     });
   }
 
   void updateProjectList() async {
     SharedPreferences prefs = await _prefs;
-    var projects = prefs.getStringList('projects') ?? [];
+    var projects = prefs.getStringList(Constants.PROJECTS_KEY) ?? [];
     setState(() {
-      _jsonEncodedProjects =
-          prefs.setStringList('projects', projects).then((bool success) {
+      _jsonEncodedProjects = prefs
+          .setStringList(Constants.PROJECTS_KEY, projects)
+          .then((bool success) {
         return projects;
       });
     });
@@ -50,7 +52,7 @@ class _SelectProjectScreenState extends State<SelectProjectScreen> {
 
   void addProject(double aspectWidth, double aspectHeight) async {
     SharedPreferences prefs = await _prefs;
-    var projects = prefs.getStringList('projects') ?? [];
+    var projects = prefs.getStringList(Constants.PROJECTS_KEY) ?? [];
     DrawingProject newProject = DrawingProject(
       title: 'Project ${projects.length + 1}',
       layers: [DrawingLayer()],
@@ -186,7 +188,8 @@ class _SelectProjectScreenState extends State<SelectProjectScreen> {
                       int idx = entry.key;
                       String jsonEncodedProject = entry.value;
                       DrawingProject project = DrawingProject.fromJson(
-                          json.decode(jsonEncodedProject));
+                        json.decode(jsonEncodedProject),
+                      );
                       return ListTile(
                         title: Text(project.title),
                         onTap: () {
