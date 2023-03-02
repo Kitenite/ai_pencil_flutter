@@ -20,9 +20,6 @@ class DrawingProject {
   double aspectHeight;
 
   // Optional
-  // TODO: Optionals are dangerous if we're rebuilding the project on callbacks. Easy to miss reassigning.
-  // Consider having a callback to return a clone of the project
-
   String prompt;
   int activeLayerIndex;
 
