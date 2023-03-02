@@ -85,6 +85,8 @@ class DrawScreen extends HookWidget {
         activeLayerIndex: activeLayerIndex.value,
         aspectWidth: project.aspectWidth,
         aspectHeight: project.aspectHeight,
+        advancedOptions: project.advancedOptions,
+        prompt: project.prompt,
       );
       var projects = prefs.getStringList('projects') ?? [];
       projects[projectIndex] = jsonEncode(updatedProject.toJson());

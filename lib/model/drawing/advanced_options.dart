@@ -1,3 +1,6 @@
+import 'package:json_annotation/json_annotation.dart';
+part 'advanced_options.g.dart';
+
 enum Sampler {
   Euler_a,
   LMS,
@@ -35,6 +38,7 @@ extension SamplerExtension on Sampler {
   }
 }
 
+@JsonSerializable()
 class AdvancedOptions {
   int seed = 0;
   String samplerIndex = Sampler.Euler_a.toString();
@@ -58,4 +62,7 @@ class AdvancedOptions {
     //this.width,
     //this.height,
   });
+
+  factory AdvancedOptions.fromJson(Map<String, dynamic> json) =>
+      _$AdvancedOptionsFromJson(json);
 }

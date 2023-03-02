@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'package:ai_pencil/model/drawing/advanced_options.dart';
 import 'package:ai_pencil/model/drawing/drawing_layer.dart';
 import 'package:ai_pencil/serialization/uint8_list_converter.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -18,6 +19,7 @@ class DrawingProject {
   Uint8List? thumbnailImageBytes;
   double aspectWidth;
   double aspectHeight;
+  AdvancedOptions advancedOptions;
 
   // Optional
   String prompt;
@@ -31,6 +33,7 @@ class DrawingProject {
     required this.layers,
     required this.aspectWidth,
     required this.aspectHeight,
+    required this.advancedOptions,
     this.thumbnailImageBytes,
     this.prompt = "",
     this.activeLayerIndex = 0,

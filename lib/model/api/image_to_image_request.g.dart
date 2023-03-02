@@ -10,6 +10,8 @@ ImageToImageRequest _$ImageToImageRequestFromJson(Map<String, dynamic> json) =>
     ImageToImageRequest(
       image: json['image'] as String,
       prompt: json['prompt'] as String,
+      advancedOptions: AdvancedOptions.fromJson(
+          json['advancedOptions'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$ImageToImageRequestToJson(
@@ -17,4 +19,5 @@ Map<String, dynamic> _$ImageToImageRequestToJson(
     <String, dynamic>{
       'image': instance.image,
       'prompt': instance.prompt,
+      'advancedOptions': instance.advancedOptions,
     };

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:ai_pencil/constants.dart';
+import 'package:ai_pencil/model/drawing/advanced_options.dart';
 import 'package:ai_pencil/model/drawing/drawing_layer.dart';
 import 'package:ai_pencil/model/drawing/drawing_project.dart';
 import 'package:ai_pencil/screens/draw_screen.dart';
@@ -58,6 +59,7 @@ class _SelectProjectScreenState extends State<SelectProjectScreen> {
       layers: [DrawingLayer()],
       aspectHeight: aspectHeight,
       aspectWidth: aspectWidth,
+      advancedOptions: AdvancedOptions(),
     );
     projects.add(jsonEncode(newProject.toJson()));
     setState(() {

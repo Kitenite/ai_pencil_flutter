@@ -14,6 +14,8 @@ DrawingProject _$DrawingProjectFromJson(Map<String, dynamic> json) =>
           .toList(),
       aspectWidth: (json['aspectWidth'] as num).toDouble(),
       aspectHeight: (json['aspectHeight'] as num).toDouble(),
+      advancedOptions: AdvancedOptions.fromJson(
+          json['advancedOptions'] as Map<String, dynamic>),
       thumbnailImageBytes: _$JsonConverterFromJson<List<dynamic>, Uint8List>(
           json['thumbnailImageBytes'], const Uint8ListConverter().fromJson),
       prompt: json['prompt'] as String? ?? "",
@@ -32,6 +34,7 @@ Map<String, dynamic> _$DrawingProjectToJson(DrawingProject instance) =>
           instance.thumbnailImageBytes, const Uint8ListConverter().toJson),
       'aspectWidth': instance.aspectWidth,
       'aspectHeight': instance.aspectHeight,
+      'advancedOptions': instance.advancedOptions,
       'prompt': instance.prompt,
       'activeLayerIndex': instance.activeLayerIndex,
     };
