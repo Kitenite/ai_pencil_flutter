@@ -233,6 +233,7 @@ class DrawScreen extends HookWidget {
           size: 18,
         ),
         onPressed: () {
+          saveActiveLayer();
           showModalBottomSheet(
             context: context,
             builder: (context) => LayerPopover(

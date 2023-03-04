@@ -10,7 +10,7 @@ part 'drawing_layer.g.dart';
 @JsonSerializable()
 class DrawingLayer {
   @Uint8ListConverter()
-  Uint8List image = Uint8List(0);
+  Uint8List image = Uint8List.fromList([]);
 
   // Required
   String title;

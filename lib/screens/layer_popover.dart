@@ -1,5 +1,6 @@
 import 'package:ai_pencil/model/drawing/drawing_layer.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -42,6 +43,13 @@ class LayerPopover extends HookWidget {
       } else {
         return const SizedBox.shrink();
       }
+    }
+
+    Widget getPreviewImage(index) {
+      if (layers.value[index].image.isEmpty) {
+        return const SizedBox.shrink();
+      }
+      return Image.memory(layers.value[index].image);
     }
 
     Widget getVisibilityButton(index) {
@@ -102,6 +110,18 @@ class LayerPopover extends HookWidget {
                 header: Card(
                   color: Colors.grey[800],
                   child: ListTile(
+                    leading: Container(
+                      width: 40,
+                      height: 30,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(5),
+                        border: Border.all(
+                          color: Colors.grey,
+                          width: 1,
+                        ),
+                      ),
+                    ),
                     title: const Text(
                       "Background color",
                       style: TextStyle(
@@ -109,8 +129,39 @@ class LayerPopover extends HookWidget {
                       ),
                     ),
                     onTap: () {
-                      // TODO: Change background color
-                      print("Change background color");
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          // TODO: Add previous colors
+                          return AlertDialog(
+                            title: const Text(
+                              'Choose background color',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            content: SingleChildScrollView(
+                              child: ColorPicker(
+                                pickerColor: Colors.white,
+                                onColorChanged: (value) {
+                                  // TODO: Set background color
+                                  print(value);
+                                },
+                                pickerAreaBorderRadius: const BorderRadius.all(
+                                  Radius.circular(10),
+                                ),
+                              ),
+                            ),
+                            actions: <Widget>[
+                              TextButton(
+                                child: const Text('Done'),
+                                onPressed: () => Navigator.pop(context),
+                              ),
+                            ],
+                          );
+                        },
+                      );
                     },
                   ),
                 ),
@@ -130,8 +181,22 @@ class LayerPopover extends HookWidget {
                         onTap: () {
                           onSelectLayer(index);
                         },
+                        leading: Container(
+                          width: 40,
+                          height: 30,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(5),
+                            border: Border.all(
+                              color: Colors.grey,
+                              width: 1,
+                            ),
+                          ),
+                          child: getPreviewImage(index),
+                        ),
                         trailing:
                             Row(mainAxisSize: MainAxisSize.min, children: [
+                          getDeleteButton(index),
                           getVisibilityButton(index),
                           ReorderableDragStartListener(
                             index: index,
@@ -142,7 +207,6 @@ class LayerPopover extends HookWidget {
                             ),
                           ),
                         ]),
-                        leading: getDeleteButton(index),
                       ),
                     ),
                 ],
