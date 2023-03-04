@@ -113,6 +113,9 @@ class DrawingCanvas extends HookWidget {
   void onPointerUp(PointerUpEvent details) {
     allSketches.value = List<Sketch>.from(allSketches.value)
       ..add(currentSketch.value!);
+
+    // Save color used
+    drawingTools.addColorToHistory(drawingTools.getSelectedColor());
   }
 
   Widget buildAllSketches(BuildContext context) {

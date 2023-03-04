@@ -33,7 +33,7 @@ class IconBox extends StatelessWidget {
                 Icon(
                   iconData,
                   color: selected
-                      ? const Color.fromARGB(255, 255, 255, 255)!
+                      ? const Color.fromARGB(255, 255, 255, 255)
                       : const Color.fromARGB(255, 150, 150, 150),
                   size: 20,
                 ),

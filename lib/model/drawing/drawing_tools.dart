@@ -4,7 +4,19 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 
 class DrawingTools {
   final drawingMode = useState(DrawingMode.pencil);
-  final usedColors = useState<List<Color>>([]);
+  final colorHistory = useState<List<Color>>(
+    [
+      Colors.green,
+      Colors.blue,
+      Colors.red,
+      Colors.pink,
+      Colors.purple,
+      Colors.orange,
+      Colors.yellow,
+      Colors.black,
+      Colors.white
+    ],
+  );
 
   final pencilSize = useState<double>(3);
   final pencilOpacity = useState<double>(1);
@@ -139,5 +151,12 @@ class DrawingTools {
       default:
         pencilSize.value = size;
     }
+  }
+
+  void addColorToHistory(Color color) {
+    colorHistory.value = [
+      color,
+      ...colorHistory.value.where((element) => element != color)
+    ];
   }
 }

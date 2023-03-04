@@ -7,7 +7,7 @@ import 'package:ai_pencil/model/drawing_canvas/undo_redo_stack.dart';
 import 'package:ai_pencil/utils/image_helpers.dart';
 import 'package:ai_pencil/widgets/drawing_canvas/drawing_canvas.dart';
 import 'package:ai_pencil/widgets/drawing_canvas/icon_box.dart';
-import 'package:ai_pencil/widgets/drawing_tools.dart';
+import 'package:ai_pencil/widgets/drawing_tool_bar.dart';
 import 'package:ai_pencil/model/drawing/drawing_layer.dart';
 import 'package:ai_pencil/model/drawing/drawing_project.dart';
 import 'package:ai_pencil/model/drawing/drawing_tools.dart';
@@ -351,7 +351,7 @@ class DrawScreen extends HookWidget {
               tooltip: 'Download image',
             ),
             GestureDetector(
-                child: Icon(FontAwesomeIcons.layerGroup),
+                child: const Icon(FontAwesomeIcons.layerGroup),
                 onTap: () {
                   showModalBottomSheet(
                     context: context,
@@ -376,6 +376,8 @@ class DrawScreen extends HookWidget {
         undoRedoStack: undoRedoStack,
         drawingMode: drawingTools.drawingMode,
         selectedColor: drawingTools.getSelectedColorNotifier(),
+        colorHistory: drawingTools.colorHistory,
+        drawingTools: drawingTools,
       ),
       body: SizedBox(
         width: MediaQuery.of(context).size.width,

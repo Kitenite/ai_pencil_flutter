@@ -1,3 +1,4 @@
+import 'package:ai_pencil/model/drawing/drawing_tools.dart';
 import 'package:ai_pencil/model/drawing_canvas/drawing_mode.dart';
 import 'package:ai_pencil/model/drawing_canvas/sketch.dart';
 import 'package:ai_pencil/model/drawing_canvas/undo_redo_stack.dart';
@@ -15,12 +16,16 @@ class DrawingToolBar extends StatelessWidget {
     required this.undoRedoStack,
     required this.drawingMode,
     required this.selectedColor,
+    required this.colorHistory,
+    required this.drawingTools,
   });
 
   final ValueNotifier<List<Sketch>> allSketches;
   final ValueNotifier<UndoRedoStack> undoRedoStack;
   final ValueNotifier<DrawingMode> drawingMode;
   final ValueNotifier<Color> selectedColor;
+  final ValueNotifier<List<Color>> colorHistory;
+  final DrawingTools drawingTools;
 
   @override
   Widget build(BuildContext context) {
@@ -83,7 +88,6 @@ class DrawingToolBar extends StatelessWidget {
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
-                  // TODO: Pull into own widget
                   // TODO: Add previous colors
                   return AlertDialog(
                     title: const Text(
@@ -97,8 +101,14 @@ class DrawingToolBar extends StatelessWidget {
                       child: ColorPicker(
                         pickerColor: selectedColor.value,
                         onColorChanged: (value) {
-                          selectedColor.value = value;
+                          drawingTools.setSelectedColor(value);
                         },
+                        onHistoryChanged: (value) {},
+                        colorHistory: drawingTools.colorHistory.value,
+                        displayThumbColor: true,
+                        pickerAreaBorderRadius: const BorderRadius.all(
+                          Radius.circular(10),
+                        ),
                       ),
                     ),
                     actions: <Widget>[

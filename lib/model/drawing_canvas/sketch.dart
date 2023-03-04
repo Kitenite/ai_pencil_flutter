@@ -100,7 +100,7 @@ extension SketchTypeX on SketchType {
 
 extension SketchTypeExtension on String {
   toSketchTypeEnum() =>
-      SketchType.values.firstWhere((e) => e.toString() == 'SketchType.${this}');
+      SketchType.values.firstWhere((e) => e.toString() == 'SketchType.$this');
 }
 
 extension ColorExtension on String {

@@ -17,7 +17,6 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:universal_html/html.dart' as html;
-import 'package:url_launcher/url_launcher.dart';
 
 class CanvasSideBar extends HookWidget {
   final ValueNotifier<Color> selectedColor;
@@ -352,19 +351,6 @@ class CanvasSideBar extends HookWidget {
     }
 
     return completer.future;
-  }
-
-  Future<void> _launchUrl(String url) async {
-    if (kIsWeb) {
-      html.window.open(
-        url,
-        url,
-      );
-    } else {
-      if (!await launchUrl(Uri.parse(url))) {
-        throw 'Could not launch $url';
-      }
-    }
   }
 
   Future<Uint8List?> getBytes() async {

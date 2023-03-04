@@ -37,11 +37,14 @@ class GenerateImageHelper {
       body: jsonEncode(requestBody.toJson()),
     );
 
-    print(response.body);
+    if (response.statusCode != 200) {
+      Logger("GenerateImageHelper").severe(response.body);
+      return null;
+    }
+
     try {
       GenerateImageResponse responseObject =
           GenerateImageResponse.fromJson(jsonDecode(response.body));
-      print(responseObject);
       ui.Image responseImage =
           await ImageHelper.base64StringToImage(responseObject.image);
       return responseImage;
