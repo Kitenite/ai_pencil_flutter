@@ -31,18 +31,6 @@ class ImageHelper {
     return fi.image;
   }
 
-  static Future<Image> getCanvasImage(GlobalKey canvasGlobalKey) async {
-    final completer = Completer<Image>();
-
-    Uint8List? bytes = await ImageHelper.getCanvasAsBytes(canvasGlobalKey);
-    if (bytes != null) {
-      completer.complete(Image.memory(Uint8List.fromList(bytes)));
-    } else {
-      completer.completeError('No image selected');
-    }
-    return completer.future;
-  }
-
   static void downloadCanvasImage(GlobalKey canvasGlobalKey) async {
     Uint8List? pngBytes = await ImageHelper.getCanvasAsBytes(canvasGlobalKey);
     if (pngBytes != null) ImageHelper.saveFile(pngBytes, 'png');
@@ -57,14 +45,16 @@ class ImageHelper {
     return pngBytes;
   }
 
-  static Future<Uint8List?> getPngBytesFromSketches(List<Sketch> sketches, Size size) async {
+  static Future<Uint8List?> getPngBytesFromSketches(
+      List<Sketch> sketches, Size size) async {
     ui.Image image = await _getImageFromSketches(sketches, size);
     var pngByteData = await image.toByteData(format: ui.ImageByteFormat.png);
     Uint8List? pngBytesList = pngByteData?.buffer.asUint8List();
     return pngBytesList;
   }
 
-  static Future<ui.Image> _getImageFromSketches(List<Sketch> sketches, Size size) async {
+  static Future<ui.Image> _getImageFromSketches(
+      List<Sketch> sketches, Size size) async {
     // Create a new canvas with a PictureRecorder, paint it with all sketches,
     // and then return the image
     ui.PictureRecorder recorder = ui.PictureRecorder();

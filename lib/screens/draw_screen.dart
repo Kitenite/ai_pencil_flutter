@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:ai_pencil/drawing_canvas/models/slider_type.dart';
@@ -15,10 +16,8 @@ import 'package:flutter/material.dart';
 import 'package:ai_pencil/drawing_canvas/drawing_canvas.dart';
 import 'package:ai_pencil/drawing_canvas/models/drawing_mode.dart';
 import 'package:ai_pencil/drawing_canvas/models/sketch.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:popover/popover.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DrawScreen extends HookWidget {
@@ -199,19 +198,43 @@ class DrawScreen extends HookWidget {
       );
     }
 
+    void navigateToInferenceScreen() {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => FutureBuilder<Uint8List?>(
+            future: ImageHelper.getCanvasAsBytes(canvasGlobalKey),
+            builder:
+                (BuildContext context, AsyncSnapshot<Uint8List?> snapshot) {
+              if (snapshot.hasData && snapshot.data != null) {
+                project.thumbnailImageBytes = snapshot.data;
+                persistProject();
+                return InferenceScreen(
+                    project: project, canvasGlobalKey: canvasGlobalKey);
+              } else if (snapshot.data == null) {
+                return const Padding(
+                  padding: EdgeInsets.only(top: 20),
+                  child: Center(
+                    child: Text("Error loading image"),
+                  ),
+                );
+              } else {
+                return const Padding(
+                  padding: EdgeInsets.only(top: 20),
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                );
+              }
+            },
+          ),
+        ),
+      );
+    }
+
     var trailingActions = [
       TextButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => InferenceScreen(
-                project: project,
-                canvasGlobalKey: canvasGlobalKey,
-              ),
-            ),
-          );
-        },
+        onPressed: navigateToInferenceScreen,
         child: const Text(
           "AI",
           style: TextStyle(

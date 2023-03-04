@@ -1,11 +1,8 @@
 import 'package:ai_pencil/api/generate_image.dart';
-import 'package:ai_pencil/utils/image_helpers.dart';
 import 'package:ai_pencil/model/drawing/drawing_project.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'dart:ui' as ui;
 
 class InferenceScreen extends HookWidget {
   final DrawingProject project;
@@ -19,7 +16,7 @@ class InferenceScreen extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final promptTextController = useTextEditingController();
+    final promptTextController = TextEditingController();
 
     Widget imageToImageTab = Padding(
       padding: const EdgeInsets.all(8.0),
@@ -40,21 +37,7 @@ class InferenceScreen extends HookWidget {
             ),
             Padding(
               padding: const EdgeInsets.all(20.0),
-              child: FutureBuilder(
-                future: ImageHelper.getCanvasImage(canvasGlobalKey),
-                builder: (BuildContext context, AsyncSnapshot<Image> snapshot) {
-                  if (snapshot.hasData) {
-                    return snapshot.data!;
-                  } else {
-                    return const Padding(
-                      padding: EdgeInsets.only(top: 20),
-                      child: Center(
-                        child: CircularProgressIndicator(),
-                      ),
-                    );
-                  }
-                },
-              ),
+              child: Image.memory(project.thumbnailImageBytes!),
             ),
             const Padding(
               padding: EdgeInsets.all(15.0),
