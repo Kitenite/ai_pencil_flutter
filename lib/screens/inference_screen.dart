@@ -1,5 +1,5 @@
 import 'package:ai_pencil/model/drawing/drawing_project.dart';
-import 'package:ai_pencil/sao/generate_image.dart';
+import 'package:ai_pencil/sao/api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -59,7 +59,7 @@ class InferenceScreen extends HookWidget {
             ),
             OutlinedButton(
               onPressed: () {
-                GenerateImageHelper.generateImage(
+                ApiDataAccessor.generateImage(
                   promptTextController.text,
                   project.thumbnailImageBytes,
                 );
@@ -116,7 +116,7 @@ class InferenceScreen extends HookWidget {
             ),
             OutlinedButton(
               onPressed: () {
-                GenerateImageHelper.generateImage(
+                ApiDataAccessor.generateImage(
                   promptTextController.text,
                   null,
                 );
