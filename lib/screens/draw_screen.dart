@@ -76,7 +76,7 @@ class DrawScreen extends HookWidget {
 
     Future<void> persistProject() async {
       // TODO: this logic should be a callback passed by select project screen
-      saveActiveLayer();
+      // saveActiveLayer(); // Already done on drawing changed. Shouldn't call in async anyway
       // TODO: Add prompt
       var prefs = await SharedPreferences.getInstance();
       var updatedProject = DrawingProject(
@@ -340,133 +340,137 @@ class DrawScreen extends HookWidget {
       child: Container(),
     );
 
-    return Scaffold(
-      appBar: AppBar(
-        leading: BackButton(onPressed: () {
-          persistProject();
-          Navigator.pop(context);
-        }),
-        title: Row(
-          children: [
-            IconBox(
-              iconData: FontAwesomeIcons.image,
-              selected: true,
-              onTap: () async {
-                backgroundImage.value = await ImageHelper.getImageFromDevice(
-                  project.aspectWidth,
-                  project.aspectHeight,
-                  context,
-                );
-              },
-              tooltip: 'Add image',
-            ),
-            IconBox(
-              iconData: FontAwesomeIcons.download,
-              selected: true,
-              onTap: () async {
-                const snackBar = SnackBar(
-                  content: Text('Drawing saved'),
-                );
-                ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                ImageHelper.downloadCanvasImage(canvasGlobalKey);
-              },
-              tooltip: 'Download image',
-            ),
-          ],
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Scaffold(
+        appBar: AppBar(
+          leading: BackButton(onPressed: () {
+            persistProject();
+            Navigator.pop(context);
+          }),
+          title: Row(
+            children: [
+              IconBox(
+                iconData: FontAwesomeIcons.image,
+                selected: true,
+                onTap: () async {
+                  backgroundImage.value = await ImageHelper.getImageFromDevice(
+                    project.aspectWidth,
+                    project.aspectHeight,
+                    context,
+                  );
+                },
+                tooltip: 'Add image',
+              ),
+              IconBox(
+                iconData: FontAwesomeIcons.download,
+                selected: true,
+                onTap: () async {
+                  const snackBar = SnackBar(
+                    content: Text('Drawing saved'),
+                  );
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                  ImageHelper.downloadCanvasImage(canvasGlobalKey);
+                },
+                tooltip: 'Download image',
+              ),
+            ],
+          ),
+          actions: trailingActions,
         ),
-        actions: trailingActions,
-      ),
-      bottomNavigationBar: DrawingToolBar(
-        allSketches: allSketches,
-        undoRedoStack: undoRedoStack,
-        drawingMode: drawingTools.drawingMode,
-        selectedColor: drawingTools.getSelectedColorNotifier(),
-        colorHistory: drawingTools.colorHistory,
-        drawingTools: drawingTools,
-      ),
-      body: SizedBox(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            gridBackground,
-            InteractiveViewer(
-                constrained: true,
-                boundaryMargin: const EdgeInsets.all(1000.0),
-                minScale: 0.01,
-                maxScale: 10,
-                panEnabled: drawingTools.drawingMode.value == DrawingMode.pan,
-                scaleEnabled: drawingTools.drawingMode.value == DrawingMode.pan,
-                child: SizedBox(
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height,
-                  child: Center(
-                      child: AspectRatio(
-                          aspectRatio:
-                              project.aspectWidth / project.aspectHeight,
-                          child: Container(
-                            color: Colors.white,
-                            child: Stack(children: [
-                              SizedBox(
-                                  child: IgnorePointer(
-                                      child: Stack(
-                                children: layers.value
-                                    .take(activeLayerIndex.value)
-                                    .map((layer) {
-                                  var imageBytes = layer.getImagePngBytes();
-                                  if (layer ==
-                                          layers
-                                              .value[activeLayerIndex.value] ||
-                                      !layer.isVisible ||
-                                      imageBytes.isEmpty) {
-                                    return Container();
-                                  } else {
-                                    return Image.memory(
-                                      imageBytes,
-                                    );
-                                  }
-                                }).toList(),
-                              ))),
-                              DrawingCanvas(
-                                width: MediaQuery.of(context).size.width,
-                                height: MediaQuery.of(context).size.height,
-                                drawingTools: drawingTools,
-                                sideBarController: animationController,
-                                currentSketch: currentSketch,
-                                allSketches: allSketches,
-                                canvasGlobalKey: canvasGlobalKey,
-                                filled: filled,
-                                polygonSides: polygonSides,
-                                backgroundImage: backgroundImage,
-                                saveActiveLayer: saveActiveLayer,
-                              ),
-                              SizedBox(
-                                  child: IgnorePointer(
-                                      child: Stack(
-                                children: layers.value
-                                    .skip(activeLayerIndex.value)
-                                    .map((layer) {
-                                  var imageBytes = layer.getImagePngBytes();
-                                  if (layer ==
-                                          layers
-                                              .value[activeLayerIndex.value] ||
-                                      !layer.isVisible ||
-                                      imageBytes.isEmpty) {
-                                    return Container();
-                                  } else {
-                                    return Image.memory(
-                                      imageBytes,
-                                    );
-                                  }
-                                }).toList(),
-                              )))
-                            ]),
-                          ))),
-                )),
-            sliderPreviewModal,
-            slidersContainer,
-          ],
+        bottomNavigationBar: DrawingToolBar(
+          allSketches: allSketches,
+          undoRedoStack: undoRedoStack,
+          drawingMode: drawingTools.drawingMode,
+          selectedColor: drawingTools.getSelectedColorNotifier(),
+          colorHistory: drawingTools.colorHistory,
+          drawingTools: drawingTools,
+        ),
+        body: SizedBox(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              gridBackground,
+              InteractiveViewer(
+                  constrained: true,
+                  boundaryMargin: const EdgeInsets.all(1000.0),
+                  minScale: 0.01,
+                  maxScale: 10,
+                  panEnabled: drawingTools.drawingMode.value == DrawingMode.pan,
+                  scaleEnabled:
+                      drawingTools.drawingMode.value == DrawingMode.pan,
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Center(
+                        child: AspectRatio(
+                            aspectRatio:
+                                project.aspectWidth / project.aspectHeight,
+                            child: Container(
+                              color: Colors.white,
+                              child: Stack(children: [
+                                SizedBox(
+                                    child: IgnorePointer(
+                                        child: Stack(
+                                  children: layers.value
+                                      .take(activeLayerIndex.value)
+                                      .map((layer) {
+                                    var imageBytes = layer.getImagePngBytes();
+                                    if (layer ==
+                                            layers.value[
+                                                activeLayerIndex.value] ||
+                                        !layer.isVisible ||
+                                        imageBytes.isEmpty) {
+                                      return Container();
+                                    } else {
+                                      return Image.memory(
+                                        imageBytes,
+                                      );
+                                    }
+                                  }).toList(),
+                                ))),
+                                DrawingCanvas(
+                                  width: MediaQuery.of(context).size.width,
+                                  height: MediaQuery.of(context).size.height,
+                                  drawingTools: drawingTools,
+                                  sideBarController: animationController,
+                                  currentSketch: currentSketch,
+                                  allSketches: allSketches,
+                                  canvasGlobalKey: canvasGlobalKey,
+                                  filled: filled,
+                                  polygonSides: polygonSides,
+                                  backgroundImage: backgroundImage,
+                                  saveActiveLayer: saveActiveLayer,
+                                ),
+                                SizedBox(
+                                    child: IgnorePointer(
+                                        child: Stack(
+                                  children: layers.value
+                                      .skip(activeLayerIndex.value)
+                                      .map((layer) {
+                                    var imageBytes = layer.getImagePngBytes();
+                                    if (layer ==
+                                            layers.value[
+                                                activeLayerIndex.value] ||
+                                        !layer.isVisible ||
+                                        imageBytes.isEmpty) {
+                                      return Container();
+                                    } else {
+                                      return Image.memory(
+                                        imageBytes,
+                                      );
+                                    }
+                                  }).toList(),
+                                )))
+                              ]),
+                            ))),
+                  )),
+              sliderPreviewModal,
+              slidersContainer,
+            ],
+          ),
         ),
       ),
     );
