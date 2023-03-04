@@ -92,9 +92,28 @@ class LayerPopover extends HookWidget {
                 ),
               ),
               ReorderableListView(
+                reverse: true,
                 shrinkWrap: true,
                 padding: const EdgeInsets.symmetric(horizontal: 40),
                 buildDefaultDragHandles: false,
+                onReorder: (int oldIndex, int newIndex) {
+                  onMoveLayer(oldIndex, newIndex);
+                },
+                header: Card(
+                  color: Colors.grey[800],
+                  child: ListTile(
+                    title: const Text(
+                      "Background color",
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
+                    onTap: () {
+                      // TODO: Change background color
+                      print("Change background color");
+                    },
+                  ),
+                ),
                 children: <Widget>[
                   for (int index = 0; index < layers.value.length; index += 1)
                     Card(
@@ -127,9 +146,6 @@ class LayerPopover extends HookWidget {
                       ),
                     ),
                 ],
-                onReorder: (int oldIndex, int newIndex) {
-                  onMoveLayer(oldIndex, newIndex);
-                },
               )
             ]),
           );

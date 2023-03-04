@@ -114,7 +114,7 @@ class DrawingTools {
         pencilColor.value = color;
         break;
       case DrawingMode.paint:
-        pencilColor.value = color;
+        paintColor.value = color;
         break;
       default:
         pencilColor.value = color;
