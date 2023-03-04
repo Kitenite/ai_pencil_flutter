@@ -31,7 +31,10 @@ class LayerPopover extends HookWidget {
     Widget getDeleteButton(index) {
       if (index != activeLayerIndex.value) {
         return IconButton(
-          icon: const Icon(Icons.delete),
+          icon: const Icon(
+            FontAwesomeIcons.trash,
+            size: 15,
+          ),
           onPressed: () {
             onRemoveLayer(index);
           },
@@ -46,8 +49,9 @@ class LayerPopover extends HookWidget {
         return IconButton(
           icon: Icon(
             layers.value[index].isVisible
-                ? Icons.visibility
-                : Icons.visibility_off,
+                ? FontAwesomeIcons.eye
+                : FontAwesomeIcons.eyeSlash,
+            size: 15,
           ),
           onPressed: () {
             onToggleLayerVisibility(index);
@@ -80,6 +84,7 @@ class LayerPopover extends HookWidget {
                       icon: const Icon(
                         FontAwesomeIcons.plus,
                         color: Colors.white,
+                        size: 20,
                       ),
                       onPressed: onAddLayer,
                     ),
@@ -89,6 +94,7 @@ class LayerPopover extends HookWidget {
               ReorderableListView(
                 shrinkWrap: true,
                 padding: const EdgeInsets.symmetric(horizontal: 40),
+                buildDefaultDragHandles: false,
                 children: <Widget>[
                   for (int index = 0; index < layers.value.length; index += 1)
                     Card(
@@ -111,8 +117,9 @@ class LayerPopover extends HookWidget {
                           ReorderableDragStartListener(
                             index: index,
                             child: const Icon(
-                              Icons.drag_handle,
+                              FontAwesomeIcons.gripLines,
                               color: Colors.white,
+                              size: 18,
                             ),
                           ),
                         ]),
