@@ -1,3 +1,4 @@
+import 'package:ai_pencil/screens/inference_complete_screen.dart';
 import 'package:ai_pencil/utils/constants.dart';
 import 'package:ai_pencil/screens/select_screen.dart';
 import 'package:ai_pencil/utils/themes.dart';
@@ -39,9 +40,12 @@ class MainApp extends StatelessWidget {
       theme: CustomTheme.lightTheme,
       darkTheme: CustomTheme.darkTheme,
       themeMode: ThemeMode.dark,
-      initialRoute: Routes.SELECT_SCREEN_ROUTE,
+      initialRoute: Routes.INFERENCE_COMPLETE_SCREEN_ROUTE,
       routes: {
         Routes.SELECT_SCREEN_ROUTE: (context) => const SelectProjectScreen(),
+        Routes.INFERENCE_COMPLETE_SCREEN_ROUTE: (context) =>
+            const InferenceCompleteScreen(),
+
         // Routes.DRAW_SCREEN_ROUTE: (context) => const DrawScreen(),
         // Routes.INFERENCE_SCREEN_ROUTE: (context) => const InferenceScreen()
       },

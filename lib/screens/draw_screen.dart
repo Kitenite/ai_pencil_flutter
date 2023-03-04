@@ -4,6 +4,7 @@ import 'dart:ui' as ui;
 
 import 'package:ai_pencil/model/drawing_canvas/slider_type.dart';
 import 'package:ai_pencil/model/drawing_canvas/undo_redo_stack.dart';
+import 'package:ai_pencil/screens/inference_complete_screen.dart';
 import 'package:ai_pencil/utils/image_helpers.dart';
 import 'package:ai_pencil/widgets/drawing_canvas/drawing_canvas.dart';
 import 'package:ai_pencil/widgets/drawing_canvas/icon_box.dart';
@@ -70,17 +71,27 @@ class DrawScreen extends HookWidget {
       isGeneratingImage.value = true;
       imageBytesFuture.then((imageBytes) {
         isGeneratingImage.value = false;
-        showModalBottomSheet(
-          context: context,
-          builder: (BuildContext context) {
-            return SizedBox(
-              height: 300,
-              child: Center(
-                child: Image.memory(imageBytes),
-              ),
-            );
-          },
-        );
+
+        // TODO: Handle this later
+        //   Navigator.push(
+        // context,
+        // MaterialPageRoute(
+        //   builder: (context) => InferenceCompleteScreen(
+        //     imageBytes: imageBytes,
+        //   ),
+        // );
+
+        // showModalBottomSheet(
+        //   context: context,
+        //   builder: (BuildContext context) {
+        //     return SizedBox(
+        //       height: 300,
+        //       child: Center(
+        //         child: Image.memory(imageBytes),
+        //       ),
+        //     );
+        //   },
+        // );
       }).catchError((error) {
         isGeneratingImage.value = false;
         Logger("DrawScreen").severe("Error generating image: $error");
