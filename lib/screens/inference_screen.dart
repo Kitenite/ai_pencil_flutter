@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:ai_pencil/model/drawing/drawing_project.dart';
 import 'package:ai_pencil/sao/api.dart';
 import 'package:flutter/material.dart';
@@ -6,16 +8,37 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class InferenceScreen extends HookWidget {
   final DrawingProject project;
+  final Function(Future<Uint8List>) onImageGenerationStarted;
 
   const InferenceScreen({
     super.key,
     required this.project,
+    required this.onImageGenerationStarted,
   });
 
   @override
   Widget build(BuildContext context) {
-    final promptTextController = TextEditingController();
+    final promptTextController = useTextEditingController();
 
+    void generateImage(bool useImage) {
+      Future<Uint8List> imageBytes = ApiDataAccessor.generateImage(
+        promptTextController.value.text,
+        useImage ? project.thumbnailImageBytes : null,
+      );
+      onImageGenerationStarted(imageBytes);
+      Navigator.pop(context);
+    }
+
+    var promptInputTextField = TextField(
+      controller: promptTextController,
+      autocorrect: true,
+      maxLines: null,
+      maxLength: 350,
+      decoration: const InputDecoration(
+        border: OutlineInputBorder(),
+        hintText: 'Be as descriptive as you can',
+      ),
+    );
     Widget imageToImageTab = Padding(
       padding: const EdgeInsets.all(8.0),
       child: SingleChildScrollView(
@@ -47,22 +70,10 @@ class InferenceScreen extends HookWidget {
                 ),
               ),
             ),
-            TextField(
-              controller: promptTextController,
-              autocorrect: true,
-              maxLines: null,
-              maxLength: 350,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: 'Be as descriptive as you can',
-              ),
-            ),
+            promptInputTextField,
             OutlinedButton(
               onPressed: () {
-                ApiDataAccessor.generateImage(
-                  promptTextController.text,
-                  project.thumbnailImageBytes,
-                );
+                generateImage(true);
               },
               style: OutlinedButton.styleFrom(
                 shape: RoundedRectangleBorder(
@@ -105,21 +116,10 @@ class InferenceScreen extends HookWidget {
                 ),
               ),
             ),
-            const TextField(
-              autocorrect: true,
-              maxLines: null,
-              maxLength: 350,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: 'Be as descriptive as you can',
-              ),
-            ),
+            promptInputTextField,
             OutlinedButton(
               onPressed: () {
-                ApiDataAccessor.generateImage(
-                  promptTextController.text,
-                  null,
-                );
+                generateImage(false);
               },
               style: OutlinedButton.styleFrom(
                 shape: RoundedRectangleBorder(

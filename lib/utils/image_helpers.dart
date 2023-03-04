@@ -34,6 +34,10 @@ class ImageHelper {
     return fi.image;
   }
 
+  static Uint8List base64StringToBytes(String base64String) {
+    return base64Decode(base64String);
+  }
+
   static void downloadCanvasImage(GlobalKey canvasGlobalKey) async {
     Uint8List? pngBytes = await ImageHelper.getCanvasAsBytes(canvasGlobalKey);
     if (pngBytes != null) ImageHelper.saveFile(pngBytes, 'png');

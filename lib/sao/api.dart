@@ -14,7 +14,7 @@ import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart';
 
 class ApiDataAccessor {
-  static Future<ui.Image> generateImage(
+  static Future<Uint8List> generateImage(
     String prompt,
     Uint8List? image,
   ) async {
@@ -41,9 +41,7 @@ class ApiDataAccessor {
     if (response.statusCode == 200) {
       GenerateImageResponse responseObject =
           GenerateImageResponse.fromJson(jsonDecode(response.body));
-      ui.Image responseImage =
-          await ImageHelper.base64StringToImage(responseObject.image);
-      return responseImage;
+      return ImageHelper.base64StringToBytes(responseObject.image);
     } else {
       Logger("ApiDataAccessor").severe(response.body);
       throw Exception('ApiDataAccessor::generateImage Failed to get response.');

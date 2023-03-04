@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ffi';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
@@ -62,6 +63,29 @@ class DrawScreen extends HookWidget {
       duration: const Duration(milliseconds: 150),
       initialValue: 1,
     );
+
+    final isGeneratingImage = useState(false);
+
+    void onImageGenerationStarted(Future<Uint8List> imageBytesFuture) {
+      isGeneratingImage.value = true;
+      imageBytesFuture.then((imageBytes) {
+        isGeneratingImage.value = false;
+        showModalBottomSheet(
+          context: context,
+          builder: (BuildContext context) {
+            return SizedBox(
+              height: 300,
+              child: Center(
+                child: Image.memory(imageBytes),
+              ),
+            );
+          },
+        );
+      }).catchError((error) {
+        isGeneratingImage.value = false;
+        print(error);
+      });
+    }
 
     void saveActiveLayer() {
       if (activeLayerIndex.value >= layers.value.length) {
@@ -212,6 +236,7 @@ class DrawScreen extends HookWidget {
                 persistProject();
                 return InferenceScreen(
                   project: project,
+                  onImageGenerationStarted: onImageGenerationStarted,
                 );
               } else {
                 return const Padding(
@@ -222,6 +247,32 @@ class DrawScreen extends HookWidget {
                 );
               }
             },
+          ),
+        ),
+      );
+    }
+
+    Widget getInferenceButton() {
+      if (isGeneratingImage.value) {
+        // TODO: Add timer to indicator
+        return const Padding(
+          padding: EdgeInsets.all(10),
+          child: Center(
+            child: SizedBox(
+              width: 25,
+              height: 25,
+              child: CircularProgressIndicator(),
+            ),
+          ),
+        );
+      }
+      return TextButton(
+        onPressed: navigateToInferenceScreen,
+        child: const Text(
+          "AI",
+          style: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
           ),
         ),
       );
@@ -249,16 +300,7 @@ class DrawScreen extends HookWidget {
           );
         },
       ),
-      TextButton(
-        onPressed: navigateToInferenceScreen,
-        child: const Text(
-          "AI",
-          style: TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
+      getInferenceButton(),
     ];
 
     var sliderPreviewModal = IgnorePointer(
