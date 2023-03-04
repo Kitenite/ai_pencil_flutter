@@ -19,6 +19,7 @@ class DrawingCanvas extends HookWidget {
   final GlobalKey canvasGlobalKey;
   final ValueNotifier<int> polygonSides;
   final ValueNotifier<bool> filled;
+  final Function() saveActiveLayer;
 
   const DrawingCanvas({
     Key? key,
@@ -32,6 +33,7 @@ class DrawingCanvas extends HookWidget {
     required this.filled,
     required this.polygonSides,
     required this.backgroundImage,
+    required this.saveActiveLayer,
   }) : super(key: key);
 
   @override
@@ -116,6 +118,7 @@ class DrawingCanvas extends HookWidget {
 
     // Save color used
     drawingTools.addColorToHistory(drawingTools.getSelectedColor());
+    saveActiveLayer();
   }
 
   Widget buildAllSketches(BuildContext context) {

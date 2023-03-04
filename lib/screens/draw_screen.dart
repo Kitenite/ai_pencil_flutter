@@ -67,8 +67,9 @@ class DrawScreen extends HookWidget {
       if (activeLayerIndex.value >= layers.value.length) {
         return;
       }
-      layers.value[activeLayerIndex.value].sketches = allSketches.value;
-      layers.value[activeLayerIndex.value]
+      List<DrawingLayer> tempLayers = layers.value;
+      tempLayers[activeLayerIndex.value].sketches = allSketches.value;
+      tempLayers[activeLayerIndex.value]
           .updateImage(canvasGlobalKey.currentContext?.size);
       layers.value = layers.value.toList(); // notify listeners of change
     }
@@ -233,7 +234,6 @@ class DrawScreen extends HookWidget {
           size: 18,
         ),
         onPressed: () {
-          saveActiveLayer();
           showModalBottomSheet(
             context: context,
             builder: (context) => LayerPopover(
@@ -439,6 +439,7 @@ class DrawScreen extends HookWidget {
                                 filled: filled,
                                 polygonSides: polygonSides,
                                 backgroundImage: backgroundImage,
+                                saveActiveLayer: saveActiveLayer,
                               ),
                               SizedBox(
                                   child: IgnorePointer(

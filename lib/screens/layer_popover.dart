@@ -7,7 +7,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 class LayerPopover extends HookWidget {
   final ValueNotifier<List<DrawingLayer>> layers;
   final ValueNotifier<int> activeLayerIndex;
-  //final List<DrawingLayer> layers;
   final Function(int, int) onMoveLayer;
   final Function(int) onSelectLayer;
   final Function() onAddLayer;
@@ -150,7 +149,6 @@ class LayerPopover extends HookWidget {
                               pickerColor: Colors.white,
                               onColorChanged: (value) {
                                 // TODO: Set background color
-                                print(value);
                               },
                               pickerAreaBorderRadius: const BorderRadius.all(
                                 Radius.circular(10),
