@@ -1,6 +1,6 @@
-import 'package:ai_pencil/constants.dart';
+import 'package:ai_pencil/utils/constants.dart';
 import 'package:ai_pencil/screens/select_screen.dart';
-import 'package:ai_pencil/themes.dart';
+import 'package:ai_pencil/utils/themes.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';

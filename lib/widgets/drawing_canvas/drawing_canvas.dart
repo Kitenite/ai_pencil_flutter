@@ -1,12 +1,10 @@
-import 'dart:typed_data';
 import 'dart:ui' as ui;
 
-import 'package:ai_pencil/constants.dart';
-import 'package:ai_pencil/drawing_canvas/widgets/sketch_painter.dart';
+import 'package:ai_pencil/widgets/drawing_canvas/sketch_painter.dart';
 import 'package:ai_pencil/model/drawing/drawing_tools.dart';
 import 'package:flutter/material.dart';
-import 'package:ai_pencil/drawing_canvas/models/drawing_mode.dart';
-import 'package:ai_pencil/drawing_canvas/models/sketch.dart';
+import 'package:ai_pencil/model/drawing_canvas/drawing_mode.dart';
+import 'package:ai_pencil/model/drawing_canvas/sketch.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
 class DrawingCanvas extends HookWidget {
@@ -99,7 +97,7 @@ class DrawingCanvas extends HookWidget {
       filled.value,
     );
 
-    // TODO: This is an extremely hacky way to get real-time eraser working. Basically, we replace the last value of allSketches with currentSketch so that it triggers a repaint.
+    // TODO: This is an hacky way to get real-time eraser working. Basically, we replace the last value of allSketches with currentSketch so that it triggers a repaint.
     if (drawingTools.drawingMode.value == DrawingMode.eraser) {
       if (currentSketch.value != null) {
         // For some reason, size is a good way to check if the last value of allSketches is the same as currentSketch.

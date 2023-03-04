@@ -1,7 +1,7 @@
-import 'package:ai_pencil/drawing_canvas/models/drawing_mode.dart';
-import 'package:ai_pencil/drawing_canvas/models/sketch.dart';
-import 'package:ai_pencil/drawing_canvas/models/undo_redo_stack.dart';
-import 'package:ai_pencil/drawing_canvas/widgets/icon_box.dart';
+import 'package:ai_pencil/model/drawing_canvas/drawing_mode.dart';
+import 'package:ai_pencil/model/drawing_canvas/sketch.dart';
+import 'package:ai_pencil/model/drawing_canvas/undo_redo_stack.dart';
+import 'package:ai_pencil/widgets/drawing_canvas/icon_box.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';

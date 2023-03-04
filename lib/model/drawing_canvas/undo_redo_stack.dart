@@ -1,4 +1,4 @@
-import 'package:ai_pencil/drawing_canvas/models/sketch.dart';
+import 'package:ai_pencil/model/drawing_canvas/sketch.dart';
 import 'package:flutter/foundation.dart';
 
 ///A data structure for undoing and redoing sketches.

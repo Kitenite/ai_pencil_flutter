@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
-import 'package:ai_pencil/drawing_canvas/models/sketch.dart';
-import 'package:ai_pencil/serialization/uint8_list_converter.dart';
+import 'package:ai_pencil/model/drawing_canvas/sketch.dart';
+import 'package:ai_pencil/utils/uint8_list_converter.dart';
 import 'package:ai_pencil/utils/image_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';

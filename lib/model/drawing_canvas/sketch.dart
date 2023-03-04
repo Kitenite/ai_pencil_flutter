@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ai_pencil/drawing_canvas/models/drawing_mode.dart';
+import 'package:ai_pencil/model/drawing_canvas/drawing_mode.dart';
 
 class Sketch {
   final List<Offset> points;

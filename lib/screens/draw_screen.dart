@@ -2,20 +2,20 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
-import 'package:ai_pencil/drawing_canvas/models/slider_type.dart';
-import 'package:ai_pencil/drawing_canvas/models/undo_redo_stack.dart';
+import 'package:ai_pencil/model/drawing_canvas/slider_type.dart';
+import 'package:ai_pencil/model/drawing_canvas/undo_redo_stack.dart';
 import 'package:ai_pencil/utils/image_helpers.dart';
-import 'package:ai_pencil/drawing_canvas/widgets/drawing_tools.dart';
-import 'package:ai_pencil/drawing_canvas/widgets/icon_box.dart';
+import 'package:ai_pencil/widgets/drawing_canvas/drawing_canvas.dart';
+import 'package:ai_pencil/widgets/drawing_canvas/icon_box.dart';
+import 'package:ai_pencil/widgets/drawing_tools.dart';
 import 'package:ai_pencil/model/drawing/drawing_layer.dart';
 import 'package:ai_pencil/model/drawing/drawing_project.dart';
 import 'package:ai_pencil/model/drawing/drawing_tools.dart';
 import 'package:ai_pencil/screens/inference_screen.dart';
 import 'package:ai_pencil/screens/layer_popover.dart';
 import 'package:flutter/material.dart';
-import 'package:ai_pencil/drawing_canvas/drawing_canvas.dart';
-import 'package:ai_pencil/drawing_canvas/models/drawing_mode.dart';
-import 'package:ai_pencil/drawing_canvas/models/sketch.dart';
+import 'package:ai_pencil/model/drawing_canvas/drawing_mode.dart';
+import 'package:ai_pencil/model/drawing_canvas/sketch.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -210,13 +210,7 @@ class DrawScreen extends HookWidget {
                 project.thumbnailImageBytes = snapshot.data;
                 persistProject();
                 return InferenceScreen(
-                    project: project, canvasGlobalKey: canvasGlobalKey);
-              } else if (snapshot.data == null) {
-                return const Padding(
-                  padding: EdgeInsets.only(top: 20),
-                  child: Center(
-                    child: Text("Error loading image"),
-                  ),
+                  project: project,
                 );
               } else {
                 return const Padding(

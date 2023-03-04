@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:ai_pencil/constants.dart';
+import 'package:ai_pencil/utils/constants.dart';
 import 'package:ai_pencil/model/drawing/advanced_options.dart';
 import 'package:ai_pencil/model/drawing/aspect_ratio.dart';
 import 'package:ai_pencil/model/drawing/drawing_layer.dart';

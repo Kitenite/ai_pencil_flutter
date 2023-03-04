@@ -3,8 +3,8 @@ import 'dart:ui' as ui;
 import 'dart:async';
 import 'dart:io';
 
-import 'package:ai_pencil/drawing_canvas/models/sketch.dart';
-import 'package:ai_pencil/drawing_canvas/widgets/sketch_painter.dart';
+import 'package:ai_pencil/widgets/drawing_canvas/sketch_painter.dart';
+import 'package:ai_pencil/model/drawing_canvas/sketch.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -14,9 +14,12 @@ import 'package:file_saver/file_saver.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
 
-// TODO: There are 2 implementations of image: ui.Image and material Image. We should decide on using just one.
-
 class ImageHelper {
+  static Future<String> bytesToBase64String(Uint8List bytes) async {
+    String base64Image = base64Encode(bytes);
+    return base64Image;
+  }
+
   static Future<String> imageToBase64String(ui.Image image) async {
     ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
     Uint8List? pngBytes = byteData?.buffer.asUint8List();

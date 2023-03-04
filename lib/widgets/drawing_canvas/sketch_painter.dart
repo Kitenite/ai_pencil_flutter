@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 import 'dart:ui';
 
-import 'package:ai_pencil/drawing_canvas/models/sketch.dart';
+import 'package:ai_pencil/model/drawing_canvas/sketch.dart';
 import 'package:flutter/material.dart' hide Image;
 
 class SketchPainter extends CustomPainter {
