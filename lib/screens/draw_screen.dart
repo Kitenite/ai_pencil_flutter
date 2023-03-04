@@ -227,6 +227,27 @@ class DrawScreen extends HookWidget {
     }
 
     var trailingActions = [
+      IconButton(
+        icon: const Icon(
+          FontAwesomeIcons.layerGroup,
+          size: 18,
+        ),
+        onPressed: () {
+          showModalBottomSheet(
+            context: context,
+            builder: (context) => LayerPopover(
+              layers: layers,
+              activeLayerIndex: activeLayerIndex,
+              onSelectLayer: saveThenSelectLayer,
+              onMoveLayer: moveLayer,
+              onAddLayer: addLayer,
+              onRemoveLayer: removeLayer,
+              onRenameLayer: renameLayer,
+              onToggleLayerVisibility: toggleLayerVisibility,
+            ),
+          );
+        },
+      ),
       TextButton(
         onPressed: navigateToInferenceScreen,
         child: const Text(
@@ -350,23 +371,6 @@ class DrawScreen extends HookWidget {
               },
               tooltip: 'Download image',
             ),
-            GestureDetector(
-                child: const Icon(FontAwesomeIcons.layerGroup),
-                onTap: () {
-                  showModalBottomSheet(
-                    context: context,
-                    builder: (context) => LayerPopover(
-                      layers: layers,
-                      activeLayerIndex: activeLayerIndex,
-                      onSelectLayer: saveThenSelectLayer,
-                      onMoveLayer: moveLayer,
-                      onAddLayer: addLayer,
-                      onRemoveLayer: removeLayer,
-                      onRenameLayer: renameLayer,
-                      onToggleLayerVisibility: toggleLayerVisibility,
-                    ),
-                  );
-                }),
           ],
         ),
         actions: trailingActions,
