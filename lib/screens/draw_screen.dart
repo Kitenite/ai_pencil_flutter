@@ -183,6 +183,7 @@ class DrawScreen extends HookWidget {
     // TODO: add rename button to layer tile
     void renameLayer(int idx, String title) {
       layers.value[idx].title = title;
+      layers.value = layers.value.toList(); // notify listeners of change
     }
 
     Widget getSliderPreviewModal() {

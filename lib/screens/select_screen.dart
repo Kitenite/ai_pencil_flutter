@@ -61,6 +61,38 @@ class _SelectProjectScreenState extends State<SelectProjectScreen> {
     navigateToProject(projects.length - 1, newProject);
   }
 
+  void deleteProject(int idx) async {
+    SharedPreferences prefs = await _prefs;
+    var projects = prefs.getStringList(Constants.PROJECTS_KEY) ?? [];
+    if (idx >= projects.length) {
+      return;
+    }
+    projects.removeAt(idx);
+    setState(() {
+      _jsonEncodedProjects =
+          prefs.setStringList('projects', projects).then((bool success) {
+        return projects;
+      });
+    });
+  }
+
+  void renameProject(int idx, String newName) async {
+    SharedPreferences prefs = await _prefs;
+    var projects = prefs.getStringList(Constants.PROJECTS_KEY) ?? [];
+    if (idx >= projects.length) {
+      return;
+    }
+    var project = jsonDecode(projects[idx]);
+    project['title'] = newName;
+    projects[idx] = jsonEncode(project);
+    setState(() {
+      _jsonEncodedProjects =
+          prefs.setStringList('projects', projects).then((bool success) {
+        return projects;
+      });
+    });
+  }
+  
   void navigateToProject(int idx, DrawingProject project) {
     Navigator.push(
       context,
@@ -74,6 +106,68 @@ class _SelectProjectScreenState extends State<SelectProjectScreen> {
       // Update projects after returning from draw screen
       updateProjectList();
     });
+  }
+
+  Widget getDeleteButton(int idx) {
+    return InkWell(
+      onTap: () {
+        deleteProject(idx);
+      },
+      child: const Padding(
+        padding: EdgeInsets.all(10),
+        child: Icon(
+          FontAwesomeIcons.trash,
+          size: 18,
+          color: Colors.white,
+        ),
+      ),
+    );
+  }
+
+  Widget getRenameButton(int idx, String currentName) {
+    return InkWell(
+      child: const Padding(
+        padding: EdgeInsets.all(12),
+        child: Icon(
+          FontAwesomeIcons.pen,
+          size: 14,
+          color: Colors.white,
+        ),
+      ),
+      onTap: () {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            String newName = currentName;
+            return AlertDialog(
+              title: const Text('Rename Project'),
+              content: TextField(
+                autofocus: true,
+                controller: TextEditingController(text: currentName),
+                onChanged: (String value) {
+                  newName = value;
+                },
+              ),
+              actions: <Widget>[
+                ElevatedButton(
+                  child: const Text('Cancel'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                ElevatedButton(
+                  child: const Text('Rename'),
+                  onPressed: () {
+                    renameProject(idx, newName);
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
   }
 
   @override
@@ -183,10 +277,29 @@ class _SelectProjectScreenState extends State<SelectProjectScreen> {
                         json.decode(jsonEncodedProject),
                       );
                       return ListTile(
-                        title: Text(project.title),
+                        title: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Flexible(
+                              child: Text(
+                                project.title,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            getRenameButton(idx, project.title)
+                          ],
+                        ),
                         onTap: () {
                           navigateToProject(idx, project);
                         },
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            //getRenameButton(idx, project.title),
+                            getDeleteButton(idx)
+                          ],
+                        ),
                       );
                     },
                   )

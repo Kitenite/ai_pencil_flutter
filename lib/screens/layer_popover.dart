@@ -68,6 +68,51 @@ class LayerPopover extends HookWidget {
       }
     }
 
+    Widget getRenameButton(index) {
+      return InkWell(
+        child: const Padding(
+          padding: EdgeInsets.all(10.0),
+          child: Icon(
+            FontAwesomeIcons.pen,
+            size: 14,
+          ),
+        ),
+        onTap: () {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              String newName = layers.value[index].title;
+              return AlertDialog(
+                title: const Text('Rename'),
+                content: TextField(
+                  autofocus: true,
+                  controller: TextEditingController(text: newName),
+                  onChanged: (String value) {
+                    newName = value;
+                  },
+                ),
+                actions: <Widget>[
+                  ElevatedButton(
+                    child: const Text('Cancel'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  ElevatedButton(
+                    child: const Text('Rename'),
+                    onPressed: () {
+                      onRenameLayer(index, newName);
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            },
+          );
+        },
+      );
+    }
+
     Widget getPreviewImage(index) {
       if (layers.value[index].image.isEmpty) {
         return const SizedBox.shrink();
@@ -177,7 +222,19 @@ class LayerPopover extends HookWidget {
                     child: ReorderableDragStartListener(
                       index: index,
                       child: ListTile(
-                        title: Text(layers.value[index].title),
+                        title: Row(
+                          children: [
+                            Flexible(
+                              child:
+                                Text(
+                                  layers.value[index].title,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis
+                                ),
+                            ),
+                            getRenameButton(index),
+                          ]
+                        ),
                         selectedColor: Colors.white,
                         textColor: Colors.white,
                         iconColor: Colors.white,
