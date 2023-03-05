@@ -50,6 +50,7 @@ class _SelectProjectScreenState extends State<SelectProjectScreen> {
       aspectHeight: aspectHeight,
       aspectWidth: aspectWidth,
       advancedOptions: AdvancedOptions(),
+      backgroundColor: CustomColors.canvasColor.value,
     );
     projects.add(jsonEncode(newProject.toJson()));
     setState(() {
@@ -92,7 +93,7 @@ class _SelectProjectScreenState extends State<SelectProjectScreen> {
       });
     });
   }
-  
+
   void navigateToProject(int idx, DrawingProject project) {
     Navigator.push(
       context,

@@ -20,6 +20,8 @@ DrawingProject _$DrawingProjectFromJson(Map<String, dynamic> json) =>
           json['thumbnailImageBytes'], const Uint8ListConverter().fromJson),
       prompt: json['prompt'] as String? ?? "",
       activeLayerIndex: json['activeLayerIndex'] as int? ?? 0,
+      backgroundColor:
+          json['backgroundColor'] as int? ?? CustomColors.canvasColor.value,
     )
       ..id = json['id'] as String
       ..createdDate = DateTime.parse(json['createdDate'] as String);
@@ -37,6 +39,7 @@ Map<String, dynamic> _$DrawingProjectToJson(DrawingProject instance) =>
       'advancedOptions': instance.advancedOptions,
       'prompt': instance.prompt,
       'activeLayerIndex': instance.activeLayerIndex,
+      'backgroundColor': instance.backgroundColor,
     };
 
 Value? _$JsonConverterFromJson<Json, Value>(

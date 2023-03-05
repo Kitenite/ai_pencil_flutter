@@ -44,7 +44,7 @@ class DrawScreen extends HookWidget {
     final polygonSides = useState<int>(3);
 
     final backgroundImage = useState<ui.Image?>(null);
-    final backgroundColor = useState<Color>(CustomColors.canvasColor);
+    final backgroundColor = useState<Color>(Color(project.backgroundColor));
     final canvasGlobalKey = GlobalKey();
 
     // Canvas sketches
@@ -125,6 +125,7 @@ class DrawScreen extends HookWidget {
         aspectHeight: project.aspectHeight,
         advancedOptions: project.advancedOptions,
         prompt: project.prompt,
+        backgroundColor: backgroundColor.value.value,
       );
       var projects = prefs.getStringList('projects') ?? [];
       projects[projectIndex] = jsonEncode(updatedProject.toJson());

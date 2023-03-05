@@ -1,7 +1,9 @@
 import 'dart:typed_data';
 import 'package:ai_pencil/model/drawing/advanced_options.dart';
 import 'package:ai_pencil/model/drawing/drawing_layer.dart';
+import 'package:ai_pencil/utils/constants.dart';
 import 'package:ai_pencil/utils/uint8_list_converter.dart';
+import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:uuid/uuid.dart';
 part 'drawing_project.g.dart';
@@ -20,6 +22,7 @@ class DrawingProject {
   double aspectWidth;
   double aspectHeight;
   AdvancedOptions advancedOptions;
+  int backgroundColor;
 
   // Optional
   String prompt;
@@ -34,6 +37,7 @@ class DrawingProject {
     required this.aspectWidth,
     required this.aspectHeight,
     required this.advancedOptions,
+    required this.backgroundColor,
     this.thumbnailImageBytes,
     this.prompt = "",
     this.activeLayerIndex = 0,
