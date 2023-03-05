@@ -3,6 +3,7 @@ import 'dart:ui' as ui;
 import 'dart:async';
 import 'dart:io';
 
+import 'package:ai_pencil/model/drawing/drawing_layer.dart';
 import 'package:ai_pencil/widgets/drawing_canvas/sketch_painter.dart';
 import 'package:ai_pencil/model/drawing_canvas/sketch.dart';
 import 'package:flutter/foundation.dart';
@@ -41,6 +42,18 @@ class ImageHelper {
   static void downloadCanvasImage(GlobalKey canvasGlobalKey) async {
     Uint8List? pngBytes = await ImageHelper.getCanvasAsBytes(canvasGlobalKey);
     if (pngBytes != null) ImageHelper.saveFile(pngBytes, 'png');
+  }
+
+  static Future<Uint8List?> getDrawingAsBytes(List<DrawingLayer> layers, Size? size) async {
+    if (size == null) {
+      return null;
+    }
+    List<Sketch> allSketches = [];
+    for (DrawingLayer layer in layers) {
+      allSketches.addAll(layer.sketches);
+    }
+    var ret = await getPngBytesFromSketches(allSketches, size);
+    return ret;
   }
 
   static Future<Uint8List?> getCanvasAsBytes(GlobalKey canvasGlobalKey) async {

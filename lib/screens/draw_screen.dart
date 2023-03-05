@@ -225,11 +225,16 @@ class DrawScreen extends HookWidget {
     }
 
     void navigateToInferenceScreen() {
+      Size? drawingSize = canvasGlobalKey.currentContext?.size;
+      if (drawingSize == null) {
+        // TODO: Error handling/logging
+        return;
+      }
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => FutureBuilder<Uint8List?>(
-            future: ImageHelper.getCanvasAsBytes(canvasGlobalKey),
+            future: ImageHelper.getDrawingAsBytes(layers.value, drawingSize),
             builder:
                 (BuildContext context, AsyncSnapshot<Uint8List?> snapshot) {
               if (snapshot.hasData && snapshot.data != null) {
