@@ -13,6 +13,7 @@ class LayerPopover extends HookWidget {
   final Function(int) onRemoveLayer;
   final Function(int, String) onRenameLayer;
   final Function(int) onToggleLayerVisibility;
+  final Function(Color) onUpdateBackgroundColor;
   final ValueNotifier<Color> backgroundColor;
 
   const LayerPopover({
@@ -26,6 +27,7 @@ class LayerPopover extends HookWidget {
     required this.onRenameLayer,
     required this.onToggleLayerVisibility,
     required this.backgroundColor,
+    required this.onUpdateBackgroundColor,
   }) : super(key: key);
 
   @override
@@ -164,7 +166,7 @@ class LayerPopover extends HookWidget {
                     width: 40,
                     height: 30,
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: backgroundColor.value,
                       borderRadius: BorderRadius.circular(5),
                       border: Border.all(
                         color: Colors.grey,
@@ -172,10 +174,10 @@ class LayerPopover extends HookWidget {
                       ),
                     ),
                   ),
-                  title: Text(
+                  title: const Text(
                     "Background color",
                     style: TextStyle(
-                      color: backgroundColor.value,
+                      color: Colors.white,
                     ),
                   ),
                   onTap: () {
@@ -195,7 +197,7 @@ class LayerPopover extends HookWidget {
                             child: ColorPicker(
                               pickerColor: backgroundColor.value,
                               onColorChanged: (value) {
-                                backgroundColor.value = value;
+                                onUpdateBackgroundColor(value);
                               },
                               pickerAreaBorderRadius: const BorderRadius.all(
                                 Radius.circular(10),

@@ -188,6 +188,11 @@ class DrawScreen extends HookWidget {
       layers.value = layers.value.toList(); // notify listeners of change
     }
 
+    void updateBackgroundColor(Color color) {
+      backgroundColor.value = color;
+      layers.value = layers.value.toList(); // notify listeners of change
+    }
+
     void toggleLayerVisibility(int idx) {
       if (idx != activeLayerIndex.value) {
         layers.value[idx].isVisible = !layers.value[idx].isVisible;
@@ -321,6 +326,7 @@ class DrawScreen extends HookWidget {
               onRemoveLayer: removeLayer,
               onRenameLayer: renameLayer,
               onToggleLayerVisibility: toggleLayerVisibility,
+              onUpdateBackgroundColor: updateBackgroundColor,
               backgroundColor: backgroundColor,
             ),
           );
