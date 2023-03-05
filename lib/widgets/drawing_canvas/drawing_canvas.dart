@@ -36,6 +36,8 @@ class DrawingCanvas extends HookWidget {
     required this.saveActiveLayer,
   }) : super(key: key);
 
+  // TODO: Add undo redo for clearing sketches
+
   @override
   Widget build(BuildContext context) {
     return MouseRegion(
@@ -87,6 +89,7 @@ class DrawingCanvas extends HookWidget {
 
     final points = List<Offset>.from(currentSketch.value?.points ?? [])
       ..add(offset);
+
     currentSketch.value = Sketch.fromDrawingMode(
       Sketch(
         points: points,
@@ -115,6 +118,7 @@ class DrawingCanvas extends HookWidget {
   void onPointerUp(PointerUpEvent details) {
     allSketches.value = List<Sketch>.from(allSketches.value)
       ..add(currentSketch.value!);
+    currentSketch.value = null;
 
     // Save color used
     drawingTools.addColorToHistory(drawingTools.getSelectedColor());
