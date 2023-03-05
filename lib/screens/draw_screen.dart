@@ -5,7 +5,9 @@ import 'dart:ui' as ui;
 import 'package:ai_pencil/model/drawing_canvas/slider_type.dart';
 import 'package:ai_pencil/model/drawing_canvas/undo_redo_stack.dart';
 import 'package:ai_pencil/screens/inference_complete_screen.dart';
+import 'package:ai_pencil/utils/constants.dart';
 import 'package:ai_pencil/utils/image_helpers.dart';
+import 'package:ai_pencil/utils/snackbar.dart';
 import 'package:ai_pencil/widgets/drawing_canvas/drawing_canvas.dart';
 import 'package:ai_pencil/widgets/drawing_canvas/icon_box.dart';
 import 'package:ai_pencil/widgets/drawing_tool_bar.dart';
@@ -42,6 +44,7 @@ class DrawScreen extends HookWidget {
     final polygonSides = useState<int>(3);
 
     final backgroundImage = useState<ui.Image?>(null);
+    final backgroundColor = useState<Color>(CustomColors.canvasColor);
     final canvasGlobalKey = GlobalKey();
 
     // Canvas sketches
@@ -236,16 +239,20 @@ class DrawScreen extends HookWidget {
     }
 
     void navigateToInferenceScreen() {
-      Size? drawingSize = canvasGlobalKey.currentContext?.size;
+      Size? drawingSize = ImageHelper.getDrawingSize(canvasGlobalKey);
       if (drawingSize == null) {
-        // TODO: Error handling/logging
+        Logger("DrawScreen::navigateToInferenceScreen")
+            .severe("Error getting drawing size");
+        SnackBarHelper.showSnackBar(
+            context, 'Something went wrong, please try again');
         return;
       }
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => FutureBuilder<Uint8List?>(
-            future: ImageHelper.getDrawingAsBytes(layers.value, drawingSize),
+            future: ImageHelper.getDrawingAsBytes(
+                layers.value, drawingSize, backgroundColor.value),
             builder:
                 (BuildContext context, AsyncSnapshot<Uint8List?> snapshot) {
               if (snapshot.hasData && snapshot.data != null) {
@@ -424,12 +431,13 @@ class DrawScreen extends HookWidget {
               IconBox(
                 iconData: FontAwesomeIcons.download,
                 selected: true,
-                onTap: () async {
-                  const snackBar = SnackBar(
-                    content: Text('Drawing saved'),
+                onTap: () {
+                  SnackBarHelper.showSnackBar(context, 'Drawing saved');
+                  ImageHelper.downloadDrawingImage(
+                    layers.value,
+                    ImageHelper.getDrawingSize(canvasGlobalKey),
+                    backgroundColor.value,
                   );
-                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                  ImageHelper.downloadCanvasImage(canvasGlobalKey);
                 },
                 tooltip: 'Download image',
               ),

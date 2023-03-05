@@ -33,7 +33,7 @@ class DrawingLayer {
 
   void updateImage(Size? size) {
     if (size != null) {
-      ImageHelper.getPngBytesFromSketches(sketches, size).then((value) {
+      ImageHelper.getPngBytesFromSketches(sketches, size, null).then((value) {
         image = value!;
       });
     }
