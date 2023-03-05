@@ -13,6 +13,7 @@ class LayerPopover extends HookWidget {
   final Function(int) onRemoveLayer;
   final Function(int, String) onRenameLayer;
   final Function(int) onToggleLayerVisibility;
+  final ValueNotifier<Color> backgroundColor;
 
   const LayerPopover({
     Key? key,
@@ -24,6 +25,7 @@ class LayerPopover extends HookWidget {
     required this.onRemoveLayer,
     required this.onRenameLayer,
     required this.onToggleLayerVisibility,
+    required this.backgroundColor,
   }) : super(key: key);
 
   @override
@@ -170,10 +172,10 @@ class LayerPopover extends HookWidget {
                       ),
                     ),
                   ),
-                  title: const Text(
+                  title: Text(
                     "Background color",
                     style: TextStyle(
-                      color: Colors.white,
+                      color: backgroundColor.value,
                     ),
                   ),
                   onTap: () {
@@ -191,9 +193,9 @@ class LayerPopover extends HookWidget {
                           ),
                           content: SingleChildScrollView(
                             child: ColorPicker(
-                              pickerColor: Colors.white,
+                              pickerColor: backgroundColor.value,
                               onColorChanged: (value) {
-                                // TODO: Set background color
+                                backgroundColor.value = value;
                               },
                               pickerAreaBorderRadius: const BorderRadius.all(
                                 Radius.circular(10),
@@ -222,19 +224,13 @@ class LayerPopover extends HookWidget {
                     child: ReorderableDragStartListener(
                       index: index,
                       child: ListTile(
-                        title: Row(
-                          children: [
-                            Flexible(
-                              child:
-                                Text(
-                                  layers.value[index].title,
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis
-                                ),
-                            ),
-                            getRenameButton(index),
-                          ]
-                        ),
+                        title: Row(children: [
+                          Flexible(
+                            child: Text(layers.value[index].title,
+                                maxLines: 2, overflow: TextOverflow.ellipsis),
+                          ),
+                          getRenameButton(index),
+                        ]),
                         selectedColor: Colors.white,
                         textColor: Colors.white,
                         iconColor: Colors.white,

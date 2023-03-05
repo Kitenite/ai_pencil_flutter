@@ -320,6 +320,7 @@ class DrawScreen extends HookWidget {
               onRemoveLayer: removeLayer,
               onRenameLayer: renameLayer,
               onToggleLayerVisibility: toggleLayerVisibility,
+              backgroundColor: backgroundColor,
             ),
           );
         },
@@ -476,7 +477,7 @@ class DrawScreen extends HookWidget {
                             aspectRatio:
                                 project.aspectWidth / project.aspectHeight,
                             child: Container(
-                              color: Colors.white,
+                              color: backgroundColor.value,
                               child: Stack(children: [
                                 SizedBox(
                                     child: IgnorePointer(
