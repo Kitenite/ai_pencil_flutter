@@ -5,7 +5,6 @@ import 'dart:ui' as ui;
 import 'package:ai_pencil/model/drawing_canvas/slider_type.dart';
 import 'package:ai_pencil/model/drawing_canvas/undo_redo_stack.dart';
 import 'package:ai_pencil/screens/inference_complete_screen.dart';
-import 'package:ai_pencil/utils/constants.dart';
 import 'package:ai_pencil/utils/image_helpers.dart';
 import 'package:ai_pencil/utils/snackbar.dart';
 import 'package:ai_pencil/widgets/drawing_canvas/drawing_canvas.dart';
@@ -112,6 +111,18 @@ class DrawScreen extends HookWidget {
       layers.value = layers.value.toList(); // notify listeners of change
     }
 
+    Future<Uint8List?> getThumbnailImageBytes() {
+      Size? drawingSize = ImageHelper.getDrawingSize(canvasGlobalKey);
+      if (drawingSize == null) {
+        Logger("DrawScreen::getThumbnailImage")
+            .severe("Error getting drawing size");
+        SnackBarHelper.showSnackBar(
+            context, 'Something went wrong, please try again');
+      }
+      return ImageHelper.getDrawingAsBytes(
+          layers.value, drawingSize, backgroundColor.value);
+    }
+
     Future<void> persistProject() async {
       // TODO: this logic should be a callback passed by select project screen
       // saveActiveLayer(); // Already done on drawing changed. Shouldn't call in async anyway
@@ -126,6 +137,7 @@ class DrawScreen extends HookWidget {
         advancedOptions: project.advancedOptions,
         prompt: project.prompt,
         backgroundColor: backgroundColor.value.value,
+        thumbnailImageBytes: project.thumbnailImageBytes,
       );
       var projects = prefs.getStringList('projects') ?? [];
       projects[projectIndex] = jsonEncode(updatedProject.toJson());
@@ -245,41 +257,19 @@ class DrawScreen extends HookWidget {
     }
 
     void navigateToInferenceScreen() {
-      Size? drawingSize = ImageHelper.getDrawingSize(canvasGlobalKey);
-      if (drawingSize == null) {
-        Logger("DrawScreen::navigateToInferenceScreen")
-            .severe("Error getting drawing size");
-        SnackBarHelper.showSnackBar(
-            context, 'Something went wrong, please try again');
-        return;
-      }
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => FutureBuilder<Uint8List?>(
-            future: ImageHelper.getDrawingAsBytes(
-                layers.value, drawingSize, backgroundColor.value),
-            builder:
-                (BuildContext context, AsyncSnapshot<Uint8List?> snapshot) {
-              if (snapshot.hasData && snapshot.data != null) {
-                project.thumbnailImageBytes = snapshot.data;
-                persistProject();
-                return InferenceScreen(
-                  project: project,
-                  onImageGenerationStarted: onImageGenerationStarted,
-                );
-              } else {
-                return const Padding(
-                  padding: EdgeInsets.only(top: 20),
-                  child: Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                );
-              }
-            },
+      getThumbnailImageBytes().then((imageByte) {
+        project.thumbnailImageBytes = imageByte;
+        persistProject();
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => InferenceScreen(
+              project: project,
+              onImageGenerationStarted: onImageGenerationStarted,
+            ),
           ),
-        ),
-      );
+        );
+      });
     }
 
     Widget getInferenceButton() {
@@ -419,8 +409,11 @@ class DrawScreen extends HookWidget {
       child: Scaffold(
         appBar: AppBar(
           leading: BackButton(onPressed: () {
-            persistProject();
-            Navigator.pop(context);
+            getThumbnailImageBytes().then((imageByte) {
+              project.thumbnailImageBytes = imageByte;
+              persistProject();
+              Navigator.pop(context);
+            });
           }),
           title: Row(
             children: [

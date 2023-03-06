@@ -32,23 +32,25 @@ class LayerPopover extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
+    ValueNotifier<bool> editMode = useState(false);
+
     Widget getDeleteButton(index) {
-      if (index != activeLayerIndex.value) {
-        return InkWell(
-          child: const Padding(
-            padding: EdgeInsets.all(10.0),
-            child: Icon(
-              FontAwesomeIcons.trash,
-              size: 15,
-            ),
-          ),
-          onTap: () {
-            onRemoveLayer(index);
-          },
-        );
-      } else {
+      if (!editMode.value || index == activeLayerIndex.value) {
         return const SizedBox.shrink();
       }
+
+      return InkWell(
+        child: const Padding(
+          padding: EdgeInsets.all(10.0),
+          child: Icon(
+            FontAwesomeIcons.trash,
+            size: 15,
+          ),
+        ),
+        onTap: () {
+          onRemoveLayer(index);
+        },
+      );
     }
 
     Widget getVisibilityButton(index) {
@@ -73,6 +75,10 @@ class LayerPopover extends HookWidget {
     }
 
     Widget getRenameButton(index) {
+      if (!editMode.value) {
+        return const SizedBox.shrink();
+      }
+
       return InkWell(
         child: const Padding(
           padding: EdgeInsets.all(10.0),
@@ -140,6 +146,12 @@ class LayerPopover extends HookWidget {
                     ),
                   ),
                   const Spacer(),
+                  TextButton(
+                    onPressed: () {
+                      editMode.value = !editMode.value;
+                    },
+                    child: Text(editMode.value ? "Done" : "Edit"),
+                  ),
                   IconButton(
                     icon: const Icon(
                       FontAwesomeIcons.plus,

@@ -18,6 +18,7 @@ class SelectProjectScreen extends StatefulWidget {
 }
 
 class _SelectProjectScreenState extends State<SelectProjectScreen> {
+  bool editMode = false;
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   late Future<List<String>> _jsonEncodedProjects;
 
@@ -110,6 +111,10 @@ class _SelectProjectScreenState extends State<SelectProjectScreen> {
   }
 
   Widget getDeleteButton(int idx) {
+    if (!editMode) {
+      return const SizedBox.shrink();
+    }
+
     return InkWell(
       onTap: () {
         deleteProject(idx);
@@ -126,6 +131,10 @@ class _SelectProjectScreenState extends State<SelectProjectScreen> {
   }
 
   Widget getRenameButton(int idx, String currentName) {
+    if (!editMode) {
+      return const SizedBox.shrink();
+    }
+
     return InkWell(
       child: const Padding(
         padding: EdgeInsets.all(12),
@@ -255,18 +264,22 @@ class _SelectProjectScreenState extends State<SelectProjectScreen> {
         ),
         actions: [
           TextButton(
-            onPressed: () {},
-            child: const Text("Select"),
+            onPressed: () {
+              setState(() {
+                editMode = !editMode;
+              });
+            },
+            child: Text(editMode ? "Done" : "Edit"),
           ),
           addProjectButton
         ],
       ),
-      body: SingleChildScrollView(
-          child: FutureBuilder(
+      body: FutureBuilder(
         future: _jsonEncodedProjects,
         builder: (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
           if (snapshot.hasData) {
-            return Column(
+            return GridView.count(
+              crossAxisCount: 3,
               children: snapshot.data!
                   .asMap()
                   .entries
@@ -277,31 +290,76 @@ class _SelectProjectScreenState extends State<SelectProjectScreen> {
                       DrawingProject project = DrawingProject.fromJson(
                         json.decode(jsonEncodedProject),
                       );
-                      return ListTile(
-                        title: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Flexible(
-                              child: Text(
+
+                      return InkWell(
+                        onTap: () {
+                          navigateToProject(idx, project);
+                        },
+                        child: Center(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                width: 100,
+                                height: 100,
+                                child: project.thumbnailImageBytes != null
+                                    ? Image.memory(project.thumbnailImageBytes!)
+                                    : Container(
+                                        decoration: BoxDecoration(
+                                        color: CustomColors.canvasColor,
+                                        border: Border.all(
+                                          color: Colors.black,
+                                          width: 1,
+                                        ),
+                                        borderRadius: const BorderRadius.all(
+                                          Radius.circular(8),
+                                        ),
+                                      )),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
                                 project.title,
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                               ),
-                            ),
-                            getRenameButton(idx, project.title)
-                          ],
-                        ),
-                        onTap: () {
-                          navigateToProject(idx, project);
-                        },
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            //getRenameButton(idx, project.title),
-                            getDeleteButton(idx)
-                          ],
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  getRenameButton(idx, project.title),
+                                  getDeleteButton(idx)
+                                ],
+                              )
+                            ],
+                          ),
                         ),
                       );
+                      // return ListTile(
+                      //   title: Row(
+                      //     mainAxisSize: MainAxisSize.min,
+                      //     children: [
+                      //       Flexible(
+                      //         child: Text(
+                      //           project.title,
+                      //           maxLines: 2,
+                      //           overflow: TextOverflow.ellipsis,
+                      //         ),
+                      //       ),
+                      //       getRenameButton(idx, project.title)
+                      //     ],
+                      //   ),
+                      //   onTap: () {
+                      //     navigateToProject(idx, project);
+                      //   },
+                      //   trailing: Row(
+                      //     mainAxisSize: MainAxisSize.min,
+                      //     children: [
+                      //       //getRenameButton(idx, project.title),
+                      //       getDeleteButton(idx)
+                      //     ],
+                      //   ),
+                      // );
                     },
                   )
                   .toList()
@@ -317,7 +375,19 @@ class _SelectProjectScreenState extends State<SelectProjectScreen> {
             );
           }
         },
-      )),
+      ),
     );
+  }
+}
+
+class SelectProjectGridItem extends StatelessWidget {
+  final int idx;
+  final DrawingProject project;
+  const SelectProjectGridItem(
+      {super.key, required this.idx, required this.project});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
   }
 }
