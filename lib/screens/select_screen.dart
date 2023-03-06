@@ -123,7 +123,7 @@ class _SelectProjectScreenState extends State<SelectProjectScreen> {
         padding: EdgeInsets.all(10),
         child: Icon(
           FontAwesomeIcons.trash,
-          size: 18,
+          size: 12,
           color: Colors.white,
         ),
       ),
@@ -140,7 +140,7 @@ class _SelectProjectScreenState extends State<SelectProjectScreen> {
         padding: EdgeInsets.all(12),
         child: Icon(
           FontAwesomeIcons.pen,
-          size: 14,
+          size: 12,
           color: Colors.white,
         ),
       ),
@@ -330,32 +330,33 @@ class _SelectProjectScreenState extends State<SelectProjectScreen> {
                                         ),
                                 ),
                               ),
-                              // SizedBox(
-                              //   width: 100,
-                              //   height: 100,
-                              //   child: project.thumbnailImageBytes != null
-                              //       ? Image.memory(project.thumbnailImageBytes!)
-                              //       : Container(
-                              //           decoration: BoxDecoration(
-                              //           color: CustomColors.canvasColor,
-                              //           border: Border.all(
-                              //             color: Colors.black,
-                              //             width: 1,
-                              //           ),
-                              //           borderRadius: const BorderRadius.all(
-                              //             Radius.circular(8),
-                              //           ),
-                              //         )),
-                              // ),
                               const SizedBox(height: 8),
-                              Text(
-                                project.title,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 8.0),
+                                child: Text(
+                                  project.title,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
                               ),
+                              const SizedBox(height: 4),
                               Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
+                                  !editMode
+                                      ? Text(
+                                          "${project.aspectWidth} x ${project.aspectHeight}",
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: const TextStyle(
+                                            fontSize: 12,
+                                          ),
+                                        )
+                                      : const SizedBox.shrink(),
                                   getRenameButton(idx, project.title),
                                   getDeleteButton(idx)
                                 ],
