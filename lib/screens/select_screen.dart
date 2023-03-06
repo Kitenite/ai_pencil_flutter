@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:ai_pencil/utils/constants.dart';
 import 'package:ai_pencil/model/drawing/advanced_options.dart';
@@ -279,6 +280,7 @@ class _SelectProjectScreenState extends State<SelectProjectScreen> {
         builder: (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
           if (snapshot.hasData) {
             return GridView.count(
+              childAspectRatio: 3 / 4,
               crossAxisCount: 3,
               children: snapshot.data!
                   .asMap()
@@ -290,106 +292,88 @@ class _SelectProjectScreenState extends State<SelectProjectScreen> {
                       DrawingProject project = DrawingProject.fromJson(
                         json.decode(jsonEncodedProject),
                       );
-
                       return InkWell(
                         onTap: () {
                           navigateToProject(idx, project);
                         },
-                        child: Center(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              ConstrainedBox(
-                                constraints: const BoxConstraints(
-                                  maxHeight: 100,
-                                  maxWidth: 100,
-                                ),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                      color: Colors.black,
-                                      width: 1,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            const Spacer(),
+                            LayoutBuilder(
+                              builder: (BuildContext context,
+                                  BoxConstraints constraints) {
+                                return ConstrainedBox(
+                                  constraints: BoxConstraints(
+                                    maxHeight: min(constraints.maxWidth,
+                                            constraints.maxHeight) *
+                                        0.75,
+                                    maxWidth: min(constraints.maxWidth,
+                                            constraints.maxHeight) *
+                                        0.75,
+                                  ),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: Colors.black,
+                                        width: 1,
+                                      ),
+                                      borderRadius: BorderRadius.circular(3.0),
                                     ),
-                                    borderRadius: BorderRadius.circular(3.0),
-                                  ),
-                                  child: project.thumbnailImageBytes != null
-                                      ? ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(3.0),
-                                          child: Image.memory(
-                                            project.thumbnailImageBytes!,
-                                            fit: BoxFit.cover,
+                                    child: project.thumbnailImageBytes != null
+                                        ? ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(3.0),
+                                            child: Image.memory(
+                                              project.thumbnailImageBytes!,
+                                              fit: BoxFit.cover,
+                                            ),
+                                          )
+                                        : Container(
+                                            color: CustomColors.canvasColor,
+                                            height: 100,
+                                            width: 100,
                                           ),
-                                        )
-                                      : Container(
-                                          color: CustomColors.canvasColor,
-                                          height: 100,
-                                          width: 100,
+                                  ),
+                                );
+                              },
+                            ),
+                            const Spacer(),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8.0),
+                              child: Text(
+                                project.title,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                !editMode
+                                    ? Text(
+                                        "${project.aspectWidth.toInt()} x ${project.aspectHeight.toInt()}",
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(
+                                          fontSize: 12,
                                         ),
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 8.0),
-                                child: Text(
-                                  project.title,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  !editMode
-                                      ? Text(
-                                          "${project.aspectWidth} x ${project.aspectHeight}",
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: const TextStyle(
-                                            fontSize: 12,
-                                          ),
-                                        )
-                                      : const SizedBox.shrink(),
-                                  getRenameButton(idx, project.title),
-                                  getDeleteButton(idx)
-                                ],
-                              )
-                            ],
-                          ),
+                                      )
+                                    : const SizedBox.shrink(),
+                                getRenameButton(idx, project.title),
+                                getDeleteButton(idx)
+                              ],
+                            )
+                          ],
                         ),
                       );
-                      // return ListTile(
-                      //   title: Row(
-                      //     mainAxisSize: MainAxisSize.min,
-                      //     children: [
-                      //       Flexible(
-                      //         child: Text(
-                      //           project.title,
-                      //           maxLines: 2,
-                      //           overflow: TextOverflow.ellipsis,
-                      //         ),
-                      //       ),
-                      //       getRenameButton(idx, project.title)
-                      //     ],
-                      //   ),
-                      //   onTap: () {
-                      //     navigateToProject(idx, project);
-                      //   },
-                      //   trailing: Row(
-                      //     mainAxisSize: MainAxisSize.min,
-                      //     children: [
-                      //       //getRenameButton(idx, project.title),
-                      //       getDeleteButton(idx)
-                      //     ],
-                      //   ),
-                      // );
                     },
                   )
                   .toList()
