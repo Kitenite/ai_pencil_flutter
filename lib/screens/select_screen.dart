@@ -301,23 +301,52 @@ class _SelectProjectScreenState extends State<SelectProjectScreen> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              SizedBox(
-                                width: 100,
-                                height: 100,
-                                child: project.thumbnailImageBytes != null
-                                    ? Image.memory(project.thumbnailImageBytes!)
-                                    : Container(
-                                        decoration: BoxDecoration(
-                                        color: CustomColors.canvasColor,
-                                        border: Border.all(
-                                          color: Colors.black,
-                                          width: 1,
+                              ConstrainedBox(
+                                constraints: const BoxConstraints(
+                                  maxHeight: 100,
+                                  maxWidth: 100,
+                                ),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                      color: Colors.black,
+                                      width: 1,
+                                    ),
+                                    borderRadius: BorderRadius.circular(3.0),
+                                  ),
+                                  child: project.thumbnailImageBytes != null
+                                      ? ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(3.0),
+                                          child: Image.memory(
+                                            project.thumbnailImageBytes!,
+                                            fit: BoxFit.cover,
+                                          ),
+                                        )
+                                      : Container(
+                                          color: CustomColors.canvasColor,
+                                          height: 100,
+                                          width: 100,
                                         ),
-                                        borderRadius: const BorderRadius.all(
-                                          Radius.circular(8),
-                                        ),
-                                      )),
+                                ),
                               ),
+                              // SizedBox(
+                              //   width: 100,
+                              //   height: 100,
+                              //   child: project.thumbnailImageBytes != null
+                              //       ? Image.memory(project.thumbnailImageBytes!)
+                              //       : Container(
+                              //           decoration: BoxDecoration(
+                              //           color: CustomColors.canvasColor,
+                              //           border: Border.all(
+                              //             color: Colors.black,
+                              //             width: 1,
+                              //           ),
+                              //           borderRadius: const BorderRadius.all(
+                              //             Radius.circular(8),
+                              //           ),
+                              //         )),
+                              // ),
                               const SizedBox(height: 8),
                               Text(
                                 project.title,
