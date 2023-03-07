@@ -1,9 +1,8 @@
 import 'dart:typed_data';
 import 'package:ai_pencil/model/drawing/advanced_options.dart';
 import 'package:ai_pencil/model/drawing/drawing_layer.dart';
-import 'package:ai_pencil/utils/constants.dart';
-import 'package:ai_pencil/utils/uint8_list_converter.dart';
-import 'package:flutter/material.dart';
+import 'package:ai_pencil/model/image/types.dart';
+import 'package:ai_pencil/utils/png_image_bytes_converter.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:uuid/uuid.dart';
 part 'drawing_project.g.dart';
@@ -17,8 +16,9 @@ class DrawingProject {
   String title;
   List<DrawingLayer> layers;
 
-  @Uint8ListConverter()
-  Uint8List? thumbnailImageBytes;
+  @PngImageBytesConverter()
+  PngImageBytes? thumbnailImageBytes;
+
   double aspectWidth;
   double aspectHeight;
   AdvancedOptions advancedOptions;

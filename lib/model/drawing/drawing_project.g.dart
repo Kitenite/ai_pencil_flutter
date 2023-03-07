@@ -18,7 +18,7 @@ DrawingProject _$DrawingProjectFromJson(Map<String, dynamic> json) =>
           json['advancedOptions'] as Map<String, dynamic>),
       backgroundColor: json['backgroundColor'] as int,
       thumbnailImageBytes: _$JsonConverterFromJson<List<dynamic>, Uint8List>(
-          json['thumbnailImageBytes'], const Uint8ListConverter().fromJson),
+          json['thumbnailImageBytes'], const PngImageBytesConverter().fromJson),
       prompt: json['prompt'] as String? ?? "",
       activeLayerIndex: json['activeLayerIndex'] as int? ?? 0,
     )
@@ -32,7 +32,7 @@ Map<String, dynamic> _$DrawingProjectToJson(DrawingProject instance) =>
       'title': instance.title,
       'layers': instance.layers,
       'thumbnailImageBytes': _$JsonConverterToJson<List<dynamic>, Uint8List>(
-          instance.thumbnailImageBytes, const Uint8ListConverter().toJson),
+          instance.thumbnailImageBytes, const PngImageBytesConverter().toJson),
       'aspectWidth': instance.aspectWidth,
       'aspectHeight': instance.aspectHeight,
       'advancedOptions': instance.advancedOptions,

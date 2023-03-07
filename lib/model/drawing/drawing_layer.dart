@@ -1,7 +1,6 @@
-import 'dart:typed_data';
-
 import 'package:ai_pencil/model/drawing_canvas/sketch.dart';
-import 'package:ai_pencil/utils/uint8_list_converter.dart';
+import 'package:ai_pencil/model/image/types.dart';
+import 'package:ai_pencil/utils/png_image_bytes_converter.dart';
 import 'package:ai_pencil/utils/image_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -9,8 +8,8 @@ part 'drawing_layer.g.dart';
 
 @JsonSerializable()
 class DrawingLayer {
-  @Uint8ListConverter()
-  Uint8List image = Uint8List.fromList([]);
+  @PngImageBytesConverter()
+  PngImageBytes image = PngImageBytes.fromList([]);
 
   // Required
   String title;
@@ -27,7 +26,7 @@ class DrawingLayer {
     this.isVisible = true,
   });
 
-  Uint8List getImagePngBytes() {
+  PngImageBytes getImagePngBytes() {
     return image;
   }
 

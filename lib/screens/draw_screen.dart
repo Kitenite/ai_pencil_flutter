@@ -4,6 +4,7 @@ import 'dart:ui' as ui;
 
 import 'package:ai_pencil/model/drawing_canvas/slider_type.dart';
 import 'package:ai_pencil/model/drawing_canvas/undo_redo_stack.dart';
+import 'package:ai_pencil/model/image/types.dart';
 import 'package:ai_pencil/screens/inference_complete_screen.dart';
 import 'package:ai_pencil/utils/image_helpers.dart';
 import 'package:ai_pencil/utils/snackbar.dart';
@@ -111,7 +112,7 @@ class DrawScreen extends HookWidget {
       layers.value = layers.value.toList(); // notify listeners of change
     }
 
-    Future<Uint8List?> getThumbnailImageBytes() {
+    Future<PngImageBytes?> getThumbnailImageBytes() {
       Size? drawingSize = ImageHelper.getDrawingSize(canvasGlobalKey);
       if (drawingSize == null) {
         Logger("DrawScreen::getThumbnailImage")
@@ -119,7 +120,7 @@ class DrawScreen extends HookWidget {
         SnackBarHelper.showSnackBar(
             context, 'Something went wrong, please try again');
       }
-      return ImageHelper.getDrawingAsBytes(
+      return ImageHelper.getDrawingAsPngBytes(
           layers.value, drawingSize, backgroundColor.value);
     }
 

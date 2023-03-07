@@ -17,11 +17,11 @@ DrawingLayer _$DrawingLayerFromJson(Map<String, dynamic> json) => DrawingLayer(
               .toList() ??
           const [],
       isVisible: json['isVisible'] as bool? ?? true,
-    )..image = const Uint8ListConverter().fromJson(json['image'] as List);
+    )..image = const PngImageBytesConverter().fromJson(json['image'] as List);
 
 Map<String, dynamic> _$DrawingLayerToJson(DrawingLayer instance) =>
     <String, dynamic>{
-      'image': const Uint8ListConverter().toJson(instance.image),
+      'image': const PngImageBytesConverter().toJson(instance.image),
       'title': instance.title,
       'sketches': instance.sketches,
       'redoStack': instance.redoStack,

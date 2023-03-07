@@ -4,7 +4,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:ai_pencil/model/drawing/drawing_layer.dart';
-import 'package:ai_pencil/utils/constants.dart';
+import 'package:ai_pencil/model/image/types.dart';
 import 'package:ai_pencil/widgets/drawing_canvas/sketch_painter.dart';
 import 'package:ai_pencil/model/drawing_canvas/sketch.dart';
 import 'package:flutter/foundation.dart';
@@ -34,7 +34,7 @@ class ImageHelper {
 
   static Future<String> imageToBase64String(ui.Image image) async {
     ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
-    Uint8List? pngBytes = byteData?.buffer.asUint8List();
+    PngImageBytes? pngBytes = byteData?.buffer.asUint8List();
     String base64Image = base64Encode(pngBytes!);
     return base64Image;
   }
@@ -51,21 +51,21 @@ class ImageHelper {
   }
 
   static void downloadCanvasImage(GlobalKey canvasGlobalKey) async {
-    Uint8List? pngBytes = await ImageHelper.getCanvasAsBytes(canvasGlobalKey);
+    PngImageBytes? pngBytes = await ImageHelper.getCanvasAsBytes(canvasGlobalKey);
     if (pngBytes != null) ImageHelper.saveFile(pngBytes, 'png');
   }
 
   static void downloadDrawingImage(
       List<DrawingLayer> layers, Size? size, Color? backgroundColor) async {
-    Uint8List? pngBytes =
-        await ImageHelper.getDrawingAsBytes(layers, size, backgroundColor);
+    PngImageBytes? pngBytes =
+        await ImageHelper.getDrawingAsPngBytes(layers, size, backgroundColor);
     if (pngBytes != null) ImageHelper.saveFile(pngBytes, 'png');
   }
 
-  static Future<Uint8List?> getDrawingAsBytes(
+  static Future<PngImageBytes?> getDrawingAsPngBytes(
       List<DrawingLayer> layers, Size? size, Color? backgroundColor) async {
     if (size == null) {
-      Logger("ImageHelper::getDrawingAsBytes")
+      Logger("ImageHelper::getDrawingAsPngBytes")
           .severe('Size is null, returning null');
       return null;
     }
@@ -77,21 +77,21 @@ class ImageHelper {
     return ret;
   }
 
-  static Future<Uint8List?> getCanvasAsBytes(GlobalKey canvasGlobalKey) async {
+  static Future<PngImageBytes?> getCanvasAsBytes(GlobalKey canvasGlobalKey) async {
     RenderRepaintBoundary boundary = canvasGlobalKey.currentContext
         ?.findRenderObject() as RenderRepaintBoundary;
     ui.Image image = await boundary.toImage();
     ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
-    Uint8List? pngBytes = byteData?.buffer.asUint8List();
+    PngImageBytes? pngBytes = byteData?.buffer.asUint8List();
     return pngBytes;
   }
 
-  static Future<Uint8List?> getPngBytesFromSketches(
+  static Future<PngImageBytes?> getPngBytesFromSketches(
       List<Sketch> sketches, Size size, Color? backgroundColor) async {
     ui.Image image =
         await _getImageFromSketches(sketches, size, backgroundColor);
     var pngByteData = await image.toByteData(format: ui.ImageByteFormat.png);
-    Uint8List? pngBytesList = pngByteData?.buffer.asUint8List();
+    PngImageBytes? pngBytesList = pngByteData?.buffer.asUint8List();
     return pngBytesList;
   }
 

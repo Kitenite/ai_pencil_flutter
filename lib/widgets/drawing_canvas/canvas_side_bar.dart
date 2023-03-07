@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:ui' as ui;
 
 import 'package:ai_pencil/model/drawing_canvas/undo_redo_stack.dart';
+import 'package:ai_pencil/model/image/types.dart';
 import 'package:ai_pencil/widgets/drawing_canvas/color_palette.dart';
 import 'package:ai_pencil/widgets/drawing_canvas/icon_box.dart';
 import 'package:file_picker/file_picker.dart';
@@ -279,7 +280,7 @@ class CanvasSideBar extends HookWidget {
                   child: TextButton(
                     child: const Text('Export PNG'),
                     onPressed: () async {
-                      Uint8List? pngBytes = await getBytes();
+                      PngImageBytes? pngBytes = await getBytes();
                       if (pngBytes != null) saveFile(pngBytes, 'png');
                     },
                   ),
@@ -289,7 +290,7 @@ class CanvasSideBar extends HookWidget {
                   child: TextButton(
                     child: const Text('Export JPEG'),
                     onPressed: () async {
-                      Uint8List? pngBytes = await getBytes();
+                      PngImageBytes? pngBytes = await getBytes();
                       if (pngBytes != null) saveFile(pngBytes, 'jpeg');
                     },
                   ),
@@ -353,12 +354,12 @@ class CanvasSideBar extends HookWidget {
     return completer.future;
   }
 
-  Future<Uint8List?> getBytes() async {
+  Future<PngImageBytes?> getBytes() async {
     RenderRepaintBoundary boundary = canvasGlobalKey.currentContext
         ?.findRenderObject() as RenderRepaintBoundary;
     ui.Image image = await boundary.toImage();
     ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
-    Uint8List? pngBytes = byteData?.buffer.asUint8List();
+    PngImageBytes? pngBytes = byteData?.buffer.asUint8List();
     return pngBytes;
   }
 }
