@@ -102,7 +102,7 @@ class DrawingCanvas extends HookWidget {
 
     // TODO: This is an hacky way to get real-time eraser working. Basically, we replace the last value of allSketches with currentSketch so that it triggers a repaint.
     if (drawingTools.drawingMode.value == DrawingMode.eraser) {
-      if (currentSketch.value != null) {
+      if (allSketches.value.isNotEmpty && currentSketch.value != null) {
         // For some reason, size is a good way to check if the last value of allSketches is the same as currentSketch.
         if (allSketches.value.last.size == currentSketch.value!.size) {
           allSketches.value.last = currentSketch.value!;
