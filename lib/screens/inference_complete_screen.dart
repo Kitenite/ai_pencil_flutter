@@ -7,7 +7,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class InferenceCompleteScreen extends HookWidget {
   final Uint8List imageBytes;
-  final Function(Uint8List) onAddImageAsLayer;
+  final Function(Uint8List, String? title) onAddImageAsLayer;
   final Function(Uint8List) onRetryInference;
 
   const InferenceCompleteScreen({
@@ -36,7 +36,7 @@ class InferenceCompleteScreen extends HookWidget {
     }
 
     void onAddToProjectButtonPressed() {
-      onAddImageAsLayer(imageBytes);
+      onAddImageAsLayer(imageBytes, textController.value.text);
       Navigator.pop(context);
     }
 
@@ -62,10 +62,9 @@ class InferenceCompleteScreen extends HookWidget {
         body: SingleChildScrollView(
           child: Column(
             children: [
-              const Padding(
-                padding: EdgeInsets.all(40.0),
-                // child: Image.memory(imageBytes),
-                child: Placeholder(),
+              Padding(
+                padding: const EdgeInsets.all(40.0),
+                child: Image.memory(imageBytes),
               ),
               const Padding(
                 padding: EdgeInsets.only(bottom: 10, top: 10),

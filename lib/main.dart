@@ -47,7 +47,7 @@ class MainApp extends StatelessWidget {
         Routes.INFERENCE_COMPLETE_SCREEN_ROUTE: (context) =>
             InferenceCompleteScreen(
               imageBytes: PngImageBytes.fromList([]),
-              onAddImageAsLayer: (imageBytes) {},
+              onAddImageAsLayer: (imageBytes, title) {},
               onRetryInference: (imageBytes) {},
             ),
 

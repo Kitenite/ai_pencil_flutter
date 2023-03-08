@@ -55,6 +55,7 @@ dependencies:
   image_cropper: ^3.0.1
   popover: ^0.2.8+1
   http: ^0.13.5
+  path_provider: ^2.0.13
 
 dev_dependencies:
   flutter_test:

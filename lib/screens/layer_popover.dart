@@ -9,7 +9,7 @@ class LayerPopover extends HookWidget {
   final ValueNotifier<int> activeLayerIndex;
   final Function(int, int) onMoveLayer;
   final Function(int) onSelectLayer;
-  final Function() onAddLayer;
+  final Function(String? title) onAddLayer;
   final Function(int) onRemoveLayer;
   final Function(int, String) onRenameLayer;
   final Function(int) onToggleLayerVisibility;
@@ -158,7 +158,9 @@ class LayerPopover extends HookWidget {
                       color: Colors.white,
                       size: 20,
                     ),
-                    onPressed: onAddLayer,
+                    onPressed: () {
+                      onAddLayer(null);
+                    },
                   ),
                 ],
               ),

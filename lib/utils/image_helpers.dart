@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:logging/logging.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:universal_html/html.dart' as html;
 import 'package:file_saver/file_saver.dart';
 import 'package:image_picker/image_picker.dart';
@@ -31,12 +32,6 @@ class ImageHelper {
       Color backgroundColor, Function(PngImageBytes?) callback) {
     getPngBytesFromLayers(layers, size, backgroundColor)
         .then((imageBytes) => callback(imageBytes));
-    // RenderRepaintBoundary boundary = canvasGlobalKey.currentContext
-    //     ?.findRenderObject() as RenderRepaintBoundary;
-    // ui.Image image = boundary.toImageSync();
-    // image
-    //     .toByteData(format: ui.ImageByteFormat.png)
-    //     .then((byteData) => callback(byteData?.buffer.asUint8List()));
   }
 
   static Future<String> bytesToBase64String(PngImageBytes bytes) async {
@@ -61,12 +56,6 @@ class ImageHelper {
   static Uint8List base64StringToBytes(String base64String) {
     return base64Decode(base64String);
   }
-
-  // static void downloadCanvasImage(GlobalKey canvasGlobalKey) async {
-  //   PngImageBytes? pngBytes =
-  //       await ImageHelper.getCanvasAsBytes(canvasGlobalKey);
-  //   if (pngBytes != null) ImageHelper.saveFile(pngBytes, 'png');
-  // }
 
   static void downloadDrawingImage(
     List<DrawingLayer> layers,
@@ -103,15 +92,15 @@ class ImageHelper {
     return ret;
   }
 
-  static Future<PngImageBytes?> getCanvasAsBytes(
-      GlobalKey canvasGlobalKey) async {
-    RenderRepaintBoundary boundary = canvasGlobalKey.currentContext
-        ?.findRenderObject() as RenderRepaintBoundary;
-    ui.Image image = await boundary.toImage();
-    ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
-    PngImageBytes? pngBytes = byteData?.buffer.asUint8List();
-    return pngBytes;
-  }
+  // static Future<PngImageBytes?> getCanvasAsBytes(
+  //     GlobalKey canvasGlobalKey) async {
+  //   RenderRepaintBoundary boundary = canvasGlobalKey.currentContext
+  //       ?.findRenderObject() as RenderRepaintBoundary;
+  //   ui.Image image = await boundary.toImage();
+  //   ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+  //   PngImageBytes? pngBytes = byteData?.buffer.asUint8List();
+  //   return pngBytes;
+  // }
 
   static Future<PngImageBytes?> getPngBytesFromSketches(List<Sketch> sketches,
       Size size, Color? backgroundColor, PngImageBytes? backgroundImage) async {
@@ -240,6 +229,30 @@ class ImageHelper {
     }
 
     return completer.future;
+  }
+
+  static Future<PngImageBytes?> cropImageFromBytes(
+    PngImageBytes imageBytes,
+    double width,
+    double height,
+    BuildContext context,
+  ) async {
+    // Create temp image file
+    final tempDir = await getTemporaryDirectory();
+    File imageFile = await File('${tempDir.path}/image.png').create();
+    imageFile.writeAsBytesSync(imageBytes);
+
+    CroppedFile? croppedImage = await cropImage(
+      imageFile,
+      width,
+      height,
+      context,
+    );
+
+    if (croppedImage == null) {
+      return imageBytes;
+    }
+    return await croppedImage.readAsBytes();
   }
 
   static Future<CroppedFile?> cropImage(

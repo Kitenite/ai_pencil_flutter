@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
@@ -23,7 +24,10 @@ import 'package:ai_pencil/model/drawing_canvas/drawing_mode.dart';
 import 'package:ai_pencil/model/drawing_canvas/sketch.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:logging/logging.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DrawScreen extends HookWidget {
@@ -165,12 +169,12 @@ class DrawScreen extends HookWidget {
       layers.value = layers.value.toList(); // notify listeners of change
     }
 
-    void addLayer() {
+    void addLayer(String? title) {
       var newLayerIndex = layers.value.length;
       layers.value = [
         ...layers.value,
         DrawingLayer(
-          title: "Layer ${newLayerIndex + 1}",
+          title: title ?? "Layer ${newLayerIndex + 1}",
         )
       ];
       saveThenSelectLayer(newLayerIndex);
@@ -190,10 +194,23 @@ class DrawScreen extends HookWidget {
       layers.value = layers.value.toList(); // notify listeners of change
     }
 
-    void addImageAsLayer(Uint8List imageBytes) {
-      addLayer();
+    void addImageAsLayer(Uint8List imageBytes, String? title) {
+      addLayer(title);
       layers.value[activeLayerIndex.value].backgroundImage = imageBytes;
       updateBackgroundImage();
+      saveActiveLayer();
+    }
+
+    void cropThenAddImageAsLayer(Uint8List imageBytes, String? title) async {
+      PngImageBytes? croppedImage = await ImageHelper.cropImageFromBytes(
+          imageBytes, project.aspectWidth, project.aspectHeight, context);
+      if (croppedImage != null) {
+        addImageAsLayer(croppedImage, title);
+      } else {
+        Logger("DrawScreen::cropThenAddImageAsLayer")
+            .warning("Error cropping image, using original");
+        addImageAsLayer(imageBytes, title);
+      }
     }
 
     void updateBackgroundColor(Color color) {
@@ -208,7 +225,6 @@ class DrawScreen extends HookWidget {
       }
     }
 
-    // TODO: add rename button to layer tile
     void renameLayer(int idx, String title) {
       layers.value[idx].title = title;
       layers.value = layers.value.toList(); // notify listeners of change
@@ -223,7 +239,7 @@ class DrawScreen extends HookWidget {
           MaterialPageRoute(
             builder: (context) => InferenceCompleteScreen(
               imageBytes: imageBytes,
-              onAddImageAsLayer: addImageAsLayer,
+              onAddImageAsLayer: cropThenAddImageAsLayer,
               onRetryInference: (val) {},
             ),
           ),
@@ -312,7 +328,7 @@ class DrawScreen extends HookWidget {
         project.aspectHeight,
         context,
       );
-      addImageAsLayer(imageBytes);
+      addImageAsLayer(imageBytes, "Imported image");
     }
 
     return WillPopScope(
