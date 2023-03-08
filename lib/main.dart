@@ -44,7 +44,11 @@ class MainApp extends StatelessWidget {
       routes: {
         Routes.SELECT_SCREEN_ROUTE: (context) => const SelectProjectScreen(),
         Routes.INFERENCE_COMPLETE_SCREEN_ROUTE: (context) =>
-            const InferenceCompleteScreen(),
+            InferenceCompleteScreen(
+              imageBytes: Uint8List.fromList([]),
+              onAddImageAsLayer: (imageBytes) {},
+              onRetryInference: (imageBytes) {},
+            ),
 
         // Routes.DRAW_SCREEN_ROUTE: (context) => const DrawScreen(),
         // Routes.INFERENCE_SCREEN_ROUTE: (context) => const InferenceScreen()

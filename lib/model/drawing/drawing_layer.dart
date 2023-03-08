@@ -18,12 +18,14 @@ class DrawingLayer {
   // Optional
   List<Sketch> redoStack;
   bool isVisible;
+  PngImageBytes? backgroundImage;
 
   DrawingLayer({
     this.title = "Layer 1",
     this.sketches = const [],
     this.redoStack = const [],
     this.isVisible = true,
+    this.backgroundImage,
   });
 
   PngImageBytes getImagePngBytes() {

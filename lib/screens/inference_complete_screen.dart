@@ -1,22 +1,63 @@
+import 'package:ai_pencil/utils/dialog_helper.dart';
+import 'package:ai_pencil/utils/image_helpers.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class InferenceCompleteScreen extends HookWidget {
-  // final Uint8List imageBytes;
+  final Uint8List imageBytes;
+  final Function(Uint8List) onAddImageAsLayer;
+  final Function(Uint8List) onRetryInference;
+
   const InferenceCompleteScreen({
     Key? key,
-    // required this.imageBytes,
+    required this.imageBytes,
+    required this.onAddImageAsLayer,
+    required this.onRetryInference,
   }) : super(key: key);
   @override
   Widget build(BuildContext context) {
     final textController = useTextEditingController();
+
+    void onBackButtonPressed() {
+      DialogHelper.showConfirmDialog(
+          context,
+          "Discard drawing?",
+          "This will discard your drawing and leave the page.",
+          "Discard",
+          "Cancel", () {
+        Navigator.pop(context);
+      });
+    }
+
+    void onDownloadImageButtonPressed() {
+      ImageHelper.saveFile(imageBytes, ".png");
+    }
+
+    void onAddToProjectButtonPressed() {
+      onAddImageAsLayer(imageBytes);
+      Navigator.pop(context);
+    }
+
+    void onRetryInferenceButtonPressed() {
+      DialogHelper.showConfirmDialog(
+          context,
+          "Retry generation?",
+          "This will discard your drawing and generate a new one.",
+          "Confirm",
+          "Cancel", () {
+        // TODO: Retry navigation
+        onRetryInference(imageBytes);
+        Navigator.pop(context);
+      });
+    }
+
     return Scaffold(
         appBar: AppBar(
-          leading: BackButton(onPressed: () {
-            // TODO: Alert discard image
-            Navigator.pop(context);
-          }),
+          leading: BackButton(
+            onPressed: onBackButtonPressed,
+          ),
         ),
         body: SingleChildScrollView(
           child: Column(
@@ -59,9 +100,7 @@ class InferenceCompleteScreen extends HookWidget {
                         FontAwesomeIcons.rotateLeft,
                         color: Colors.white,
                       ),
-                      onPressed: () {
-                        // TODO: Retry image generation
-                      },
+                      onPressed: onRetryInferenceButtonPressed,
                     ),
                     const SizedBox(width: 20),
                     IconButton(
@@ -69,9 +108,7 @@ class InferenceCompleteScreen extends HookWidget {
                         FontAwesomeIcons.trash,
                         color: Colors.white,
                       ),
-                      onPressed: () {
-                        // TODO: Delete image and return
-                      },
+                      onPressed: onBackButtonPressed,
                     ),
                     const SizedBox(width: 20),
                     IconButton(
@@ -79,17 +116,13 @@ class InferenceCompleteScreen extends HookWidget {
                         FontAwesomeIcons.download,
                         color: Colors.white,
                       ),
-                      onPressed: () {
-                        // TODO: Download image to device
-                      },
+                      onPressed: onDownloadImageButtonPressed,
                     ),
                   ],
                 ),
               ),
               OutlinedButton(
-                onPressed: () {
-                  // TODO: Add to image layer
-                },
+                onPressed: onAddToProjectButtonPressed,
                 style: OutlinedButton.styleFrom(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15),

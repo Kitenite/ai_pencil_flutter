@@ -51,7 +51,8 @@ class ImageHelper {
   }
 
   static void downloadCanvasImage(GlobalKey canvasGlobalKey) async {
-    PngImageBytes? pngBytes = await ImageHelper.getCanvasAsBytes(canvasGlobalKey);
+    PngImageBytes? pngBytes =
+        await ImageHelper.getCanvasAsBytes(canvasGlobalKey);
     if (pngBytes != null) ImageHelper.saveFile(pngBytes, 'png');
   }
 
@@ -77,7 +78,8 @@ class ImageHelper {
     return ret;
   }
 
-  static Future<PngImageBytes?> getCanvasAsBytes(GlobalKey canvasGlobalKey) async {
+  static Future<PngImageBytes?> getCanvasAsBytes(
+      GlobalKey canvasGlobalKey) async {
     RenderRepaintBoundary boundary = canvasGlobalKey.currentContext
         ?.findRenderObject() as RenderRepaintBoundary;
     ui.Image image = await boundary.toImage();
@@ -131,12 +133,12 @@ class ImageHelper {
     }
   }
 
-  static Future<ui.Image> getImageFromDevice(
+  static Future<Uint8List> getImageFromDevice(
     double width,
     double height,
     BuildContext context,
   ) async {
-    final completer = Completer<ui.Image>();
+    final completer = Completer<Uint8List>();
     if (!kIsWeb && !Platform.isAndroid && !Platform.isIOS) {
       final file = await FilePicker.platform.pickFiles(
         type: FileType.image,
@@ -148,7 +150,7 @@ class ImageHelper {
             ? file.files.first.bytes
             : File(filePath).readAsBytesSync();
         if (bytes != null) {
-          completer.complete(decodeImageFromList(bytes));
+          completer.complete(bytes);
         } else {
           completer.completeError('No image selected');
         }
@@ -164,9 +166,7 @@ class ImageHelper {
           image = XFile(croppedImage.path);
         }
         final bytes = await image.readAsBytes();
-        completer.complete(
-          decodeImageFromList(bytes),
-        );
+        completer.complete(bytes);
       } else {
         completer.completeError('No image selected');
       }

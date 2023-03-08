@@ -35,7 +35,7 @@ class DrawScreen extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: Add lines and shapes tool
+    // TODO: Add lines and shapes tool?
     // TODO: Eraser undo takes 2 clicks
 
     final drawingTools = DrawingTools();
@@ -63,42 +63,17 @@ class DrawScreen extends HookWidget {
       currentSketchNotifier: currentSketch,
     ));
 
-    final animationController = useAnimationController(
-      duration: const Duration(milliseconds: 150),
-      initialValue: 1,
-    );
-
     final isGeneratingImage = useState(false);
 
-    void onImageGenerationStarted(Future<Uint8List> imageBytesFuture) {
-      isGeneratingImage.value = true;
-      imageBytesFuture.then((imageBytes) {
-        isGeneratingImage.value = false;
-
-        // TODO: Handle this later
-        //   Navigator.push(
-        // context,
-        // MaterialPageRoute(
-        //   builder: (context) => InferenceCompleteScreen(
-        //     imageBytes: imageBytes,
-        //   ),
-        // );
-
-        // showModalBottomSheet(
-        //   context: context,
-        //   builder: (BuildContext context) {
-        //     return SizedBox(
-        //       height: 300,
-        //       child: Center(
-        //         child: Image.memory(imageBytes),
-        //       ),
-        //     );
-        //   },
-        // );
-      }).catchError((error) {
-        isGeneratingImage.value = false;
-        Logger("DrawScreen").severe("Error generating image: $error");
-      });
+    void updateBackgroundImage() async {
+      Uint8List? activeBackgroundImage =
+          layers.value[activeLayerIndex.value].backgroundImage;
+      if (activeBackgroundImage != null) {
+        backgroundImage.value =
+            await decodeImageFromList(activeBackgroundImage);
+      } else {
+        backgroundImage.value = null;
+      }
     }
 
     void saveActiveLayer() {
@@ -150,6 +125,7 @@ class DrawScreen extends HookWidget {
       allSketches.value = layers.value[idx].sketches;
       layers.value[activeLayerIndex.value].isVisible = true;
       layers.value = layers.value.toList(); // notify listeners of change
+      updateBackgroundImage();
     }
 
     void saveThenSelectLayer(int idx) {
@@ -199,6 +175,12 @@ class DrawScreen extends HookWidget {
         selectLayer(0);
       }
       layers.value = layers.value.toList(); // notify listeners of change
+    }
+
+    void addImageAsLayer(Uint8List imageBytes) {
+      addLayer();
+      layers.value[activeLayerIndex.value].backgroundImage = imageBytes;
+      updateBackgroundImage();
     }
 
     void updateBackgroundColor(Color color) {
@@ -255,6 +237,26 @@ class DrawScreen extends HookWidget {
           ],
         ),
       );
+    }
+
+    void onImageGenerationStarted(Future<Uint8List> imageBytesFuture) {
+      isGeneratingImage.value = true;
+      imageBytesFuture.then((imageBytes) {
+        isGeneratingImage.value = false;
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => InferenceCompleteScreen(
+              imageBytes: imageBytes,
+              onAddImageAsLayer: addImageAsLayer,
+              onRetryInference: (val) {},
+            ),
+          ),
+        );
+      }).catchError((error) {
+        isGeneratingImage.value = false;
+        Logger("DrawScreen").severe("Error generating image: $error");
+      });
     }
 
     void navigateToInferenceScreen() {
@@ -422,11 +424,12 @@ class DrawScreen extends HookWidget {
                 iconData: FontAwesomeIcons.image,
                 selected: true,
                 onTap: () async {
-                  backgroundImage.value = await ImageHelper.getImageFromDevice(
+                  Uint8List imageBytes = await ImageHelper.getImageFromDevice(
                     project.aspectWidth,
                     project.aspectHeight,
                     context,
                   );
+                  addImageAsLayer(imageBytes);
                 },
                 tooltip: 'Add image',
               ),
@@ -504,7 +507,6 @@ class DrawScreen extends HookWidget {
                                   width: MediaQuery.of(context).size.width,
                                   height: MediaQuery.of(context).size.height,
                                   drawingTools: drawingTools,
-                                  sideBarController: animationController,
                                   currentSketch: currentSketch,
                                   allSketches: allSketches,
                                   canvasGlobalKey: canvasGlobalKey,

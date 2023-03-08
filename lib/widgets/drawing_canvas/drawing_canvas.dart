@@ -13,7 +13,6 @@ class DrawingCanvas extends HookWidget {
   final double width;
   final DrawingTools drawingTools;
   final ValueNotifier<ui.Image?> backgroundImage;
-  final AnimationController sideBarController;
   final ValueNotifier<Sketch?> currentSketch;
   final ValueNotifier<List<Sketch>> allSketches;
   final GlobalKey canvasGlobalKey;
@@ -26,7 +25,6 @@ class DrawingCanvas extends HookWidget {
     required this.height,
     required this.width,
     required this.drawingTools,
-    required this.sideBarController,
     required this.currentSketch,
     required this.allSketches,
     required this.canvasGlobalKey,
