@@ -4,8 +4,8 @@ import 'dart:ui' as ui;
 
 import 'package:ai_pencil/model/drawing_canvas/undo_redo_stack.dart';
 import 'package:ai_pencil/model/image/types.dart';
-import 'package:ai_pencil/widgets/drawing_canvas/color_palette.dart';
-import 'package:ai_pencil/widgets/drawing_canvas/icon_box.dart';
+import 'package:ai_pencil/widgets/draw_screen/color_palette.dart';
+import 'package:ai_pencil/widgets/draw_screen/icon_box.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:file_saver/file_saver.dart';
 import 'package:flutter/foundation.dart';
