@@ -27,7 +27,7 @@ class ImageHelper {
     return drawingSize;
   }
 
-  static Future<String> bytesToBase64String(Uint8List bytes) async {
+  static Future<String> bytesToBase64String(PngImageBytes bytes) async {
     String base64Image = base64Encode(bytes);
     return base64Image;
   }
@@ -57,14 +57,26 @@ class ImageHelper {
   }
 
   static void downloadDrawingImage(
-      List<DrawingLayer> layers, Size? size, Color? backgroundColor) async {
-    PngImageBytes? pngBytes =
-        await ImageHelper.getDrawingAsPngBytes(layers, size, backgroundColor);
+    List<DrawingLayer> layers,
+    Size? size,
+    Color? backgroundColor,
+    PngImageBytes? backgroundImage,
+  ) async {
+    PngImageBytes? pngBytes = await ImageHelper.getDrawingAsPngBytes(
+      layers,
+      size,
+      backgroundColor,
+      backgroundImage,
+    );
     if (pngBytes != null) ImageHelper.saveFile(pngBytes, 'png');
   }
 
   static Future<PngImageBytes?> getDrawingAsPngBytes(
-      List<DrawingLayer> layers, Size? size, Color? backgroundColor) async {
+    List<DrawingLayer> layers,
+    Size? size,
+    Color? backgroundColor,
+    PngImageBytes? backgroundImage,
+  ) async {
     if (size == null) {
       Logger("ImageHelper::getDrawingAsPngBytes")
           .severe('Size is null, returning null');
@@ -74,7 +86,8 @@ class ImageHelper {
     for (DrawingLayer layer in layers) {
       allSketches.addAll(layer.sketches);
     }
-    var ret = await getPngBytesFromSketches(allSketches, size, backgroundColor);
+    var ret = await getPngBytesFromSketches(
+        allSketches, size, backgroundColor, backgroundImage);
     return ret;
   }
 
@@ -88,17 +101,17 @@ class ImageHelper {
     return pngBytes;
   }
 
-  static Future<PngImageBytes?> getPngBytesFromSketches(
-      List<Sketch> sketches, Size size, Color? backgroundColor) async {
-    ui.Image image =
-        await _getImageFromSketches(sketches, size, backgroundColor);
+  static Future<PngImageBytes?> getPngBytesFromSketches(List<Sketch> sketches,
+      Size size, Color? backgroundColor, PngImageBytes? backgroundImage) async {
+    ui.Image image = await _getImageFromSketches(
+        sketches, size, backgroundColor, backgroundImage);
     var pngByteData = await image.toByteData(format: ui.ImageByteFormat.png);
     PngImageBytes? pngBytesList = pngByteData?.buffer.asUint8List();
     return pngBytesList;
   }
 
-  static Future<ui.Image> _getImageFromSketches(
-      List<Sketch> sketches, Size size, Color? backgroundColor) async {
+  static Future<ui.Image> _getImageFromSketches(List<Sketch> sketches,
+      Size size, Color? backgroundColor, PngImageBytes? backgroundImage) async {
     // Create a new canvas with a PictureRecorder, paint it with all sketches,
     // and then return the image
     ui.PictureRecorder recorder = ui.PictureRecorder();
@@ -108,7 +121,15 @@ class ImageHelper {
       canvas.drawColor(backgroundColor, BlendMode.src);
     }
 
-    SketchPainter painter = SketchPainter(sketches: sketches);
+    SketchPainter painter;
+    if (backgroundImage != null) {
+      painter = SketchPainter(
+          sketches: sketches,
+          backgroundImage: await decodeImageFromList(backgroundImage));
+    } else {
+      painter = SketchPainter(sketches: sketches);
+    }
+
     painter.paint(canvas, Size(size.width, size.height));
     return recorder
         .endRecording()

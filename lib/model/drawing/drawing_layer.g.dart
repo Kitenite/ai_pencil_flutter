@@ -17,6 +17,8 @@ DrawingLayer _$DrawingLayerFromJson(Map<String, dynamic> json) => DrawingLayer(
               .toList() ??
           const [],
       isVisible: json['isVisible'] as bool? ?? true,
+      backgroundImage: const PngImageBytesConverterNullable()
+          .fromJson(json['backgroundImage'] as List?),
     )..image = const PngImageBytesConverter().fromJson(json['image'] as List);
 
 Map<String, dynamic> _$DrawingLayerToJson(DrawingLayer instance) =>
@@ -26,4 +28,6 @@ Map<String, dynamic> _$DrawingLayerToJson(DrawingLayer instance) =>
       'sketches': instance.sketches,
       'redoStack': instance.redoStack,
       'isVisible': instance.isVisible,
+      'backgroundImage': const PngImageBytesConverterNullable()
+          .toJson(instance.backgroundImage),
     };

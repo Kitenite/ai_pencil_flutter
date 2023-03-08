@@ -67,17 +67,6 @@ class DrawScreen extends HookWidget {
 
     final isGeneratingImage = useState(false);
 
-    void updateBackgroundImage() async {
-      Uint8List? activeBackgroundImage =
-          layers.value[activeLayerIndex.value].backgroundImage;
-      if (activeBackgroundImage != null) {
-        backgroundImage.value =
-            await decodeImageFromList(activeBackgroundImage);
-      } else {
-        backgroundImage.value = null;
-      }
-    }
-
     void saveActiveLayer() {
       if (activeLayerIndex.value >= layers.value.length) {
         return;
@@ -89,6 +78,22 @@ class DrawScreen extends HookWidget {
       layers.value = layers.value.toList(); // notify listeners of change
     }
 
+    void updateBackgroundImage() async {
+      Uint8List? activeBackgroundImage =
+          layers.value[activeLayerIndex.value].backgroundImage;
+      if (activeBackgroundImage != null) {
+        backgroundImage.value =
+            await decodeImageFromList(activeBackgroundImage);
+      } else {
+        backgroundImage.value = null;
+      }
+      saveActiveLayer();
+    }
+
+    useEffect(() {
+      updateBackgroundImage();
+    }, []);
+
     Future<PngImageBytes?> getThumbnailImageBytes() {
       Size? drawingSize = ImageHelper.getDrawingSize(canvasGlobalKey);
       if (drawingSize == null) {
@@ -98,7 +103,11 @@ class DrawScreen extends HookWidget {
             context, 'Something went wrong, please try again');
       }
       return ImageHelper.getDrawingAsPngBytes(
-          layers.value, drawingSize, backgroundColor.value);
+        layers.value,
+        drawingSize,
+        backgroundColor.value,
+        layers.value[activeLayerIndex.value].backgroundImage,
+      );
     }
 
     Future<void> persistProject() async {
@@ -329,6 +338,7 @@ class DrawScreen extends HookWidget {
                     layers.value,
                     ImageHelper.getDrawingSize(canvasGlobalKey),
                     backgroundColor.value,
+                    layers.value[activeLayerIndex.value].backgroundImage,
                   );
                 },
                 tooltip: 'Download image',

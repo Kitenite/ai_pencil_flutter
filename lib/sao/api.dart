@@ -3,19 +3,19 @@ import 'dart:convert';
 
 import 'package:ai_pencil/model/api/text_to_text_request.dart';
 import 'package:ai_pencil/model/api/text_to_text_response.dart';
+import 'package:ai_pencil/model/image/types.dart';
 import 'package:ai_pencil/utils/constants.dart';
 import 'package:ai_pencil/model/api/generate_image_request.dart';
 import 'package:ai_pencil/model/api/generate_image_response.dart';
 import 'package:ai_pencil/model/drawing/advanced_options.dart';
 import 'package:ai_pencil/utils/image_helpers.dart';
-import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart';
 
 class ApiDataAccessor {
-  static Future<Uint8List> generateImage(
+  static Future<PngImageBytes> generateImage(
     String prompt,
-    Uint8List? image,
+    PngImageBytes? image,
   ) async {
     var url = Uri.https(Apis.BETA_BASE_API, Apis.BETA_GENERATE_IMAGE_ROUTE);
     const headers = {

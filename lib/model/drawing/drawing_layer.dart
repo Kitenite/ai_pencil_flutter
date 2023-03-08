@@ -18,6 +18,8 @@ class DrawingLayer {
   // Optional
   List<Sketch> redoStack;
   bool isVisible;
+
+  @PngImageBytesConverterNullable()
   PngImageBytes? backgroundImage;
 
   DrawingLayer({
@@ -34,7 +36,8 @@ class DrawingLayer {
 
   void updateImage(Size? size) {
     if (size != null) {
-      ImageHelper.getPngBytesFromSketches(sketches, size, null).then((value) {
+      ImageHelper.getPngBytesFromSketches(sketches, size, null, backgroundImage)
+          .then((value) {
         image = value!;
       });
     }

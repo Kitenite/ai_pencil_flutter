@@ -1,3 +1,4 @@
+import 'package:ai_pencil/model/image/types.dart';
 import 'package:ai_pencil/screens/inference_complete_screen.dart';
 import 'package:ai_pencil/utils/constants.dart';
 import 'package:ai_pencil/screens/select_screen.dart';
@@ -45,7 +46,7 @@ class MainApp extends StatelessWidget {
         Routes.SELECT_SCREEN_ROUTE: (context) => const SelectProjectScreen(),
         Routes.INFERENCE_COMPLETE_SCREEN_ROUTE: (context) =>
             InferenceCompleteScreen(
-              imageBytes: Uint8List.fromList([]),
+              imageBytes: PngImageBytes.fromList([]),
               onAddImageAsLayer: (imageBytes) {},
               onRetryInference: (imageBytes) {},
             ),
