@@ -27,6 +27,18 @@ class ImageHelper {
     return drawingSize;
   }
 
+  static void getCanvasScreenshot(List<DrawingLayer> layers, Size size,
+      Color backgroundColor, Function(PngImageBytes?) callback) {
+    getPngBytesFromLayers(layers, size, backgroundColor)
+        .then((imageBytes) => callback(imageBytes));
+    // RenderRepaintBoundary boundary = canvasGlobalKey.currentContext
+    //     ?.findRenderObject() as RenderRepaintBoundary;
+    // ui.Image image = boundary.toImageSync();
+    // image
+    //     .toByteData(format: ui.ImageByteFormat.png)
+    //     .then((byteData) => callback(byteData?.buffer.asUint8List()));
+  }
+
   static Future<String> bytesToBase64String(PngImageBytes bytes) async {
     String base64Image = base64Encode(bytes);
     return base64Image;
@@ -50,11 +62,11 @@ class ImageHelper {
     return base64Decode(base64String);
   }
 
-  static void downloadCanvasImage(GlobalKey canvasGlobalKey) async {
-    PngImageBytes? pngBytes =
-        await ImageHelper.getCanvasAsBytes(canvasGlobalKey);
-    if (pngBytes != null) ImageHelper.saveFile(pngBytes, 'png');
-  }
+  // static void downloadCanvasImage(GlobalKey canvasGlobalKey) async {
+  //   PngImageBytes? pngBytes =
+  //       await ImageHelper.getCanvasAsBytes(canvasGlobalKey);
+  //   if (pngBytes != null) ImageHelper.saveFile(pngBytes, 'png');
+  // }
 
   static void downloadDrawingImage(
     List<DrawingLayer> layers,
@@ -134,6 +146,40 @@ class ImageHelper {
     return recorder
         .endRecording()
         .toImage(size.width.floor(), size.height.floor());
+  }
+
+  static Future<PngImageBytes?> getPngBytesFromLayers(
+      List<DrawingLayer> layers, Size size, Color? backgroundColor) async {
+    // Create a new canvas with a PictureRecorder, paint it with all sketches,
+    // and then return the image
+    ui.PictureRecorder recorder = ui.PictureRecorder();
+    Canvas canvas = Canvas(recorder);
+
+    if (backgroundColor != null) {
+      canvas.drawColor(backgroundColor, BlendMode.src);
+    }
+
+    SketchPainter painter;
+
+    for (DrawingLayer layer in layers) {
+      if (layer.backgroundImage != null) {
+        painter = SketchPainter(
+            sketches: layer.sketches,
+            backgroundImage: await decodeImageFromList(layer.backgroundImage!));
+      } else {
+        painter = SketchPainter(sketches: layer.sketches);
+      }
+
+      painter.paint(canvas, Size(size.width, size.height));
+    }
+
+    ui.Image image = await recorder
+        .endRecording()
+        .toImage(size.width.floor(), size.height.floor());
+
+    var pngByteData = await image.toByteData(format: ui.ImageByteFormat.png);
+    PngImageBytes? pngBytesList = pngByteData?.buffer.asUint8List();
+    return pngBytesList;
   }
 
   static void saveFile(Uint8List bytes, String extension) async {

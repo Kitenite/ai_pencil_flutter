@@ -94,21 +94,23 @@ class DrawScreen extends HookWidget {
       updateBackgroundImage();
     }, []);
 
-    Future<PngImageBytes?> getThumbnailImageBytes() {
-      Size? drawingSize = ImageHelper.getDrawingSize(canvasGlobalKey);
-      if (drawingSize == null) {
-        Logger("DrawScreen::getThumbnailImage")
-            .severe("Error getting drawing size");
-        SnackBarHelper.showSnackBar(
-            context, 'Something went wrong, please try again');
-      }
-      return ImageHelper.getDrawingAsPngBytes(
-        layers.value,
-        drawingSize,
-        backgroundColor.value,
-        layers.value[activeLayerIndex.value].backgroundImage,
-      );
-    }
+    // Future<PngImageBytes?> getThumbnailImageBytes() {
+    //   // TODO: Export all layers with background image
+
+    //   Size? drawingSize = ImageHelper.getDrawingSize(canvasGlobalKey);
+    //   if (drawingSize == null) {
+    //     Logger("DrawScreen::getThumbnailImage")
+    //         .severe("Error getting drawing size");
+    //     SnackBarHelper.showSnackBar(
+    //         context, 'Something went wrong, please try again');
+    //   }
+    //   return ImageHelper.getDrawingAsPngBytes(
+    //     layers.value,
+    //     drawingSize,
+    //     backgroundColor.value,
+    //     layers.value[activeLayerIndex.value].backgroundImage,
+    //   );
+    // }
 
     Future<void> persistProject() async {
       // TODO: this logic should be a callback passed by select project screen
@@ -233,7 +235,10 @@ class DrawScreen extends HookWidget {
     }
 
     void navigateToInferenceScreen() {
-      getThumbnailImageBytes().then((imageByte) {
+      ImageHelper.getCanvasScreenshot(
+          layers.value,
+          ImageHelper.getDrawingSize(canvasGlobalKey)!,
+          backgroundColor.value, (imageByte) {
         project.thumbnailImageBytes = imageByte;
         persistProject();
         Navigator.push(
@@ -315,7 +320,10 @@ class DrawScreen extends HookWidget {
       child: Scaffold(
         appBar: AppBar(
           leading: BackButton(onPressed: () {
-            getThumbnailImageBytes().then((imageByte) {
+            ImageHelper.getCanvasScreenshot(
+                layers.value,
+                ImageHelper.getDrawingSize(canvasGlobalKey)!,
+                backgroundColor.value, (imageByte) {
               project.thumbnailImageBytes = imageByte;
               persistProject();
               Navigator.pop(context);
