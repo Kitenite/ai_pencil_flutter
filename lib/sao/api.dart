@@ -28,7 +28,8 @@ class ApiDataAccessor {
     );
 
     if (image != null) {
-      requestBody.image = await ImageHelper.bytesToBase64String(image);
+      PngImageBytes resized = ImageHelper.resizeImageToMax(image, 64);
+      requestBody.image = await ImageHelper.bytesToBase64String(resized);
     }
 
     final response = await http.post(

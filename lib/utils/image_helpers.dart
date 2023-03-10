@@ -9,7 +9,6 @@ import 'package:ai_pencil/widgets/drawing_canvas/sketch_painter.dart';
 import 'package:ai_pencil/model/drawing_canvas/sketch.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:logging/logging.dart';
 import 'package:path_provider/path_provider.dart';
@@ -17,8 +16,31 @@ import 'package:universal_html/html.dart' as html;
 import 'package:file_saver/file_saver.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:image/image.dart' as IMG;
 
 class ImageHelper {
+  static PngImageBytes resizeImageToMax(PngImageBytes image, int multiple) {
+    PngImageBytes resizedData = image;
+    IMG.Image? decoded = IMG.decodeImage(image);
+    if (decoded == null) {
+      Logger("ImageHelper::resizeImage").warning("Decoded image is null");
+      return resizedData;
+    }
+
+    // Adhere to multiple
+    int newWidth = (decoded.width / multiple).ceil() * multiple;
+    int newHeight = (decoded.height / multiple).ceil() * multiple;
+
+    IMG.Image resized = IMG.copyResize(
+      decoded,
+      width: newWidth,
+      height: newHeight,
+    );
+
+    resizedData = IMG.encodePng(resized) as PngImageBytes;
+    return resizedData;
+  }
+
   static Size? getDrawingSize(GlobalKey canvasGlobalKey) {
     Size? drawingSize = canvasGlobalKey.currentContext?.size;
     if (drawingSize == null) {

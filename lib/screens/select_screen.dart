@@ -253,7 +253,7 @@ class _SelectProjectScreenState extends State<SelectProjectScreen> {
         PopupMenuItem<DrawingAspectRatio>(
           value: DrawingAspectRatio.screenSize,
           child: Text(
-              'Screen size (${MediaQuery.of(context).size.width}x${MediaQuery.of(context).size.height})'),
+              'Screen size (${MediaQuery.of(context).size.width.round()}x${MediaQuery.of(context).size.height.round()})'),
         ),
       ],
     );
