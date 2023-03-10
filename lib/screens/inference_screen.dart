@@ -8,7 +8,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class InferenceScreen extends HookWidget {
   final DrawingProject project;
-  final Function(Future<Uint8List>) onImageGenerationStarted;
+  final Function(Future<Uint8List>, String) onImageGenerationStarted;
 
   const InferenceScreen({
     super.key,
@@ -25,7 +25,7 @@ class InferenceScreen extends HookWidget {
         promptTextController.value.text,
         useImage ? project.thumbnailImageBytes : null,
       );
-      onImageGenerationStarted(imageBytes);
+      onImageGenerationStarted(imageBytes, promptTextController.value.text);
       Navigator.pop(context);
     }
 

@@ -1,6 +1,7 @@
 // Helper class for making http call to an image to image api
 import 'dart:convert';
 
+import 'package:ai_pencil/model/api/generate_image_error_response.dart';
 import 'package:ai_pencil/model/api/text_to_text_request.dart';
 import 'package:ai_pencil/model/api/text_to_text_response.dart';
 import 'package:ai_pencil/model/image/types.dart';
@@ -43,9 +44,11 @@ class ApiDataAccessor {
           GenerateImageResponse.fromJson(jsonDecode(response.body));
       return ImageHelper.base64StringToBytes(responseObject.image);
     } else {
-      Logger("ApiDataAccessor").severe(response.body);
+      GenerateImageErrorResponse responseObject =
+          GenerateImageErrorResponse.fromJson(jsonDecode(response.body));
+      Logger("ApiDataAccessor").severe(responseObject.error);
       throw Exception(
-        'ApiDataAccessor::generateImage Failed to get response. ${response.body}',
+        responseObject.error,
       );
     }
   }

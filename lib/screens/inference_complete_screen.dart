@@ -7,18 +7,20 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class InferenceCompleteScreen extends HookWidget {
   final Uint8List imageBytes;
+  final String prompt;
   final Function(Uint8List, String? title) onAddImageAsLayer;
   final Function(Uint8List) onRetryInference;
 
   const InferenceCompleteScreen({
     Key? key,
     required this.imageBytes,
+    required this.prompt,
     required this.onAddImageAsLayer,
     required this.onRetryInference,
   }) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    final textController = useTextEditingController();
+    final textController = useTextEditingController(text: prompt);
 
     void onBackButtonPressed() {
       DialogHelper.showConfirmDialog(
@@ -94,13 +96,13 @@ class InferenceCompleteScreen extends HookWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    IconButton(
-                      icon: const Icon(
-                        FontAwesomeIcons.rotateLeft,
-                        color: Colors.white,
-                      ),
-                      onPressed: onRetryInferenceButtonPressed,
-                    ),
+                    // IconButton(
+                    //   icon: const Icon(
+                    //     FontAwesomeIcons.rotateLeft,
+                    //     color: Colors.white,
+                    //   ),
+                    //   onPressed: onRetryInferenceButtonPressed,
+                    // ),
                     const SizedBox(width: 20),
                     IconButton(
                       icon: const Icon(

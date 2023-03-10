@@ -7,6 +7,7 @@ import 'package:ai_pencil/model/drawing_canvas/slider_type.dart';
 import 'package:ai_pencil/model/drawing_canvas/undo_redo_stack.dart';
 import 'package:ai_pencil/model/image/types.dart';
 import 'package:ai_pencil/screens/inference_complete_screen.dart';
+import 'package:ai_pencil/utils/dialog_helper.dart';
 import 'package:ai_pencil/utils/image_helpers.dart';
 import 'package:ai_pencil/utils/snackbar.dart';
 import 'package:ai_pencil/widgets/drawing_canvas/drawing_canvas.dart';
@@ -97,24 +98,6 @@ class DrawScreen extends HookWidget {
     useEffect(() {
       updateBackgroundImage();
     }, []);
-
-    // Future<PngImageBytes?> getThumbnailImageBytes() {
-    //   // TODO: Export all layers with background image
-
-    //   Size? drawingSize = ImageHelper.getDrawingSize(canvasGlobalKey);
-    //   if (drawingSize == null) {
-    //     Logger("DrawScreen::getThumbnailImage")
-    //         .severe("Error getting drawing size");
-    //     SnackBarHelper.showSnackBar(
-    //         context, 'Something went wrong, please try again');
-    //   }
-    //   return ImageHelper.getDrawingAsPngBytes(
-    //     layers.value,
-    //     drawingSize,
-    //     backgroundColor.value,
-    //     layers.value[activeLayerIndex.value].backgroundImage,
-    //   );
-    // }
 
     Future<void> persistProject() async {
       // TODO: this logic should be a callback passed by select project screen
@@ -230,7 +213,8 @@ class DrawScreen extends HookWidget {
       layers.value = layers.value.toList(); // notify listeners of change
     }
 
-    void onImageGenerationStarted(Future<Uint8List> imageBytesFuture) {
+    void onImageGenerationStarted(
+        Future<Uint8List> imageBytesFuture, String prompt) {
       isGeneratingImage.value = true;
       imageBytesFuture.then((imageBytes) {
         isGeneratingImage.value = false;
@@ -239,6 +223,7 @@ class DrawScreen extends HookWidget {
           MaterialPageRoute(
             builder: (context) => InferenceCompleteScreen(
               imageBytes: imageBytes,
+              prompt: prompt,
               onAddImageAsLayer: cropThenAddImageAsLayer,
               onRetryInference: (val) {},
             ),
@@ -247,6 +232,8 @@ class DrawScreen extends HookWidget {
       }).catchError((error) {
         isGeneratingImage.value = false;
         Logger("DrawScreen").severe("Error generating image: $error");
+        DialogHelper.showInfoDialog(
+            context, "Error creation image", "$error", "Ok");
       });
     }
 
