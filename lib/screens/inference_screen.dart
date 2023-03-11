@@ -31,6 +31,7 @@ class InferenceScreen extends HookWidget {
 
     var promptInputTextField = TextField(
       controller: promptTextController,
+      textInputAction: TextInputAction.done,
       autocorrect: true,
       maxLines: null,
       maxLength: 350,
