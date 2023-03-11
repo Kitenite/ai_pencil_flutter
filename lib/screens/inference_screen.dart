@@ -18,7 +18,7 @@ class InferenceScreen extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final promptTextController = useTextEditingController();
+    final promptTextController = useTextEditingController(text: project.prompt);
 
     void generateImage(bool useImage) {
       Future<Uint8List> imageBytes = ApiDataAccessor.generateImage(

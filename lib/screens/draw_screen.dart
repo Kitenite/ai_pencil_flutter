@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
@@ -25,10 +24,7 @@ import 'package:ai_pencil/model/drawing_canvas/drawing_mode.dart';
 import 'package:ai_pencil/model/drawing_canvas/sketch.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:image_cropper/image_cropper.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:logging/logging.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DrawScreen extends HookWidget {
@@ -216,6 +212,7 @@ class DrawScreen extends HookWidget {
     void onImageGenerationStarted(
         Future<Uint8List> imageBytesFuture, String prompt) {
       isGeneratingImage.value = true;
+      project.prompt = prompt;
       imageBytesFuture.then((imageBytes) {
         isGeneratingImage.value = false;
         Navigator.push(

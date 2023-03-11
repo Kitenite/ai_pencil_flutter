@@ -7,6 +7,7 @@ import 'package:ai_pencil/model/drawing/aspect_ratio.dart';
 import 'package:ai_pencil/model/drawing/drawing_layer.dart';
 import 'package:ai_pencil/model/drawing/drawing_project.dart';
 import 'package:ai_pencil/screens/draw_screen.dart';
+import 'package:ai_pencil/utils/dialog_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -65,18 +66,27 @@ class _SelectProjectScreenState extends State<SelectProjectScreen> {
   }
 
   void deleteProject(int idx) async {
-    SharedPreferences prefs = await _prefs;
-    var projects = prefs.getStringList(Constants.PROJECTS_KEY) ?? [];
-    if (idx >= projects.length) {
-      return;
-    }
-    projects.removeAt(idx);
-    setState(() {
-      _jsonEncodedProjects =
-          prefs.setStringList('projects', projects).then((bool success) {
-        return projects;
-      });
-    });
+    DialogHelper.showConfirmDialog(
+      context,
+      "Delete project",
+      "This cannot be undone.",
+      "Delete",
+      "Cancel",
+      () async {
+        SharedPreferences prefs = await _prefs;
+        var projects = prefs.getStringList(Constants.PROJECTS_KEY) ?? [];
+        if (idx >= projects.length) {
+          return;
+        }
+        projects.removeAt(idx);
+        setState(() {
+          _jsonEncodedProjects =
+              prefs.setStringList('projects', projects).then((bool success) {
+            return projects;
+          });
+        });
+      },
+    );
   }
 
   void renameProject(int idx, String newName) async {

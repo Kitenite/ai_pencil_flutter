@@ -51,7 +51,6 @@ class MainApp extends StatelessWidget {
               onAddImageAsLayer: (imageBytes, title) {},
               onRetryInference: (imageBytes) {},
             ),
-
         // Routes.DRAW_SCREEN_ROUTE: (context) => const DrawScreen(),
         // Routes.INFERENCE_SCREEN_ROUTE: (context) => const InferenceScreen()
       },

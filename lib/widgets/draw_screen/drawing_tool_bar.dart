@@ -2,6 +2,7 @@ import 'package:ai_pencil/model/drawing/drawing_tools.dart';
 import 'package:ai_pencil/model/drawing_canvas/drawing_mode.dart';
 import 'package:ai_pencil/model/drawing_canvas/sketch.dart';
 import 'package:ai_pencil/model/drawing_canvas/undo_redo_stack.dart';
+import 'package:ai_pencil/utils/dialog_helper.dart';
 import 'package:ai_pencil/widgets/draw_screen/icon_box.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
@@ -55,7 +56,16 @@ class DrawingToolBar extends StatelessWidget {
           IconBox(
             iconData: FontAwesomeIcons.trash,
             selected: true,
-            onTap: () => undoRedoStack.value.clear(),
+            onTap: () {
+              DialogHelper.showConfirmDialog(
+                context,
+                "Clear drawing",
+                "This will all drawings from the layer. This cannot be undone.",
+                "Clear",
+                "Cancel",
+                () => undoRedoStack.value.clear(),
+              );
+            },
             tooltip: 'Clear',
           ),
           const Spacer(),
