@@ -1,5 +1,6 @@
 import 'package:ai_pencil/utils/dialog_helper.dart';
 import 'package:ai_pencil/utils/image_helpers.dart';
+import 'package:ai_pencil/utils/snackbar.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -34,6 +35,7 @@ class InferenceCompleteScreen extends HookWidget {
     }
 
     void onDownloadImageButtonPressed() {
+      SnackBarHelper.showSnackBar(context, "Image saved!");
       ImageHelper.saveFile(imageBytes, ".png");
     }
 

@@ -177,7 +177,6 @@ class DrawScreen extends HookWidget {
       addLayer(title);
       layers.value[activeLayerIndex.value].backgroundImage = imageBytes;
       updateBackgroundImage();
-      saveActiveLayer();
     }
 
     void cropThenAddImageAsLayer(Uint8List imageBytes, String? title) async {

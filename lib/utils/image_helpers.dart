@@ -9,6 +9,7 @@ import 'package:ai_pencil/widgets/drawing_canvas/sketch_painter.dart';
 import 'package:ai_pencil/model/drawing_canvas/sketch.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:gallery_saver/gallery_saver.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:logging/logging.dart';
 import 'package:path_provider/path_provider.dart';
@@ -193,6 +194,13 @@ class ImageHelper {
     return pngBytesList;
   }
 
+  static Future<File> createTempImageFile(PngImageBytes imageBytes) async {
+    final tempDir = await getTemporaryDirectory();
+    File imageFile = await File('${tempDir.path}/image.png').create();
+    imageFile.writeAsBytesSync(imageBytes);
+    return imageFile;
+  }
+
   static void saveFile(Uint8List bytes, String extension) async {
     if (kIsWeb) {
       html.AnchorElement()
@@ -202,12 +210,8 @@ class ImageHelper {
         ..style.display = 'none'
         ..click();
     } else {
-      await FileSaver.instance.saveFile(
-        'FlutterLetsDraw-${DateTime.now().toIso8601String()}.$extension',
-        bytes,
-        extension,
-        mimeType: extension == 'png' ? MimeType.PNG : MimeType.JPEG,
-      );
+      File image = await createTempImageFile(bytes);
+      GallerySaver.saveImage(image.path);
     }
   }
 
@@ -260,8 +264,7 @@ class ImageHelper {
     BuildContext context,
   ) async {
     // Create temp image file
-    final tempDir = await getTemporaryDirectory();
-    File imageFile = await File('${tempDir.path}/image.png').create();
+    File imageFile = await createTempImageFile(imageBytes);
     imageFile.writeAsBytesSync(imageBytes);
 
     CroppedFile? croppedImage = await cropImage(
