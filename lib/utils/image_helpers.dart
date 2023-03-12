@@ -14,7 +14,6 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:logging/logging.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:universal_html/html.dart' as html;
-import 'package:file_saver/file_saver.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:image/image.dart' as IMG;
@@ -37,6 +36,7 @@ class ImageHelper {
       width: newWidth,
       height: newHeight,
     );
+    print("$newWidth, $newHeight");
 
     resizedData = IMG.encodePng(resized) as PngImageBytes;
     return resizedData;

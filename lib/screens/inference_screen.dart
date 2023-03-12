@@ -23,7 +23,8 @@ class InferenceScreen extends HookWidget {
     void generateImage(bool useImage) {
       Future<Uint8List> imageBytes = ApiDataAccessor.generateImage(
         promptTextController.value.text,
-        useImage ? project.thumbnailImageBytes : null,
+        project.thumbnailImageBytes,
+        useImage,
       );
       onImageGenerationStarted(imageBytes, promptTextController.value.text);
       Navigator.pop(context);

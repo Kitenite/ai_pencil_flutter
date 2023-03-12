@@ -12,6 +12,8 @@ GenerateImageRequest _$GenerateImageRequestFromJson(
       prompt: json['prompt'] as String,
       advancedOptions: AdvancedOptions.fromJson(
           json['advancedOptions'] as Map<String, dynamic>),
+      width: json['width'] as int? ?? 512,
+      height: json['height'] as int? ?? 512,
       image: json['image'] as String?,
     );
 
@@ -20,5 +22,7 @@ Map<String, dynamic> _$GenerateImageRequestToJson(
     <String, dynamic>{
       'image': instance.image,
       'prompt': instance.prompt,
+      'width': instance.width,
+      'height': instance.height,
       'advancedOptions': instance.advancedOptions,
     };
