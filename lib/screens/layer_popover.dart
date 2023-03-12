@@ -35,7 +35,7 @@ class LayerPopover extends HookWidget {
     ValueNotifier<bool> editMode = useState(false);
 
     Widget getDeleteButton(index) {
-      if (!editMode.value || index == activeLayerIndex.value) {
+      if (!editMode.value || layers.value.length <= 1) {
         return const SizedBox.shrink();
       }
 
