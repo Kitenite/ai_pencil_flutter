@@ -19,13 +19,25 @@ class InferenceScreen extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final promptTextController = useTextEditingController(text: project.prompt);
+    final turboMode = useState(false);
 
-    void generateImage(bool useImage) {
-      Future<Uint8List> imageBytes = ApiDataAccessor.generateImage(
-        promptTextController.value.text,
-        project.thumbnailImageBytes,
-        useImage,
-      );
+    void generateImage(bool useImage, bool turbo) {
+      Future<Uint8List> imageBytes;
+
+      if (turbo) {
+        // Controlnet
+        imageBytes = ApiDataAccessor.controlNet(
+          promptTextController.value.text,
+          project.thumbnailImageBytes,
+        );
+      } else {
+        // Image2Image
+        imageBytes = ApiDataAccessor.generateImage(
+          promptTextController.value.text,
+          project.thumbnailImageBytes,
+          useImage,
+        );
+      }
       onImageGenerationStarted(imageBytes, promptTextController.value.text);
       Navigator.pop(context);
     }
@@ -41,6 +53,7 @@ class InferenceScreen extends HookWidget {
         hintText: 'Be as descriptive as you can',
       ),
     );
+
     Widget imageToImageTab = Padding(
       padding: const EdgeInsets.all(8.0),
       child: SingleChildScrollView(
@@ -73,9 +86,19 @@ class InferenceScreen extends HookWidget {
               ),
             ),
             promptInputTextField,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Checkbox(
+                    activeColor: Colors.amber,
+                    value: turboMode.value,
+                    onChanged: (val) => turboMode.value = val!),
+                const Text("Turbo Mode (ControlNet)"),
+              ],
+            ),
             OutlinedButton(
               onPressed: () {
-                generateImage(true);
+                generateImage(true, turboMode.value);
               },
               style: OutlinedButton.styleFrom(
                 shape: RoundedRectangleBorder(
@@ -121,7 +144,7 @@ class InferenceScreen extends HookWidget {
             promptInputTextField,
             OutlinedButton(
               onPressed: () {
-                generateImage(false);
+                generateImage(false, false);
               },
               style: OutlinedButton.styleFrom(
                 shape: RoundedRectangleBorder(

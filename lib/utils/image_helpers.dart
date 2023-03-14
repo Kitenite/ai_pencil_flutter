@@ -19,7 +19,8 @@ import 'package:file_picker/file_picker.dart';
 import 'package:image/image.dart' as IMG;
 
 class ImageHelper {
-  static PngImageBytes resizeImageToMax(PngImageBytes image, int multiple) {
+  static PngImageBytes resizeImageToMultiple(
+      PngImageBytes image, int multiple) {
     PngImageBytes resizedData = image;
     IMG.Image? decoded = IMG.decodeImage(image);
     if (decoded == null) {
