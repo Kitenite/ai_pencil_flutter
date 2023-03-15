@@ -15,12 +15,14 @@ GenerateImageRequest _$GenerateImageRequestFromJson(
       width: json['width'] as int? ?? 512,
       height: json['height'] as int? ?? 512,
       image: json['image'] as String?,
+      mask: json['mask'] as String?,
     );
 
 Map<String, dynamic> _$GenerateImageRequestToJson(
         GenerateImageRequest instance) =>
     <String, dynamic>{
       'image': instance.image,
+      'mask': instance.mask,
       'prompt': instance.prompt,
       'width': instance.width,
       'height': instance.height,

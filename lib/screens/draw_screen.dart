@@ -97,7 +97,6 @@ class DrawScreen extends HookWidget {
 
     Future<void> persistProject() async {
       // TODO: this logic should be a callback passed by select project screen
-      // saveActiveLayer(); // Already done on drawing changed. Shouldn't call in async anyway
       // TODO: Add prompt
       var prefs = await SharedPreferences.getInstance();
       var updatedProject = DrawingProject(

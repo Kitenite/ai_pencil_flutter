@@ -5,6 +5,7 @@ part 'generate_image_request.g.dart';
 @JsonSerializable()
 class GenerateImageRequest {
   String? image;
+  String? mask;
   String prompt;
   int width;
   int height;
@@ -16,6 +17,7 @@ class GenerateImageRequest {
     this.width = 512,
     this.height = 512,
     this.image,
+    this.mask,
   });
 
   factory GenerateImageRequest.fromJson(Map<String, dynamic> json) =>

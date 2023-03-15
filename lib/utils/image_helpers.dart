@@ -19,8 +19,17 @@ import 'package:file_picker/file_picker.dart';
 import 'package:image/image.dart' as IMG;
 
 class ImageHelper {
-  static PngImageBytes resizeImageToMultiple(
-      PngImageBytes image, int multiple) {
+  static Size getNewImageSizeWithMultiple(PngImageBytes image, int multiple) {
+    // Required for Stable Diffusion to work
+    IMG.Image? decoded = IMG.decodeImage(image);
+    // Adhere to multiple
+    int newWidth = (decoded!.width / multiple).ceil() * multiple;
+    int newHeight = (decoded.height / multiple).ceil() * multiple;
+
+    return Size(newWidth.toDouble(), newHeight.toDouble());
+  }
+
+  static PngImageBytes resizeImageToDimensions(PngImageBytes image, Size size) {
     PngImageBytes resizedData = image;
     IMG.Image? decoded = IMG.decodeImage(image);
     if (decoded == null) {
@@ -28,16 +37,11 @@ class ImageHelper {
       return resizedData;
     }
 
-    // Adhere to multiple
-    int newWidth = (decoded.width / multiple).ceil() * multiple;
-    int newHeight = (decoded.height / multiple).ceil() * multiple;
-
     IMG.Image resized = IMG.copyResize(
       decoded,
-      width: newWidth,
-      height: newHeight,
+      width: size.width.toInt(),
+      height: size.height.toInt(),
     );
-    print("$newWidth, $newHeight");
 
     resizedData = IMG.encodePng(resized) as PngImageBytes;
     return resizedData;

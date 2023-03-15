@@ -32,7 +32,9 @@ class ApiDataAccessor {
     };
 
     int multiple = 64;
-    PngImageBytes resized = ImageHelper.resizeImageToMultiple(image, multiple);
+    Size correctSize = ImageHelper.getNewImageSizeWithMultiple(image, multiple);
+    PngImageBytes resized =
+        ImageHelper.resizeImageToDimensions(image, correctSize);
     String base64Image = await ImageHelper.bytesToBase64String(resized);
     UploadImageRequest requestBody = UploadImageRequest(image: base64Image);
 
@@ -92,36 +94,40 @@ class ApiDataAccessor {
   static Future<PngImageBytes> generateImage(
     String prompt,
     PngImageBytes? image,
-    bool useImage,
-  ) async {
+    bool useImage, {
+    PngImageBytes? mask,
+  }) async {
     var url = Uri.https(Apis.BETA_BASE_API, Apis.BETA_GENERATE_IMAGE_ROUTE);
     const headers = {
       'Content-Type': 'application/json; charset=UTF-8',
     };
 
-    int width = 512;
-    int height = 512;
+    Size desiredImageSize = Size(512, 512);
     int multiple = 64;
 
     if (image != null) {
-      IMG.Image? decoded = IMG.decodeImage(image);
-      if (decoded != null) {
-        width = (decoded.width / multiple).ceil() * multiple;
-        height = (decoded.height / multiple).ceil() * multiple;
-      }
+      desiredImageSize =
+          ImageHelper.getNewImageSizeWithMultiple(image, multiple);
     }
 
     GenerateImageRequest requestBody = GenerateImageRequest(
       prompt: prompt,
       advancedOptions: AdvancedOptions(),
-      width: width,
-      height: height,
+      width: desiredImageSize.width.toInt(),
+      height: desiredImageSize.height.toInt(),
     );
 
     if (useImage && image != null) {
       PngImageBytes resized =
-          ImageHelper.resizeImageToMultiple(image, multiple);
+          ImageHelper.resizeImageToDimensions(image, desiredImageSize);
       requestBody.image = await ImageHelper.bytesToBase64String(resized);
+    }
+
+    // Inpainting
+    if (useImage && mask != null) {
+      PngImageBytes resized =
+          ImageHelper.resizeImageToDimensions(mask, desiredImageSize);
+      requestBody.mask = await ImageHelper.bytesToBase64String(resized);
     }
 
     final response = await http.post(
