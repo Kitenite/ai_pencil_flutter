@@ -21,8 +21,10 @@ class Apis {
   static const BETA_TEXT_TO_TEXT_ROUTE = "beta/text-to-text";
   static const BETA_UPLOAD_IMAGE_ROUTE = "beta/upload-image";
   static const BETA_CONTROLNET_ROUTE = "beta/controlnet";
+  static const BETA_PROMPT_STYLES_ROUTE = "beta/prompt-styles";
 
   static const PROD_BASE_API = "8p4dffq0ke.execute-api.us-west-2.amazonaws.com";
   static const PROD_GENERATE_IMAGE_ROUTE = "prod/generate-image";
   static const PROD_TEXT_TO_TEXT_ROUTE = "prod/text-to-text";
+  static const PROD_PROMPT_STYLES_ROUTE = "prod/prompt-styles";
 }

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:ai_pencil/model/api/controlnet/controlnet_request.dart';
 import 'package:ai_pencil/model/api/controlnet/controlnet_response.dart';
 import 'package:ai_pencil/model/api/generate_image/generate_image_error_response.dart';
+import 'package:ai_pencil/model/api/prompt_styles_response.dart';
 import 'package:ai_pencil/model/api/text_to_text/text_to_text_request.dart';
 import 'package:ai_pencil/model/api/text_to_text/text_to_text_response.dart';
 import 'package:ai_pencil/model/api/upload_image/upload_image_request.dart';
@@ -10,6 +11,7 @@ import 'package:ai_pencil/model/api/generate_image/generate_image_request.dart';
 import 'package:ai_pencil/model/api/generate_image/generate_image_response.dart';
 import 'package:ai_pencil/model/api/upload_image/upload_image_response.dart';
 import 'package:ai_pencil/model/image/types.dart';
+import 'package:ai_pencil/model/prompt/prompt_style.dart';
 import 'package:ai_pencil/model/drawing/advanced_options.dart';
 import 'package:ai_pencil/utils/constants.dart';
 import 'package:ai_pencil/utils/image_helpers.dart';
@@ -162,6 +164,29 @@ class ApiDataAccessor {
       Logger("ApiDataAccessor").severe(response.body);
       throw Exception(
         'ApiDataAccessor::textToText Failed to get response. ${response.body}',
+      );
+    }
+  }
+
+  static Future<List<PromptStyle>> getPromptStyles() async {
+    var url = Uri.https(Apis.BETA_BASE_API, Apis.BETA_PROMPT_STYLES_ROUTE);
+    const headers = {
+      'Content-Type': 'application/json; charset=UTF-8',
+    };
+
+    final response = await http.get(
+      url,
+      headers: headers,
+    );
+
+    if (response.statusCode == 200) {
+      PromptStylesResponse responseObject =
+          PromptStylesResponse.fromJson(jsonDecode(response.body));
+      return responseObject.promptStyles;
+    } else {
+      Logger("ApiDataAccessor").severe(response.body);
+      throw Exception(
+        'ApiDataAccessor::promptStyles Failed to get response. ${response.body}',
       );
     }
   }
