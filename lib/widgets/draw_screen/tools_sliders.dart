@@ -23,42 +23,39 @@ class ToolsSliders extends StatelessWidget {
         duration: const Duration(milliseconds: 300),
         child: Card(
           color: Colors.black54,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: Row(
-              children: [
-                Slider(
-                  value: drawingTools.getStrokeSize(),
-                  min: drawingTools.getMinStrokeSize(),
-                  max: drawingTools.getMaxStrokeSize(),
-                  onChanged: (val) {
-                    drawingTools.setStrokeSize(val);
-                  },
-                  onChangeStart: (value) {
-                    activeSlider.value = SliderType.strokeSize;
-                    sliderModalVisible.value = true;
-                  },
-                  onChangeEnd: (value) {
-                    sliderModalVisible.value = false;
-                  },
-                ),
-                Slider(
-                  value: drawingTools.getOpacity(),
-                  min: 0,
-                  max: 1,
-                  onChanged: (val) {
-                    drawingTools.setOpacity(val);
-                  },
-                  onChangeStart: (value) {
-                    activeSlider.value = SliderType.opacity;
-                    sliderModalVisible.value = true;
-                  },
-                  onChangeEnd: (value) {
-                    sliderModalVisible.value = false;
-                  },
-                ),
-              ],
-            ),
+          child: Wrap(
+            children: [
+              Slider(
+                value: drawingTools.getStrokeSize(),
+                min: drawingTools.getMinStrokeSize(),
+                max: drawingTools.getMaxStrokeSize(),
+                onChanged: (val) {
+                  drawingTools.setStrokeSize(val);
+                },
+                onChangeStart: (value) {
+                  activeSlider.value = SliderType.strokeSize;
+                  sliderModalVisible.value = true;
+                },
+                onChangeEnd: (value) {
+                  sliderModalVisible.value = false;
+                },
+              ),
+              Slider(
+                value: drawingTools.getOpacity(),
+                min: 0,
+                max: 1,
+                onChanged: (val) {
+                  drawingTools.setOpacity(val);
+                },
+                onChangeStart: (value) {
+                  activeSlider.value = SliderType.opacity;
+                  sliderModalVisible.value = true;
+                },
+                onChangeEnd: (value) {
+                  sliderModalVisible.value = false;
+                },
+              ),
+            ],
           ),
         ),
       ),

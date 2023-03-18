@@ -30,6 +30,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class DrawScreen extends HookWidget {
   final DrawingProject project;
   final int projectIndex;
+
   const DrawScreen({
     Key? key,
     required this.project,

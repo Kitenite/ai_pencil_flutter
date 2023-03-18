@@ -1,4 +1,5 @@
 import 'package:ai_pencil/model/drawing/drawing_project.dart';
+import 'package:ai_pencil/widgets/inference_screen/prompt_style_section.dart';
 import 'package:flutter/material.dart';
 
 class ImageToImageTab extends StatelessWidget {
@@ -9,11 +10,9 @@ class ImageToImageTab extends StatelessWidget {
     required this.turboMode,
     required this.selectedArtType,
     required this.selectedSubstyleKeys,
-    required this.promptStyleSection,
     required this.onGenerateImage,
   });
 
-  final Widget promptStyleSection;
   final DrawingProject project;
   final TextField promptInputTextField;
   final ValueNotifier<bool> turboMode;
@@ -65,7 +64,10 @@ class ImageToImageTab extends StatelessWidget {
                 const Text("Turbo Mode (ControlNet)"),
               ],
             ),
-            promptStyleSection,
+            PromptStyleSection(
+              selectedArtType: selectedArtType,
+              selectedSubstyleKeys: selectedSubstyleKeys,
+            ),
             OutlinedButton(
               onPressed: () {
                 onGenerateImage(true, turboMode.value);
