@@ -165,7 +165,7 @@ class ApiDataAccessor {
     if (response.statusCode == 200) {
       TextToTextResponse responseObject =
           TextToTextResponse.fromJson(jsonDecode(response.body));
-      return responseObject.response;
+      return responseObject.positive;
     } else {
       Logger("ApiDataAccessor").severe(response.body);
       throw Exception(

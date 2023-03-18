@@ -3,7 +3,9 @@ part 'text_to_text_response.g.dart';
 
 @JsonSerializable()
 class TextToTextResponse {
-  String response = "";
+  String positive = "";
+  String negative = "";
+
   TextToTextResponse();
 
   factory TextToTextResponse.fromJson(Map<String, dynamic> json) =>
