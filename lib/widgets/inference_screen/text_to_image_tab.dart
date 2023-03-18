@@ -2,6 +2,11 @@ import 'package:ai_pencil/widgets/inference_screen/prompt_style_section.dart';
 import 'package:flutter/material.dart';
 
 class TextToImageTab extends StatelessWidget {
+  final Widget promptInputTextField;
+  final ValueNotifier<String> selectedArtType;
+  final ValueNotifier<Map<String, String>> selectedSubstyleKeys;
+  final Function(bool, bool) onGenerateImage;
+
   const TextToImageTab({
     super.key,
     required this.promptInputTextField,
@@ -9,11 +14,6 @@ class TextToImageTab extends StatelessWidget {
     required this.selectedSubstyleKeys,
     required this.onGenerateImage,
   });
-
-  final TextField promptInputTextField;
-  final ValueNotifier<String> selectedArtType;
-  final ValueNotifier<Map<String, String>> selectedSubstyleKeys;
-  final Function(bool, bool) onGenerateImage;
 
   @override
   Widget build(BuildContext context) {

@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:ai_pencil/model/drawing/drawing_project.dart';
 import 'package:ai_pencil/sao/api.dart';
+import 'package:ai_pencil/utils/dialog_helper.dart';
 import 'package:ai_pencil/utils/prompt_styles_manager.dart';
 import 'package:ai_pencil/widgets/inference_screen/image_to_image_tab.dart';
 import 'package:ai_pencil/widgets/inference_screen/inpainting_tab.dart';
@@ -9,6 +10,7 @@ import 'package:ai_pencil/widgets/inference_screen/text_to_image_tab.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:logging/logging.dart';
 
 class InferenceScreen extends HookWidget {
   final DrawingProject project;
@@ -25,6 +27,7 @@ class InferenceScreen extends HookWidget {
     PromptStylesManager promptStylesManager = PromptStylesManager.getInstance();
     final promptTextController = useTextEditingController(text: project.prompt);
     final turboMode = useState(false);
+    final callingTextToText = useState(false);
 
     // Prompt Styles
     final selectedArtType = useState('');
@@ -59,16 +62,46 @@ class InferenceScreen extends HookWidget {
       Navigator.pop(context);
     }
 
-    var promptInputTextField = TextField(
-      controller: promptTextController,
-      textInputAction: TextInputAction.done,
-      autocorrect: true,
-      maxLines: null,
-      maxLength: 350,
-      decoration: const InputDecoration(
-        border: OutlineInputBorder(),
-        hintText: 'Be as descriptive as you can',
-      ),
+    var promptInputTextField = Column(
+      children: [
+        TextField(
+          controller: promptTextController,
+          textInputAction: TextInputAction.done,
+          autocorrect: true,
+          maxLines: null,
+          maxLength: 350,
+          decoration: InputDecoration(
+              border: const OutlineInputBorder(),
+              hintText: 'Be as descriptive as you can',
+              suffixIcon: callingTextToText.value
+                  ? const CircularProgressIndicator()
+                  : IconButton(
+                      icon: const Icon(FontAwesomeIcons.rocket),
+                      onPressed: () {
+                        DialogHelper.showConfirmDialog(
+                            context,
+                            "Improve prompt with AI",
+                            "We will rewrite your prompt using AI. This will replace your current prompt.",
+                            "Confirm",
+                            "Cancel", () {
+                          callingTextToText.value = true;
+                          ApiDataAccessor.textToText(promptTextController.text)
+                              .then((improvedText) {
+                            promptTextController.text = improvedText;
+                            callingTextToText.value = false;
+                          }).onError((error, stackTrace) {
+                            callingTextToText.value = false;
+                            Logger("InferenceScreen::callTextToText").severe(
+                              "Error while calling text to text API",
+                              error,
+                              stackTrace,
+                            );
+                          });
+                        });
+                      },
+                    )),
+        ),
+      ],
     );
 
     return WillPopScope(

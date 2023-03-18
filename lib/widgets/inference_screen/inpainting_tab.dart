@@ -21,7 +21,7 @@ import 'package:logging/logging.dart';
 
 class InpaintingTab extends HookWidget {
   final DrawingProject project;
-  final TextField promptInputTextField;
+  final Widget promptInputTextField;
   final ValueNotifier<String> selectedArtType;
   final ValueNotifier<Map<String, String>> selectedSubstyleKeys;
   final Function(bool, bool, {Uint8List maskBytes}) onGenerateImage;

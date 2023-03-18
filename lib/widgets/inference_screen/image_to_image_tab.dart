@@ -3,6 +3,13 @@ import 'package:ai_pencil/widgets/inference_screen/prompt_style_section.dart';
 import 'package:flutter/material.dart';
 
 class ImageToImageTab extends StatelessWidget {
+  final DrawingProject project;
+  final Widget promptInputTextField;
+  final ValueNotifier<bool> turboMode;
+  final ValueNotifier<String> selectedArtType;
+  final ValueNotifier<Map<String, String>> selectedSubstyleKeys;
+  final Function(bool, bool) onGenerateImage;
+
   const ImageToImageTab({
     super.key,
     required this.project,
@@ -12,14 +19,6 @@ class ImageToImageTab extends StatelessWidget {
     required this.selectedSubstyleKeys,
     required this.onGenerateImage,
   });
-
-  final DrawingProject project;
-  final TextField promptInputTextField;
-  final ValueNotifier<bool> turboMode;
-  final ValueNotifier<String> selectedArtType;
-  final ValueNotifier<Map<String, String>> selectedSubstyleKeys;
-  final Function(bool, bool) onGenerateImage;
-
   @override
   Widget build(BuildContext context) {
     return Padding(
