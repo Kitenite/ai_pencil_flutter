@@ -17,50 +17,51 @@ class PromptStyleCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-          border: isSelected
-              ? Border.all(
-                  color: Colors.blue,
-                  width: 2,
-                )
-              : Border.all(
-                  color: Colors.transparent,
-                  width: 2,
-                ),
-          borderRadius: const BorderRadius.all(Radius.circular(8))),
-      child: Card(
-        color: Colors.transparent,
-        child: Column(
-          children: [
-            InkWell(
-              onTap: () {
-                onTap();
-              },
-              child: SizedBox(
-                height: 100,
-                width: 100,
-                child: ClipRRect(
-                  borderRadius: const BorderRadius.all(Radius.circular(8)),
-                  child: FittedBox(
-                    fit: BoxFit.cover,
-                    clipBehavior: Clip.hardEdge,
-                    child: CachedNetworkImage(
-                      placeholder: (context, url) => Container(),
-                      errorWidget: (context, url, error) => Container(),
-                      imageUrl: imageUrl,
-                    ),
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        children: [
+          InkWell(
+            onTap: () {
+              onTap();
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                  border: isSelected
+                      ? Border.all(
+                          color: Colors.blue,
+                          width: 3,
+                        )
+                      : Border.all(
+                          color: Colors.transparent,
+                          width: 3,
+                        ),
+                  borderRadius: const BorderRadius.all(Radius.circular(8))),
+              height: 100,
+              width: 100,
+              child: ClipRRect(
+                borderRadius: const BorderRadius.all(Radius.circular(8)),
+                child: FittedBox(
+                  fit: BoxFit.cover,
+                  clipBehavior: Clip.hardEdge,
+                  child: CachedNetworkImage(
+                    placeholder: (context, url) => Container(),
+                    errorWidget: (context, url, error) => Container(),
+                    imageUrl: imageUrl,
                   ),
                 ),
               ),
             ),
-            const SizedBox(height: 5),
-            Text(styleKey,
-                style: const TextStyle(
-                  color: Colors.amber,
-                )),
-          ],
-        ),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            styleKey,
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+            ),
+          ),
+        ],
       ),
     );
   }

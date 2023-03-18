@@ -16,7 +16,7 @@ class PromptStyleSelector extends StatelessWidget {
       title: Text(title),
       children: [
         SizedBox(
-          height: 135,
+          height: 150,
           child: ListView(
             scrollDirection: Axis.horizontal,
             children: children,
