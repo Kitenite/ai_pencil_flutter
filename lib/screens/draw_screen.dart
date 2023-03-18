@@ -233,6 +233,7 @@ class DrawScreen extends HookWidget {
     }
 
     void navigateToInferenceScreen() {
+      saveActiveLayer();
       ImageHelper.getCanvasScreenshot(
           layers.value,
           ImageHelper.getDrawingSize(canvasGlobalKey)!,
