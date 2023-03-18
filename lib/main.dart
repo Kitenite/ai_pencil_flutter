@@ -2,6 +2,7 @@ import 'package:ai_pencil/model/image/types.dart';
 import 'package:ai_pencil/screens/inference_complete_screen.dart';
 import 'package:ai_pencil/utils/constants.dart';
 import 'package:ai_pencil/screens/select_screen.dart';
+import 'package:ai_pencil/utils/prompt_styles_manager.dart';
 import 'package:ai_pencil/utils/themes.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +14,7 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
   setupFirebase();
   setupLogging();
+  setupPromptStyles();
   runApp(const MainApp());
 }
 
@@ -30,6 +32,10 @@ void setupLogging() {
       print('${record.level.name}: ${record.time}: ${record.message}');
     }
   });
+}
+
+void setupPromptStyles() async {
+  PromptStylesManager.getInstance().initialize();
 }
 
 class MainApp extends StatelessWidget {
