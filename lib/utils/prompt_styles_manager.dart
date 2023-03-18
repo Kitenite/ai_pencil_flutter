@@ -4,15 +4,23 @@ import 'package:ai_pencil/model/prompt/prompt_substyle.dart';
 import 'package:ai_pencil/sao/api.dart';
 
 class PromptStylesManager {
+  static bool _initialized = false;
   static final PromptStylesManager _instance = PromptStylesManager._internal();
   List<PromptStyle> _promptStyles = [];
 
-  Future<void> init() async {
-    _promptStyles = await ApiDataAccessor.getPromptStyles();
+  Future<void> initialize() async {
+    if (!_initialized || _promptStyles.isEmpty) {
+      _promptStyles = await ApiDataAccessor.getPromptStyles();
+      _initialized = true;
+    }
+  }
+
+  bool isInitialized() {
+    return _initialized;
   }
 
   PromptStylesManager._internal() {
-    init();
+    initialize();
   }
   
   static PromptStylesManager getInstance() {
@@ -21,6 +29,21 @@ class PromptStylesManager {
 
   List<String> getArtTypeKeys() {
     return _promptStyles.map((e) => e.key).toList();
+  }
+
+  String getImageUrlForArtType(String artType) {
+    return _promptStyles
+        .firstWhere((e) => e.key == artType, orElse: () => PromptStyle(key: ""))
+        .imageUrl ??
+        "";
+  }
+
+  String getImageUrlForSubstyle(String artType, int substyleIndex, String substyleValueKey) {
+    return getSubstylesByArtType(artType)[substyleIndex]
+        .values
+        .firstWhere((e) => e.key == substyleValueKey, orElse: () => PromptArtStyle(key: ""))
+        .imageUrl ??
+        "";
   }
 
   List<PromptSubstyle> getSubstylesByArtType(String artType) {
@@ -75,25 +98,25 @@ class PromptStylesManager {
   }
 
   String buildPrompt(String selectedArtTypeKey,
-      List<String> selectedSubstyleKeys, String prompt) {
+      Map<String, String> selectedSubstyleKeysMap, String prompt) {
+    var selectedSubstyleKeys = getSubstylesByArtType(selectedArtTypeKey)
+        .map((e) => selectedSubstyleKeysMap[e.key])
+        .toList();
     var enhancedPrompt = selectedArtTypeKey == "None" ? prompt : "of $prompt";
     enhancedPrompt =
         addPrefix(getArtTypePrefix(selectedArtTypeKey), enhancedPrompt);
-    print("enhancedPrompt: ${getArtTypePrefix(selectedArtTypeKey)}");
     enhancedPrompt =
         addSuffix(getArtTypeSuffix(selectedArtTypeKey), enhancedPrompt);
-    print("enhancedPrompt: $enhancedPrompt");
     for (var index = 0; index < selectedSubstyleKeys.length; index++) {
       enhancedPrompt = addPrefix(
           getPromptArtStylePrefix(
-              selectedArtTypeKey, index, selectedSubstyleKeys[index]),
+              selectedArtTypeKey, index, selectedSubstyleKeys[index] ?? ""),
           enhancedPrompt);
       enhancedPrompt = addSuffix(
           getPromptArtStyleSuffix(
-              selectedArtTypeKey, index, selectedSubstyleKeys[index]),
+              selectedArtTypeKey, index, selectedSubstyleKeys[index] ?? ""),
           enhancedPrompt);
     }
-    print("enhancedPrompt: $enhancedPrompt");
     return enhancedPrompt;
   }
 

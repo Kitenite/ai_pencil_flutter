@@ -5,6 +5,8 @@ import 'package:ai_pencil/model/drawing_canvas/sketch.dart';
 import 'package:ai_pencil/sao/api.dart';
 import 'package:ai_pencil/utils/image_helpers.dart';
 import 'package:ai_pencil/widgets/drawing_canvas/inpaint_canvas.dart';
+import 'package:ai_pencil/utils/prompt_styles_manager.dart';
+import 'package:ai_pencil/widgets/inference_screen/prompt_style_section.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -14,7 +16,7 @@ class InferenceScreen extends HookWidget {
   final DrawingProject project;
   final Function(Future<Uint8List>, String) onImageGenerationStarted;
 
-  InferenceScreen({
+  const InferenceScreen({
     super.key,
     required this.project,
     required this.onImageGenerationStarted,
@@ -22,28 +24,36 @@ class InferenceScreen extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
+    PromptStylesManager promptStylesManager = PromptStylesManager.getInstance();
     final promptTextController = useTextEditingController(text: project.prompt);
     final turboMode = useState(false);
+
+    // Prompt Styles
+    final selectedArtType = useState('');
+    final selectedSubstyleKeys = useState<Map<String, String>>({});
 
     // Inpaint Tab
     final canvasGlobalKey = GlobalKey();
     final ValueNotifier<List<Sketch>> allSketches = useState([]);
     final ValueNotifier<Sketch?> currentSketch = useState(null);
     final ValueNotifier<bool> disableScroll = useState(false);
+    
 
     void generateImage(bool useImage, bool turbo) {
       Future<Uint8List> imageBytesFuture;
+      String prompt = promptStylesManager.buildPrompt(selectedArtType.value,
+          selectedSubstyleKeys.value, promptTextController.value.text);
 
       if (turbo) {
         // Controlnet
         imageBytesFuture = ApiDataAccessor.controlNet(
-          promptTextController.value.text,
+          prompt,
           project.thumbnailImageBytes,
         );
       } else {
         // Image2Image
         imageBytesFuture = ApiDataAccessor.generateImage(
-          promptTextController.value.text,
+          prompt,
           project.thumbnailImageBytes,
           useImage,
         );
@@ -107,6 +117,10 @@ class InferenceScreen extends HookWidget {
                 const Text("Turbo Mode (ControlNet)"),
               ],
             ),
+            PromptStyleSection(
+              selectedArtType: selectedArtType,
+              selectedSubstyleKeys: selectedSubstyleKeys,
+            ),
             OutlinedButton(
               onPressed: () {
                 generateImage(true, turboMode.value);
@@ -153,6 +167,10 @@ class InferenceScreen extends HookWidget {
               ),
             ),
             promptInputTextField,
+            PromptStyleSection(
+              selectedArtType: selectedArtType,
+              selectedSubstyleKeys: selectedSubstyleKeys,
+            ),
             OutlinedButton(
               onPressed: () {
                 generateImage(false, false);
