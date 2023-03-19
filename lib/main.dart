@@ -1,5 +1,6 @@
 import 'package:ai_pencil/model/image/types.dart';
 import 'package:ai_pencil/screens/inference_complete_screen.dart';
+import 'package:ai_pencil/screens/landing_screen.dart';
 import 'package:ai_pencil/utils/constants.dart';
 import 'package:ai_pencil/screens/select_screen.dart';
 import 'package:ai_pencil/utils/prompt_styles_manager.dart';
@@ -47,9 +48,11 @@ class MainApp extends StatelessWidget {
       theme: CustomTheme.lightTheme,
       darkTheme: CustomTheme.darkTheme,
       themeMode: ThemeMode.dark,
-      initialRoute: Routes.SELECT_SCREEN_ROUTE,
+      initialRoute:
+          kIsWeb ? Routes.LANDING_SCREEN_ROUTE : Routes.SELECT_SCREEN_ROUTE,
       routes: {
         Routes.SELECT_SCREEN_ROUTE: (context) => const SelectProjectScreen(),
+        Routes.LANDING_SCREEN_ROUTE: (context) => const LandingScreen(),
         Routes.INFERENCE_COMPLETE_SCREEN_ROUTE: (context) =>
             InferenceCompleteScreen(
               imageBytes: PngImageBytes.fromList([]),
