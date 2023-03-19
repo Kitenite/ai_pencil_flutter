@@ -81,7 +81,7 @@ class InferenceScreen extends HookWidget {
                         DialogHelper.showConfirmDialog(
                             context,
                             "Improve prompt with AI",
-                            "We will rewrite your prompt using AI. This will replace your current prompt.",
+                            "We will rewrite your prompt using AI. This will replace your current prompt.\n\nNote: This is still experimental and may not always work.",
                             "Confirm",
                             "Cancel", () {
                           callingTextToText.value = true;
@@ -96,6 +96,11 @@ class InferenceScreen extends HookWidget {
                               error,
                               stackTrace,
                             );
+                            DialogHelper.showInfoDialog(
+                                context,
+                                "Error improving prompt",
+                                "An error occurred while calling the AI. Please try again later. Error: $error",
+                                "OK");
                           });
                         });
                       },

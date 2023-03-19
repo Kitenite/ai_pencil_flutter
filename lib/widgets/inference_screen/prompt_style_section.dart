@@ -16,21 +16,18 @@ class PromptStyleSection extends StatelessWidget {
       PromptStylesManager.getInstance();
 
   Widget _buildArtStyleSection() {
-    return PromptStyleSelector(
-      title: "Art Style (Optional)",
-      children: [
-        for (var artType in _promptStylesManager.getArtTypeKeys())
-          PromptStyleCard(
-            isSelected: selectedArtType.value == artType,
-            styleKey: artType,
-            imageUrl: _promptStylesManager.getImageUrlForArtType(artType),
-            onTap: () {
-              selectedArtType.value = artType;
-              selectedSubstyleKeys.value = {};
-            },
-          ),
-      ]
-    );
+    return PromptStyleSelector(title: "Art Style (Optional)", children: [
+      for (var artType in _promptStylesManager.getArtTypeKeys())
+        PromptStyleCard(
+          isSelected: selectedArtType.value == artType,
+          styleKey: artType,
+          imageUrl: _promptStylesManager.getImageUrlForArtType(artType),
+          onTap: () {
+            selectedArtType.value = artType;
+            selectedSubstyleKeys.value = {};
+          },
+        ),
+    ]);
   }
 
   Widget _buildSubstyleSection() {
@@ -43,13 +40,15 @@ class PromptStyleSection extends StatelessWidget {
             for (var substyleValueKey in _promptStylesManager
                 .getSubstyleValueKeys(selectedArtType.value, index))
               PromptStyleCard(
-                isSelected: selectedSubstyleKeys.value[substyleKeys[index].key] ==
-                    substyleValueKey,
+                isSelected:
+                    selectedSubstyleKeys.value[substyleKeys[index].key] ==
+                        substyleValueKey,
                 styleKey: substyleValueKey,
                 imageUrl: _promptStylesManager.getImageUrlForSubstyle(
                     selectedArtType.value, index, substyleValueKey),
                 onTap: () {
-                  selectedSubstyleKeys.value[substyleKeys[index].key] = substyleValueKey;
+                  selectedSubstyleKeys.value[substyleKeys[index].key] =
+                      substyleValueKey;
                   selectedSubstyleKeys.notifyListeners();
                 },
               )

@@ -18,7 +18,6 @@ import 'package:ai_pencil/utils/image_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart';
-import 'package:image/image.dart' as IMG;
 
 class ApiDataAccessor {
   static Future<String> uploadImage(PngImageBytes? image) async {
@@ -79,12 +78,11 @@ class ApiDataAccessor {
     if (response.statusCode == 200) {
       ControlNetResponse responseObject =
           ControlNetResponse.fromJson(jsonDecode(response.body));
-      print(responseObject);
       // Get png bytes from image url
-      http.Response image_res = await http.get(
+      http.Response imageRes = await http.get(
         Uri.parse(responseObject.image),
       );
-      return image_res.bodyBytes;
+      return imageRes.bodyBytes;
     } else {
       Logger("ApiDataAccessor::controlNet").severe("Error: ${response.body}");
       throw Exception(response.body);
@@ -102,7 +100,7 @@ class ApiDataAccessor {
       'Content-Type': 'application/json; charset=UTF-8',
     };
 
-    Size desiredImageSize = Size(512, 512);
+    Size desiredImageSize = const Size(512, 512);
     int multiple = 64;
 
     if (image != null) {
@@ -169,7 +167,7 @@ class ApiDataAccessor {
     } else {
       Logger("ApiDataAccessor").severe(response.body);
       throw Exception(
-        'ApiDataAccessor::textToText Failed to get response. ${response.body}',
+        response.body,
       );
     }
   }

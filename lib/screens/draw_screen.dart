@@ -454,10 +454,13 @@ class DrawScreen extends HookWidget {
                 drawingTools: drawingTools,
                 activeSlider: activeSlider,
               ),
-              ToolsSliders(
-                sliderModalVisible: sliderModalVisible,
-                drawingTools: drawingTools,
-                activeSlider: activeSlider,
+              Positioned(
+                bottom: -4,
+                child: ToolsSliders(
+                  sliderModalVisible: sliderModalVisible,
+                  drawingTools: drawingTools,
+                  activeSlider: activeSlider,
+                ),
               ),
             ],
           ),
