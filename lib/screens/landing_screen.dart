@@ -12,8 +12,10 @@ class LandingScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+            Wrap(
+              direction: Axis.horizontal,
+              alignment: WrapAlignment.center,
+              crossAxisAlignment: WrapCrossAlignment.center,
               children: const [
                 Image(
                   width: 150,
@@ -35,8 +37,9 @@ class LandingScreen extends StatelessWidget {
             const SizedBox(
               height: 40,
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+            Wrap(
+              direction: Axis.horizontal,
+              alignment: WrapAlignment.center,
               children: [
                 InkWell(
                   onTap: () {
@@ -45,14 +48,14 @@ class LandingScreen extends StatelessWidget {
                     ]);
                   }, // Image tapped
                   splashColor: Colors.white10, // Splash color over image
-                  child: const Image(
-                    image: AssetImage(
-                      'assets/landing/appstore.png',
+                  child: const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Image(
+                      image: AssetImage(
+                        'assets/landing/appstore.png',
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(
-                  width: 20,
                 ),
                 InkWell(
                   onTap: () {
@@ -61,9 +64,12 @@ class LandingScreen extends StatelessWidget {
                     ]);
                   }, // Image tapped
                   splashColor: Colors.white10, // Splash color over image
-                  child: const Image(
-                    image: AssetImage(
-                      'assets/landing/googleplay.png',
+                  child: const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Image(
+                      image: AssetImage(
+                        'assets/landing/googleplay.png',
+                      ),
                     ),
                   ),
                 ),
