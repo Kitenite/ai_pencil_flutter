@@ -77,7 +77,7 @@ class DrawScreen extends HookWidget {
       tempLayers[activeLayerIndex.value].sketches = allSketches.value;
       tempLayers[activeLayerIndex.value]
           .updateImage(canvasGlobalKey.currentContext?.size);
-      layers.value = layers.value.toList(); // notify listeners of change
+      layers.value = tempLayers.toList(); // notify listeners of change
     }
 
     void updateBackgroundImage() async {
