@@ -11,6 +11,7 @@ import 'package:ai_pencil/utils/dialog_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SelectProjectScreen extends StatefulWidget {
   const SelectProjectScreen({super.key});
@@ -268,11 +269,35 @@ class _SelectProjectScreenState extends State<SelectProjectScreen> {
       ],
     );
 
+    var titleDropdown = PopupMenuButton<int>(
+      initialValue: null,
+      child: Row(
+        children: const [
+          Text(
+            "Ai Pencil",
+          ),
+          SizedBox(width: 10),
+          Icon(FontAwesomeIcons.chevronDown),
+        ],
+      ),
+      onSelected: (int item) {
+        switch (item) {
+          case 0:
+            launchUrl(Uri.parse('https://discord.gg/9zYj6yx7Z4'));
+            break;
+        }
+      },
+      itemBuilder: (BuildContext context) => <PopupMenuEntry<int>>[
+        const PopupMenuItem<int>(
+          value: 0,
+          child: Text('Join our Discord'),
+        ),
+      ],
+    );
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          "Ai Pencil",
-        ),
+        title: titleDropdown,
         actions: [
           TextButton(
             onPressed: () {
