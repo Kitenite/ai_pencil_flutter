@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'dart:js' as js;
+import 'package:url_launcher/url_launcher.dart';
 
 class LandingScreen extends StatelessWidget {
   const LandingScreen({super.key});
@@ -43,9 +43,8 @@ class LandingScreen extends StatelessWidget {
               children: [
                 InkWell(
                   onTap: () {
-                    js.context.callMethod('open', [
-                      'https://apps.apple.com/us/app/ai-pencil-lite/id6444737491'
-                    ]);
+                    launchUrl(Uri.parse(
+                        'https://apps.apple.com/us/app/ai-pencil-lite/id6444737491'));
                   }, // Image tapped
                   splashColor: Colors.white10, // Splash color over image
                   child: const Padding(
@@ -59,9 +58,8 @@ class LandingScreen extends StatelessWidget {
                 ),
                 InkWell(
                   onTap: () {
-                    js.context.callMethod('open', [
-                      'https://play.google.com/store/apps/details?id=io.aipencil'
-                    ]);
+                    launchUrl(Uri.parse(
+                        'https://play.google.com/store/apps/details?id=io.aipencil'));
                   }, // Image tapped
                   splashColor: Colors.white10, // Splash color over image
                   child: const Padding(
