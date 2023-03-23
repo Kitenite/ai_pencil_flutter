@@ -5,6 +5,7 @@ import 'dart:io';
 
 import 'package:ai_pencil/model/drawing/drawing_layer.dart';
 import 'package:ai_pencil/model/image/types.dart';
+import 'package:ai_pencil/utils/constants.dart';
 import 'package:ai_pencil/widgets/drawing_canvas/sketch_painter.dart';
 import 'package:ai_pencil/model/drawing_canvas/sketch.dart';
 import 'package:flutter/foundation.dart';
@@ -19,13 +20,36 @@ import 'package:file_picker/file_picker.dart';
 import 'package:image/image.dart' as IMG;
 
 class ImageHelper {
-  static Size getNewImageSizeWithMultiple(PngImageBytes image, int multiple) {
-    // Required for Stable Diffusion to work
-    IMG.Image? decoded = IMG.decodeImage(image);
-    // Adhere to multiple
-    int newWidth = (decoded!.width / multiple).ceil() * multiple;
-    int newHeight = (decoded.height / multiple).ceil() * multiple;
+  static Size getStableDiffusionImageSize(PngImageBytes image) {
+    // Required for Stable Diffusion to work. Need to have max dimension of 512 and multiple of 64.
 
+    IMG.Image? decoded = IMG.decodeImage(image);
+
+    int oldWidth = decoded!.width;
+    int oldHeight = decoded.height;
+    int newWidth = oldWidth;
+    int newHeight = oldHeight;
+    double aspectRatio = oldWidth / oldHeight;
+
+    // Adhere to max dimension
+    if (oldWidth > oldHeight) {
+      newWidth = StableDiffusionStandards.MAX_DIMENSION.toInt();
+      newHeight = newWidth ~/ aspectRatio;
+    } else {
+      newHeight = StableDiffusionStandards.MAX_DIMENSION.toInt();
+      newWidth = (newHeight * aspectRatio).toInt();
+    }
+
+    // Adhere to multiple
+    newWidth = (newWidth / StableDiffusionStandards.MULTIPLE).ceil() *
+        StableDiffusionStandards.MULTIPLE;
+    newHeight = (newHeight / StableDiffusionStandards.MULTIPLE).ceil() *
+        StableDiffusionStandards.MULTIPLE;
+
+    Logger("ImageHelper::getStableDiffusionImageSize")
+        .info("Old size: $oldWidth x $oldHeight");
+    Logger("ImageHelper::getStableDiffusionImageSize")
+        .info("New size: $newWidth x $newHeight");
     return Size(newWidth.toDouble(), newHeight.toDouble());
   }
 

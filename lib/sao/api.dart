@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:ai_pencil/model/api/controlnet/controlnet_request.dart';
 import 'package:ai_pencil/model/api/controlnet/controlnet_response.dart';
-import 'package:ai_pencil/model/api/generate_image/generate_image_error_response.dart';
 import 'package:ai_pencil/model/api/prompt_styles_response.dart';
 import 'package:ai_pencil/model/api/text_to_text/text_to_text_request.dart';
 import 'package:ai_pencil/model/api/text_to_text/text_to_text_response.dart';
@@ -31,7 +30,7 @@ class ApiDataAccessor {
     };
 
     int multiple = 64;
-    Size correctSize = ImageHelper.getNewImageSizeWithMultiple(image, multiple);
+    Size correctSize = ImageHelper.getStableDiffusionImageSize(image);
     PngImageBytes resized =
         ImageHelper.resizeImageToDimensions(image, correctSize);
     String base64Image = await ImageHelper.bytesToBase64String(resized);
@@ -42,18 +41,15 @@ class ApiDataAccessor {
       headers: headers,
       body: jsonEncode(requestBody.toJson()),
     );
-
+    UploadImageResponse responseObject =
+        UploadImageResponse.fromJson(jsonDecode(response.body));
     if (response.statusCode == 200) {
-      UploadImageResponse responseObject =
-          UploadImageResponse.fromJson(jsonDecode(response.body));
       return responseObject.url;
     } else {
-      GenerateImageErrorResponse responseObject =
-          GenerateImageErrorResponse.fromJson(jsonDecode(response.body));
-      Logger("ApiDataAccessor").severe(responseObject.error);
-      throw Exception(
-        responseObject.error,
+      Logger("ApiDataAccessor").severe(
+        "Error uploading image: ${response.statusCode} ${response.body}",
       );
+      throw Exception("Error uploading image");
     }
   }
 
@@ -69,11 +65,13 @@ class ApiDataAccessor {
     ControlNetRequest requestBody = ControlNetRequest(
         prompt: prompt, image: await ImageHelper.bytesToBase64String(image!));
 
-    final response = await http.post(
-      url,
-      headers: headers,
-      body: jsonEncode(requestBody.toJson()),
-    );
+    final response = await http
+        .post(
+          url,
+          headers: headers,
+          body: jsonEncode(requestBody.toJson()),
+        )
+        .timeout(const Duration(seconds: 90));
 
     if (response.statusCode == 200) {
       ControlNetResponse responseObject =
@@ -84,7 +82,7 @@ class ApiDataAccessor {
       );
       return imageRes.bodyBytes;
     } else {
-      Logger("ApiDataAccessor::controlNet").severe("Error: ${response.body}");
+      Logger("ApiDataAccessor::controlNet").severe(response.body);
       throw Exception(response.body);
     }
   }
@@ -104,8 +102,7 @@ class ApiDataAccessor {
     int multiple = 64;
 
     if (image != null) {
-      desiredImageSize =
-          ImageHelper.getNewImageSizeWithMultiple(image, multiple);
+      desiredImageSize = ImageHelper.getStableDiffusionImageSize(image);
     }
 
     GenerateImageRequest requestBody = GenerateImageRequest(
@@ -128,23 +125,29 @@ class ApiDataAccessor {
       requestBody.mask = await ImageHelper.bytesToBase64String(resized);
     }
 
-    final response = await http.post(
-      url,
-      headers: headers,
-      body: jsonEncode(requestBody.toJson()),
-    );
+    final response = await http
+        .post(
+          url,
+          headers: headers,
+          body: jsonEncode(requestBody.toJson()),
+        )
+        .timeout(const Duration(seconds: 90));
+
+    GenerateImageResponse responseObject =
+        GenerateImageResponse.fromJson(jsonDecode(response.body));
 
     if (response.statusCode == 200) {
-      GenerateImageResponse responseObject =
-          GenerateImageResponse.fromJson(jsonDecode(response.body));
-      return ImageHelper.base64StringToBytes(responseObject.image);
+      return ImageHelper.base64StringToBytes(responseObject.image!);
     } else {
-      GenerateImageErrorResponse responseObject =
-          GenerateImageErrorResponse.fromJson(jsonDecode(response.body));
-      Logger("ApiDataAccessor").severe(responseObject.error);
-      throw Exception(
-        responseObject.error,
-      );
+      if (responseObject.error != null) {
+        Logger("ApiDataAccessor").severe(responseObject.error);
+        throw Exception(
+          responseObject.error,
+        );
+      } else {
+        Logger("ApiDataAccessor").severe(response.body);
+        throw Exception("Unknown error. Please try again later.");
+      }
     }
   }
 
@@ -154,11 +157,13 @@ class ApiDataAccessor {
       'Content-Type': 'application/json; charset=UTF-8',
     };
 
-    final response = await http.post(
-      url,
-      headers: headers,
-      body: jsonEncode(TextToTextRequest(prompt: input).toJson()),
-    );
+    final response = await http
+        .post(
+          url,
+          headers: headers,
+          body: jsonEncode(TextToTextRequest(prompt: input).toJson()),
+        )
+        .timeout(const Duration(seconds: 60));
 
     if (response.statusCode == 200) {
       TextToTextResponse responseObject =

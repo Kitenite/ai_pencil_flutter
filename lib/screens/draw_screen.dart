@@ -227,9 +227,9 @@ class DrawScreen extends HookWidget {
         );
       }).catchError((error) {
         isGeneratingImage.value = false;
-        Logger("DrawScreen").severe("Error generating image: $error");
+        Logger("DrawScreen").severe("Error creating image: $error");
         DialogHelper.showInfoDialog(
-            context, "Error creation image", "$error", "Ok");
+            context, "Error creating image", "$error", "Ok");
       });
     }
 

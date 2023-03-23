@@ -3,7 +3,9 @@ part 'generate_image_response.g.dart';
 
 @JsonSerializable()
 class GenerateImageResponse {
-  String image;
+  String? image;
+  String? error;
+
   GenerateImageResponse({
     required this.image,
   });

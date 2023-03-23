@@ -29,3 +29,8 @@ class Apis {
   static const PROD_TEXT_TO_TEXT_ROUTE = "prod/text-to-text";
   static const PROD_PROMPT_STYLES_ROUTE = "prod/prompt-styles";
 }
+
+class StableDiffusionStandards {
+  static const MAX_DIMENSION = 512;
+  static const MULTIPLE = 64;
+}

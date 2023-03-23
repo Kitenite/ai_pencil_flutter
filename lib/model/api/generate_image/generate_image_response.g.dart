@@ -9,11 +9,12 @@ part of 'generate_image_response.dart';
 GenerateImageResponse _$GenerateImageResponseFromJson(
         Map<String, dynamic> json) =>
     GenerateImageResponse(
-      image: json['image'] as String,
-    );
+      image: json['image'] as String?,
+    )..error = json['error'] as String?;
 
 Map<String, dynamic> _$GenerateImageResponseToJson(
         GenerateImageResponse instance) =>
     <String, dynamic>{
       'image': instance.image,
+      'error': instance.error,
     };
