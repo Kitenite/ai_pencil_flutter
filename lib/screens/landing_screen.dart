@@ -44,7 +44,7 @@ class LandingScreen extends StatelessWidget {
                 InkWell(
                   onTap: () {
                     launchUrl(Uri.parse(
-                        'https://apps.apple.com/us/app/ai-pencil-lite/id6444737491'));
+                        'https://apps.apple.com/us/app/ai-pencil/id6446209407'));
                   }, // Image tapped
                   splashColor: Colors.white10, // Splash color over image
                   child: const Padding(
