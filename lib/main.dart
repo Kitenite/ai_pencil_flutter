@@ -3,6 +3,7 @@ import 'package:ai_pencil/screens/inference_complete_screen.dart';
 import 'package:ai_pencil/screens/landing_screen.dart';
 import 'package:ai_pencil/utils/constants.dart';
 import 'package:ai_pencil/screens/select_screen.dart';
+import 'package:ai_pencil/utils/event_analytics.dart';
 import 'package:ai_pencil/utils/prompt_styles_manager.dart';
 import 'package:ai_pencil/utils/themes.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -17,6 +18,7 @@ void main() {
   setupFirebase();
   setupLogging();
   setupPromptStyles();
+  MixPanelAnalyticsManager(); // Singleton initiation to start collecting general events
   runApp(const MainApp());
 }
 

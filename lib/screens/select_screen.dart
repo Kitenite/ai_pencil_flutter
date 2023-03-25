@@ -8,6 +8,7 @@ import 'package:ai_pencil/model/drawing/drawing_layer.dart';
 import 'package:ai_pencil/model/drawing/drawing_project.dart';
 import 'package:ai_pencil/screens/draw_screen.dart';
 import 'package:ai_pencil/utils/dialog_helper.dart';
+import 'package:ai_pencil/utils/event_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -46,6 +47,11 @@ class _SelectProjectScreenState extends State<SelectProjectScreen> {
   }
 
   void addProject(double aspectWidth, double aspectHeight) async {
+    MixPanelAnalyticsManager().trackEvent("Create project", {
+      "aspect_width": aspectWidth,
+      "aspect_height": aspectHeight,
+    });
+
     SharedPreferences prefs = await _prefs;
     var projects = prefs.getStringList(Constants.PROJECTS_KEY) ?? [];
     DrawingProject newProject = DrawingProject(
@@ -67,6 +73,7 @@ class _SelectProjectScreenState extends State<SelectProjectScreen> {
   }
 
   void deleteProject(int idx) async {
+    MixPanelAnalyticsManager().trackEvent("Delete project", {});
     DialogHelper.showConfirmDialog(
       context,
       "Delete project",
@@ -91,6 +98,7 @@ class _SelectProjectScreenState extends State<SelectProjectScreen> {
   }
 
   void renameProject(int idx, String newName) async {
+    MixPanelAnalyticsManager().trackEvent("Rename project", {});
     SharedPreferences prefs = await _prefs;
     var projects = prefs.getStringList(Constants.PROJECTS_KEY) ?? [];
     if (idx >= projects.length) {
@@ -108,6 +116,7 @@ class _SelectProjectScreenState extends State<SelectProjectScreen> {
   }
 
   void navigateToProject(int idx, DrawingProject project) {
+    MixPanelAnalyticsManager().trackEvent("Open project", {});
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -129,6 +138,7 @@ class _SelectProjectScreenState extends State<SelectProjectScreen> {
 
     return InkWell(
       onTap: () {
+        MixPanelAnalyticsManager().trackEvent("Delete project", {});
         deleteProject(idx);
       },
       child: const Padding(

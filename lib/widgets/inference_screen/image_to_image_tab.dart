@@ -19,6 +19,7 @@ class ImageToImageTab extends StatelessWidget {
     required this.selectedSubstyleKeys,
     required this.onGenerateImage,
   });
+
   @override
   Widget build(BuildContext context) {
     return Padding(

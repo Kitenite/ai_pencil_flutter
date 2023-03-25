@@ -2,6 +2,7 @@ import 'dart:ui';
 
 class Constants {
   static const String PROJECTS_KEY = 'projects';
+  static const String MIX_PANEL_TOKEN = 'ca6ee42ba391f3f318e6e606f31ec283';
 }
 
 class CustomColors {

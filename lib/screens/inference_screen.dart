@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:ai_pencil/model/drawing/drawing_project.dart';
 import 'package:ai_pencil/sao/api.dart';
 import 'package:ai_pencil/utils/dialog_helper.dart';
+import 'package:ai_pencil/utils/event_analytics.dart';
 import 'package:ai_pencil/utils/prompt_styles_manager.dart';
 import 'package:ai_pencil/widgets/inference_screen/image_to_image_tab.dart';
 import 'package:ai_pencil/widgets/inference_screen/inpainting_tab.dart';
@@ -38,6 +39,12 @@ class InferenceScreen extends HookWidget {
       bool turbo, {
       Uint8List? maskBytes,
     }) {
+      MixPanelAnalyticsManager().trackEvent("Generate image", {
+        'use_image': useImage,
+        'turbo_mode': turbo,
+        'mask': maskBytes != null,
+      });
+
       Future<Uint8List> imageBytesFuture;
       String prompt = promptStylesManager.buildPrompt(selectedArtType.value,
           selectedSubstyleKeys.value, promptTextController.value.text);
@@ -78,6 +85,10 @@ class InferenceScreen extends HookWidget {
                   : IconButton(
                       icon: const Icon(FontAwesomeIcons.rocket),
                       onPressed: () {
+                        MixPanelAnalyticsManager()
+                            .trackEvent("Generate prompt", {
+                          'prompt': promptTextController.text,
+                        });
                         DialogHelper.showConfirmDialog(
                             context,
                             "Improve prompt with AI",
@@ -85,6 +96,7 @@ class InferenceScreen extends HookWidget {
                             "Confirm",
                             "Cancel", () {
                           callingTextToText.value = true;
+
                           ApiDataAccessor.textToText(promptTextController.text)
                               .then((improvedText) {
                             promptTextController.text = improvedText;

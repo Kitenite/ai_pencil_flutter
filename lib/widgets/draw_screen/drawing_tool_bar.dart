@@ -3,6 +3,7 @@ import 'package:ai_pencil/model/drawing_canvas/drawing_mode.dart';
 import 'package:ai_pencil/model/drawing_canvas/sketch.dart';
 import 'package:ai_pencil/model/drawing_canvas/undo_redo_stack.dart';
 import 'package:ai_pencil/utils/dialog_helper.dart';
+import 'package:ai_pencil/utils/event_analytics.dart';
 import 'package:ai_pencil/widgets/draw_screen/icon_box.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
@@ -38,7 +39,10 @@ class DrawingToolBar extends StatelessWidget {
             iconData: FontAwesomeIcons.arrowRotateLeft,
             selected: allSketches.value.isNotEmpty,
             onTap: allSketches.value.isNotEmpty
-                ? () => undoRedoStack.value.undo()
+                ? () {
+                    MixPanelAnalyticsManager().trackEvent("Undo drawing", {});
+                    undoRedoStack.value.undo();
+                  }
                 : () {},
             tooltip: 'Undo',
           ),
@@ -48,7 +52,13 @@ class DrawingToolBar extends StatelessWidget {
               return IconBox(
                 iconData: FontAwesomeIcons.arrowRotateRight,
                 selected: canRedo,
-                onTap: canRedo ? () => undoRedoStack.value.redo() : () {},
+                onTap: canRedo
+                    ? () {
+                        MixPanelAnalyticsManager()
+                            .trackEvent("Redo drawing", {});
+                        undoRedoStack.value.redo();
+                      }
+                    : () {},
                 tooltip: 'Redo',
               );
             },
@@ -63,7 +73,10 @@ class DrawingToolBar extends StatelessWidget {
                 "This will all drawings from the layer. This cannot be undone.",
                 "Clear",
                 "Cancel",
-                () => undoRedoStack.value.clear(),
+                () {
+                  MixPanelAnalyticsManager().trackEvent("Clear drawing", {});
+                  undoRedoStack.value.clear();
+                },
               );
             },
             tooltip: 'Clear',
@@ -72,25 +85,37 @@ class DrawingToolBar extends StatelessWidget {
           IconBox(
             iconData: FontAwesomeIcons.upDownLeftRight,
             selected: drawingMode.value == DrawingMode.pan,
-            onTap: () => drawingMode.value = DrawingMode.pan,
+            onTap: () {
+              MixPanelAnalyticsManager().trackEvent("Select pan tool", {});
+              drawingMode.value = DrawingMode.pan;
+            },
             tooltip: 'Pan',
           ),
           IconBox(
             iconData: FontAwesomeIcons.eraser,
             selected: drawingMode.value == DrawingMode.eraser,
-            onTap: () => drawingMode.value = DrawingMode.eraser,
+            onTap: () {
+              MixPanelAnalyticsManager().trackEvent("Select eraser tool", {});
+              drawingMode.value = DrawingMode.eraser;
+            },
             tooltip: 'Eraser',
           ),
           IconBox(
             iconData: FontAwesomeIcons.pencil,
             selected: drawingMode.value == DrawingMode.pencil,
-            onTap: () => drawingMode.value = DrawingMode.pencil,
+            onTap: () {
+              MixPanelAnalyticsManager().trackEvent("Select pencil tool", {});
+              drawingMode.value = DrawingMode.pencil;
+            },
             tooltip: 'Pencil',
           ),
           IconBox(
             iconData: FontAwesomeIcons.brush,
             selected: drawingMode.value == DrawingMode.paint,
-            onTap: () => drawingMode.value = DrawingMode.paint,
+            onTap: () {
+              MixPanelAnalyticsManager().trackEvent("Select paint tool", {});
+              drawingMode.value = DrawingMode.paint;
+            },
             tooltip: 'Paint',
           ),
           ElevatedButton(

@@ -13,6 +13,7 @@ import 'package:ai_pencil/model/image/types.dart';
 import 'package:ai_pencil/model/prompt/prompt_style.dart';
 import 'package:ai_pencil/model/drawing/advanced_options.dart';
 import 'package:ai_pencil/utils/constants.dart';
+import 'package:ai_pencil/utils/event_analytics.dart';
 import 'package:ai_pencil/utils/image_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -139,6 +140,12 @@ class ApiDataAccessor {
     if (response.statusCode == 200) {
       return ImageHelper.base64StringToBytes(responseObject.image!);
     } else {
+      if (responseObject.filtered != null && responseObject.filtered == true) {
+        MixPanelAnalyticsManager().trackEvent("Content filter triggered", {});
+        throw Exception(
+          "The image or prompt triggered our content filter. Please try again or report this issue.",
+        );
+      }
       if (responseObject.error != null) {
         Logger("ApiDataAccessor").severe(responseObject.error);
         throw Exception(

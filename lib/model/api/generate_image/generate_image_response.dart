@@ -5,9 +5,12 @@ part 'generate_image_response.g.dart';
 class GenerateImageResponse {
   String? image;
   String? error;
+  bool? filtered = false;
 
   GenerateImageResponse({
     required this.image,
+    this.error,
+    this.filtered,
   });
 
   factory GenerateImageResponse.fromJson(Map<String, dynamic> json) =>

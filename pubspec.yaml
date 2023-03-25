@@ -60,6 +60,8 @@ dependencies:
   gallery_saver: ^2.3.2
   cached_network_image: ^3.2.3
   firebase_crashlytics: ^3.0.17
+  mixpanel_flutter: ^2.1.1
+  permission_handler: ^10.2.0
 
 dev_dependencies:
   flutter_test:

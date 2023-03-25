@@ -1,4 +1,5 @@
 import 'package:ai_pencil/model/drawing/drawing_layer.dart';
+import 'package:ai_pencil/utils/event_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -48,6 +49,7 @@ class LayerPopover extends HookWidget {
           ),
         ),
         onTap: () {
+          MixPanelAnalyticsManager().trackEvent("Delete layer", {});
           onRemoveLayer(index);
         },
       );
@@ -111,6 +113,7 @@ class LayerPopover extends HookWidget {
                   ElevatedButton(
                     child: const Text('Rename'),
                     onPressed: () {
+                      MixPanelAnalyticsManager().trackEvent("Rename layer", {});
                       onRenameLayer(index, newName);
                       Navigator.of(context).pop();
                     },
@@ -167,129 +170,132 @@ class LayerPopover extends HookWidget {
             ),
             Expanded(
               child: Align(
-                alignment: Alignment.topCenter,
-                child: ReorderableListView(
-                  reverse: true,
-                  shrinkWrap: true,
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  buildDefaultDragHandles: true,
-                  onReorder: (int oldIndex, int newIndex) {
-                    onMoveLayer(oldIndex, newIndex);
-                  },
-                  header: Card(
-                    color: Colors.grey[800],
-                    child: ListTile(
-                      leading: Container(
-                        width: 40,
-                        height: 30,
-                        decoration: BoxDecoration(
-                          color: backgroundColor.value,
-                          borderRadius: BorderRadius.circular(5),
-                          border: Border.all(
-                            color: Colors.grey,
-                            width: 1,
+                  alignment: Alignment.topCenter,
+                  child: ReorderableListView(
+                    reverse: true,
+                    shrinkWrap: true,
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    buildDefaultDragHandles: true,
+                    onReorder: (int oldIndex, int newIndex) {
+                      onMoveLayer(oldIndex, newIndex);
+                    },
+                    header: Card(
+                      color: Colors.grey[800],
+                      child: ListTile(
+                        leading: Container(
+                          width: 40,
+                          height: 30,
+                          decoration: BoxDecoration(
+                            color: backgroundColor.value,
+                            borderRadius: BorderRadius.circular(5),
+                            border: Border.all(
+                              color: Colors.grey,
+                              width: 1,
+                            ),
                           ),
                         ),
-                      ),
-                      title: const Text(
-                        "Background color",
-                        style: TextStyle(
-                          color: Colors.white,
+                        title: const Text(
+                          "Background color",
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
                         ),
-                      ),
-                      onTap: () {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            // TODO: Add previous colors
-                            return AlertDialog(
-                              title: const Text(
-                                'Choose background color',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              content: SingleChildScrollView(
-                                child: ColorPicker(
-                                  pickerColor: backgroundColor.value,
-                                  onColorChanged: (value) {
-                                    onUpdateBackgroundColor(value);
-                                  },
-                                  pickerAreaBorderRadius: const BorderRadius.all(
-                                    Radius.circular(10),
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              // TODO: Add previous colors
+                              return AlertDialog(
+                                title: const Text(
+                                  'Choose background color',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                content: SingleChildScrollView(
+                                  child: ColorPicker(
+                                    pickerColor: backgroundColor.value,
+                                    onColorChanged: (value) {
+                                      onUpdateBackgroundColor(value);
+                                    },
+                                    pickerAreaBorderRadius:
+                                        const BorderRadius.all(
+                                      Radius.circular(10),
+                                    ),
                                   ),
                                 ),
+                                actions: <Widget>[
+                                  TextButton(
+                                    child: const Text('Done'),
+                                    onPressed: () => Navigator.pop(context),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                    children: <Widget>[
+                      for (int index = 0;
+                          index < layers.value.length;
+                          index += 1)
+                        Card(
+                          key: Key('$index'),
+                          color: index == activeLayerIndex.value
+                              ? Colors.blue
+                              : Colors.grey[800],
+                          child: ListTile(
+                            title: Row(children: [
+                              Flexible(
+                                child: Text(layers.value[index].title,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis),
                               ),
-                              actions: <Widget>[
-                                TextButton(
-                                  child: const Text('Done'),
-                                  onPressed: () => Navigator.pop(context),
+                              getRenameButton(index),
+                            ]),
+                            selectedColor: Colors.white,
+                            textColor: Colors.white,
+                            iconColor: Colors.white,
+                            selected: activeLayerIndex.value == index,
+                            onTap: () {
+                              onSelectLayer(index);
+                            },
+                            leading: Container(
+                              width: 40,
+                              height: 30,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(5),
+                                border: Border.all(
+                                  color: Colors.grey,
+                                  width: 1,
+                                ),
+                              ),
+                              child: getPreviewImage(index),
+                            ),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                getDeleteButton(index),
+                                getVisibilityButton(index),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 10),
+                                  child: ReorderableDragStartListener(
+                                    index: index,
+                                    child: const Icon(
+                                      FontAwesomeIcons.gripLines,
+                                      size: 18,
+                                    ),
+                                  ),
                                 ),
                               ],
-                            );
-                          },
-                        );
-                      },
-                    ),
-                  ),
-                  children: <Widget>[
-                    for (int index = 0; index < layers.value.length; index += 1)
-                      Card(
-                        key: Key('$index'),
-                        color: index == activeLayerIndex.value
-                            ? Colors.blue
-                            : Colors.grey[800],
-                        child: ListTile(
-                          title: Row(children: [
-                            Flexible(
-                              child: Text(layers.value[index].title,
-                                  maxLines: 2, overflow: TextOverflow.ellipsis),
                             ),
-                            getRenameButton(index),
-                          ]),
-                          selectedColor: Colors.white,
-                          textColor: Colors.white,
-                          iconColor: Colors.white,
-                          selected: activeLayerIndex.value == index,
-                          onTap: () {
-                            onSelectLayer(index);
-                          },
-                          leading: Container(
-                            width: 40,
-                            height: 30,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(5),
-                              border: Border.all(
-                                color: Colors.grey,
-                                width: 1,
-                              ),
-                            ),
-                            child: getPreviewImage(index),
-                          ),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              getDeleteButton(index),
-                              getVisibilityButton(index),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 10),
-                                child: ReorderableDragStartListener(
-                                  index: index,
-                                  child: const Icon(
-                                    FontAwesomeIcons.gripLines,
-                                    size: 18,
-                                  ),
-                                ),
-                              ),
-                            ],
                           ),
                         ),
-                      ),
-                  ],
-                )
-              ),
+                    ],
+                  )),
             ),
           ]);
         });

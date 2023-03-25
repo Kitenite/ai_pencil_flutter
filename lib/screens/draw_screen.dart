@@ -7,6 +7,7 @@ import 'package:ai_pencil/model/drawing_canvas/undo_redo_stack.dart';
 import 'package:ai_pencil/model/image/types.dart';
 import 'package:ai_pencil/screens/inference_complete_screen.dart';
 import 'package:ai_pencil/utils/dialog_helper.dart';
+import 'package:ai_pencil/utils/event_analytics.dart';
 import 'package:ai_pencil/utils/image_helpers.dart';
 import 'package:ai_pencil/utils/snackbar.dart';
 import 'package:ai_pencil/widgets/drawing_canvas/drawing_canvas.dart';
@@ -25,6 +26,7 @@ import 'package:ai_pencil/model/drawing_canvas/sketch.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:logging/logging.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DrawScreen extends HookWidget {
@@ -94,6 +96,7 @@ class DrawScreen extends HookWidget {
 
     useEffect(() {
       updateBackgroundImage();
+      return null;
     }, []);
 
     Future<void> persistProject() async {
@@ -213,6 +216,7 @@ class DrawScreen extends HookWidget {
       isGeneratingImage.value = true;
       project.prompt = prompt;
       imageBytesFuture.then((imageBytes) {
+        MixPanelAnalyticsManager().trackEvent("Image generated", {});
         isGeneratingImage.value = false;
         Navigator.push(
           context,
@@ -226,6 +230,7 @@ class DrawScreen extends HookWidget {
           ),
         );
       }).catchError((error) {
+        MixPanelAnalyticsManager().trackEvent("Image generation failed", {});
         isGeneratingImage.value = false;
         Logger("DrawScreen").severe("Error creating image: $error");
         DialogHelper.showInfoDialog(
@@ -315,6 +320,51 @@ class DrawScreen extends HookWidget {
       addImageAsLayer(imageBytes, "Imported image");
     }
 
+    void onAddImageButtonPressed() {
+      Permission.photos.status.then((status) {
+        if (status.isGranted) {
+          addImageFromDevice();
+        } else {
+          Permission.photos.request().then((status) {
+            if (status.isGranted) {
+              addImageFromDevice();
+            } else {
+              DialogHelper.showInfoDialog(context, "Failed to import image",
+                  "Please allow access to photos.", "OK");
+            }
+          });
+        }
+      });
+    }
+
+    void downloadImageToDevice() {
+      MixPanelAnalyticsManager().trackEvent("Download image to device", {});
+      SnackBarHelper.showSnackBar(context, 'Drawing saved');
+      ImageHelper.downloadDrawingImage(
+        layers.value,
+        ImageHelper.getDrawingSize(canvasGlobalKey),
+        backgroundColor.value,
+        layers.value[activeLayerIndex.value].backgroundImage,
+      );
+    }
+
+    void onDownloadImageButtonPressed() {
+      Permission.photos.status.then((status) {
+        if (status.isGranted) {
+          downloadImageToDevice();
+        } else {
+          Permission.photos.request().then((status) {
+            if (status.isGranted) {
+              downloadImageToDevice();
+            } else {
+              DialogHelper.showInfoDialog(context, "Failed to download image",
+                  "Please allow access to photos.", "OK");
+            }
+          });
+        }
+      });
+    }
+
     return WillPopScope(
       onWillPop: () async => false,
       child: Scaffold(
@@ -334,21 +384,13 @@ class DrawScreen extends HookWidget {
               IconBox(
                 iconData: FontAwesomeIcons.image,
                 selected: true,
-                onTap: addImageFromDevice,
+                onTap: onAddImageButtonPressed,
                 tooltip: 'Add image',
               ),
               IconBox(
                 iconData: FontAwesomeIcons.download,
                 selected: true,
-                onTap: () {
-                  SnackBarHelper.showSnackBar(context, 'Drawing saved');
-                  ImageHelper.downloadDrawingImage(
-                    layers.value,
-                    ImageHelper.getDrawingSize(canvasGlobalKey),
-                    backgroundColor.value,
-                    layers.value[activeLayerIndex.value].backgroundImage,
-                  );
-                },
+                onTap: onDownloadImageButtonPressed,
                 tooltip: 'Download image',
               ),
             ],

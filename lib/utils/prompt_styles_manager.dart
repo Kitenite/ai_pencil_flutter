@@ -2,6 +2,7 @@ import 'package:ai_pencil/model/prompt/prompt_art_style.dart';
 import 'package:ai_pencil/model/prompt/prompt_style.dart';
 import 'package:ai_pencil/model/prompt/prompt_substyle.dart';
 import 'package:ai_pencil/sao/api.dart';
+import 'package:ai_pencil/utils/event_analytics.dart';
 
 class PromptStylesManager {
   static bool _initialized = false;
@@ -22,7 +23,7 @@ class PromptStylesManager {
   PromptStylesManager._internal() {
     initialize();
   }
-  
+
   static PromptStylesManager getInstance() {
     return _instance;
   }
@@ -33,16 +34,19 @@ class PromptStylesManager {
 
   String getImageUrlForArtType(String artType) {
     return _promptStyles
-        .firstWhere((e) => e.key == artType, orElse: () => PromptStyle(key: ""))
-        .imageUrl ??
+            .firstWhere((e) => e.key == artType,
+                orElse: () => PromptStyle(key: ""))
+            .imageUrl ??
         "";
   }
 
-  String getImageUrlForSubstyle(String artType, int substyleIndex, String substyleValueKey) {
+  String getImageUrlForSubstyle(
+      String artType, int substyleIndex, String substyleValueKey) {
     return getSubstylesByArtType(artType)[substyleIndex]
-        .values
-        .firstWhere((e) => e.key == substyleValueKey, orElse: () => PromptArtStyle(key: ""))
-        .imageUrl ??
+            .values
+            .firstWhere((e) => e.key == substyleValueKey,
+                orElse: () => PromptArtStyle(key: ""))
+            .imageUrl ??
         "";
   }
 
@@ -99,6 +103,12 @@ class PromptStylesManager {
 
   String buildPrompt(String selectedArtTypeKey,
       Map<String, String> selectedSubstyleKeysMap, String prompt) {
+    if (selectedArtTypeKey != "None") {
+      MixPanelAnalyticsManager().trackEvent("Use styles", {
+        'art_type': selectedArtTypeKey,
+        'substye_map': selectedSubstyleKeysMap.toString(),
+      });
+    }
     var selectedSubstyleKeys = getSubstylesByArtType(selectedArtTypeKey)
         .map((e) => selectedSubstyleKeysMap[e.key])
         .toList();
@@ -117,6 +127,7 @@ class PromptStylesManager {
               selectedArtTypeKey, index, selectedSubstyleKeys[index] ?? ""),
           enhancedPrompt);
     }
+
     return enhancedPrompt;
   }
 

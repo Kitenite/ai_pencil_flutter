@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 class CustomTheme {
   static var lightTheme = ThemeData(
     brightness: Brightness.light,
-    appBarTheme: CustomTheme.appBar,
+    appBarTheme: appBar,
   );
 
   static var darkTheme = ThemeData(
     primarySwatch: Colors.amber,
     brightness: Brightness.dark,
-    appBarTheme: CustomTheme.appBar,
+    appBarTheme: appBar,
     iconTheme: const IconThemeData(
       color: Colors.black,
     ),
@@ -18,6 +18,7 @@ class CustomTheme {
         foregroundColor: Colors.white,
       ),
     ),
+    bottomAppBarTheme: bottomNavigationBar,
   );
 
   static const appBar = AppBarTheme(
@@ -29,5 +30,10 @@ class CustomTheme {
       fontWeight: FontWeight.bold,
       color: Colors.white,
     ),
+  );
+
+  static const bottomNavigationBar = BottomAppBarTheme(
+    color: Colors.black12,
+    elevation: 2,
   );
 }
