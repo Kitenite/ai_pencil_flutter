@@ -103,12 +103,6 @@ class PromptStylesManager {
 
   String buildPrompt(String selectedArtTypeKey,
       Map<String, String> selectedSubstyleKeysMap, String prompt) {
-    if (selectedArtTypeKey != "None") {
-      MixPanelAnalyticsManager().trackEvent("Use styles", {
-        'art_type': selectedArtTypeKey,
-        'substye_map': selectedSubstyleKeysMap.toString(),
-      });
-    }
     var selectedSubstyleKeys = getSubstylesByArtType(selectedArtTypeKey)
         .map((e) => selectedSubstyleKeysMap[e.key])
         .toList();
@@ -126,6 +120,13 @@ class PromptStylesManager {
           getPromptArtStyleSuffix(
               selectedArtTypeKey, index, selectedSubstyleKeys[index] ?? ""),
           enhancedPrompt);
+    }
+
+    if (selectedArtTypeKey != "None") {
+      MixPanelAnalyticsManager().trackEvent("Use styles", {
+        'art_type': selectedArtTypeKey,
+        'substyles': selectedSubstyleKeys,
+      });
     }
 
     return enhancedPrompt;
