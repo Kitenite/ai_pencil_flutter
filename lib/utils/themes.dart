@@ -18,7 +18,15 @@ class CustomTheme {
         foregroundColor: Colors.white,
       ),
     ),
-    bottomAppBarTheme: bottomNavigationBar,
+    bottomAppBarColor: Colors.black26,
+    dialogTheme: const DialogTheme(
+      backgroundColor: Color.fromARGB(255, 41, 41, 41),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(
+          Radius.circular(10),
+        ),
+      ),
+    ),
   );
 
   static const appBar = AppBarTheme(
@@ -30,10 +38,5 @@ class CustomTheme {
       fontWeight: FontWeight.bold,
       color: Colors.white,
     ),
-  );
-
-  static const bottomNavigationBar = BottomAppBarTheme(
-    color: Colors.black12,
-    elevation: 2,
   );
 }

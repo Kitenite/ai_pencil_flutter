@@ -1,4 +1,6 @@
 import 'package:ai_pencil/utils/constants.dart';
+import 'package:flutter/foundation.dart';
+import 'package:logging/logging.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 
 class MixPanelAnalyticsManager {
@@ -11,6 +13,9 @@ class MixPanelAnalyticsManager {
   }
 
   MixPanelAnalyticsManager._internal() {
+    if (kDebugMode) {
+      return;
+    }
     initMixpanel();
   }
 
@@ -22,6 +27,11 @@ class MixPanelAnalyticsManager {
   }
 
   void trackEvent(String eventName, Map<String, dynamic> properties) {
+    if (kDebugMode) {
+      Logger("MixPanelAnalyticsManager::trackEvent")
+          .info('MixPanel: $eventName, $properties');
+      return;
+    }
     _mixpanel.track(eventName, properties: properties);
   }
 }

@@ -43,6 +43,7 @@ class InferenceScreen extends HookWidget {
         'use_image': useImage,
         'turbo_mode': turbo,
         'mask': maskBytes != null,
+        'prompt': promptTextController.value.text,
       });
 
       Future<Uint8List> imageBytesFuture;

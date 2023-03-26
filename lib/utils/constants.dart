@@ -15,6 +15,7 @@ class Routes {
   static const DRAW_SCREEN_ROUTE = "draw";
   static const INFERENCE_SCREEN_ROUTE = "inference";
   static const INFERENCE_COMPLETE_SCREEN_ROUTE = "inference_complete";
+  static const PREMIUM_SCREEN_ROUTE = "premium";
 }
 
 class Apis {

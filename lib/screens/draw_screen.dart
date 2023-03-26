@@ -49,7 +49,8 @@ class DrawScreen extends HookWidget {
     final filled = useState<bool>(false);
     final polygonSides = useState<int>(3);
 
-    final backgroundImage = useState<ui.Image?>(null);
+    final backgroundImage =
+        useState<ui.Image?>(null); // TODO: Rethink this implementation
     final backgroundColor = useState<Color>(Color(project.backgroundColor));
     final canvasGlobalKey = GlobalKey();
 
@@ -277,9 +278,7 @@ class DrawScreen extends HookWidget {
         child: const Text(
           "AI",
           style: TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
-          ),
+              fontSize: 22, fontWeight: FontWeight.bold, color: Colors.amber),
         ),
       );
     }

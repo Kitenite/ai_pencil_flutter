@@ -68,6 +68,8 @@ class LayerPopover extends HookWidget {
             ),
           ),
           onTap: () {
+            MixPanelAnalyticsManager()
+                .trackEvent("Toggle layer visibility", {});
             onToggleLayerVisibility(index);
           },
         );
@@ -177,6 +179,8 @@ class LayerPopover extends HookWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     buildDefaultDragHandles: true,
                     onReorder: (int oldIndex, int newIndex) {
+                      MixPanelAnalyticsManager()
+                          .trackEvent("Reorder layer", {});
                       onMoveLayer(oldIndex, newIndex);
                     },
                     header: Card(

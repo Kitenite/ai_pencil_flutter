@@ -1,6 +1,7 @@
 import 'package:ai_pencil/model/image/types.dart';
 import 'package:ai_pencil/screens/inference_complete_screen.dart';
 import 'package:ai_pencil/screens/landing_screen.dart';
+import 'package:ai_pencil/screens/premium_screen.dart';
 import 'package:ai_pencil/utils/constants.dart';
 import 'package:ai_pencil/screens/select_screen.dart';
 import 'package:ai_pencil/utils/event_analytics.dart';
@@ -23,6 +24,10 @@ void main() {
 }
 
 void setupFirebase() async {
+  if (kDebugMode) {
+    return;
+  }
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -55,7 +60,6 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Ai Pencil',
-      theme: CustomTheme.lightTheme,
       darkTheme: CustomTheme.darkTheme,
       themeMode: ThemeMode.dark,
       initialRoute:
@@ -70,6 +74,7 @@ class MainApp extends StatelessWidget {
               onAddImageAsLayer: (imageBytes, title) {},
               onRetryInference: (imageBytes) {},
             ),
+        Routes.PREMIUM_SCREEN_ROUTE: (context) => const PremiumScreen(),
       },
       debugShowCheckedModeBanner: false,
     );

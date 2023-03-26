@@ -61,7 +61,7 @@ class InferenceCompleteScreen extends HookWidget {
     }
 
     void onAddToProjectButtonPressed() {
-      MixPanelAnalyticsManager().trackEvent("Add image to project", {});
+      MixPanelAnalyticsManager().trackEvent("Add inference to project", {});
       onAddImageAsLayer(imageBytes, textController.value.text);
       Navigator.pop(context);
     }

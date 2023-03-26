@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:ai_pencil/screens/premium_screen.dart';
 import 'package:ai_pencil/utils/constants.dart';
 import 'package:ai_pencil/model/drawing/advanced_options.dart';
 import 'package:ai_pencil/model/drawing/aspect_ratio.dart';
@@ -73,7 +74,7 @@ class _SelectProjectScreenState extends State<SelectProjectScreen> {
   }
 
   void deleteProject(int idx) async {
-    MixPanelAnalyticsManager().trackEvent("Delete project", {});
+    MixPanelAnalyticsManager().trackEvent("Delete project", {"index": "$idx"});
     DialogHelper.showConfirmDialog(
       context,
       "Delete project",
@@ -98,7 +99,8 @@ class _SelectProjectScreenState extends State<SelectProjectScreen> {
   }
 
   void renameProject(int idx, String newName) async {
-    MixPanelAnalyticsManager().trackEvent("Rename project", {});
+    MixPanelAnalyticsManager()
+        .trackEvent("Rename project", {"new_name": newName});
     SharedPreferences prefs = await _prefs;
     var projects = prefs.getStringList(Constants.PROJECTS_KEY) ?? [];
     if (idx >= projects.length) {
@@ -116,7 +118,7 @@ class _SelectProjectScreenState extends State<SelectProjectScreen> {
   }
 
   void navigateToProject(int idx, DrawingProject project) {
-    MixPanelAnalyticsManager().trackEvent("Open project", {});
+    MixPanelAnalyticsManager().trackEvent("Open project", {"index": "$idx"});
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -295,12 +297,24 @@ class _SelectProjectScreenState extends State<SelectProjectScreen> {
           case 0:
             launchUrl(Uri.parse('https://discord.gg/9zYj6yx7Z4'));
             break;
+          case 1:
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const PremiumScreen(),
+              ),
+            );
+            break;
         }
       },
       itemBuilder: (BuildContext context) => <PopupMenuEntry<int>>[
         const PopupMenuItem<int>(
           value: 0,
           child: Text('Join our Discord'),
+        ),
+        const PopupMenuItem<int>(
+          value: 1,
+          child: Text('Subscribe to Pro'),
         ),
       ],
     );
@@ -309,6 +323,17 @@ class _SelectProjectScreenState extends State<SelectProjectScreen> {
       appBar: AppBar(
         title: titleDropdown,
         actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const PremiumScreen(),
+                ),
+              );
+            },
+            child: Text("PRO"),
+          ),
           TextButton(
             onPressed: () {
               setState(() {
