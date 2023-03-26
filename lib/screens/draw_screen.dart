@@ -370,6 +370,8 @@ class DrawScreen extends HookWidget {
     return WillPopScope(
       onWillPop: () async => false,
       child: Scaffold(
+        extendBodyBehindAppBar: true,
+        extendBody: true,
         appBar: AppBar(
           leading: BackButton(onPressed: () {
             ImageHelper.getCanvasScreenshot(
@@ -399,13 +401,26 @@ class DrawScreen extends HookWidget {
           ),
           actions: trailingActions,
         ),
-        bottomNavigationBar: DrawingToolBar(
-          allSketches: allSketches,
-          undoRedoStack: undoRedoStack,
-          drawingMode: drawingTools.drawingMode,
-          selectedColor: drawingTools.getSelectedColorNotifier(),
-          colorHistory: drawingTools.colorHistory,
-          drawingTools: drawingTools,
+        bottomNavigationBar: Wrap(
+          children: [
+            Row(
+              children: [
+                ToolsSliders(
+                  sliderModalVisible: sliderModalVisible,
+                  drawingTools: drawingTools,
+                  activeSlider: activeSlider,
+                ),
+              ],
+            ),
+            DrawingToolBar(
+              allSketches: allSketches,
+              undoRedoStack: undoRedoStack,
+              drawingMode: drawingTools.drawingMode,
+              selectedColor: drawingTools.getSelectedColorNotifier(),
+              colorHistory: drawingTools.colorHistory,
+              drawingTools: drawingTools,
+            ),
+          ],
         ),
         body: SizedBox(
           width: MediaQuery.of(context).size.width,
@@ -497,15 +512,7 @@ class DrawScreen extends HookWidget {
                 sliderModalVisible: sliderModalVisible,
                 drawingTools: drawingTools,
                 activeSlider: activeSlider,
-              ),
-              Positioned(
-                bottom: -4,
-                child: ToolsSliders(
-                  sliderModalVisible: sliderModalVisible,
-                  drawingTools: drawingTools,
-                  activeSlider: activeSlider,
-                ),
-              ),
+              )
             ],
           ),
         ),
