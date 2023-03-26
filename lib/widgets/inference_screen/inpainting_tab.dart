@@ -8,6 +8,7 @@ import 'package:ai_pencil/model/drawing_canvas/slider_type.dart';
 import 'package:ai_pencil/model/drawing_canvas/undo_redo_stack.dart';
 import 'package:ai_pencil/utils/dialog_helper.dart';
 import 'package:ai_pencil/utils/image_helpers.dart';
+import 'package:ai_pencil/utils/themes.dart';
 import 'package:ai_pencil/widgets/draw_screen/icon_box.dart';
 import 'package:ai_pencil/widgets/draw_screen/slider_preview_modal.dart';
 import 'package:ai_pencil/widgets/draw_screen/tools_sliders.dart';
@@ -213,8 +214,8 @@ class InpaintingTab extends HookWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(15),
                 ),
-                side: const BorderSide(
-                  color: Colors.amber,
+                side: BorderSide(
+                  color: CustomTheme.primaryColor,
                   width: 1,
                 ),
               ),

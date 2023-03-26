@@ -1,4 +1,5 @@
 import 'package:ai_pencil/model/drawing/drawing_project.dart';
+import 'package:ai_pencil/utils/themes.dart';
 import 'package:ai_pencil/widgets/inference_screen/prompt_style_section.dart';
 import 'package:flutter/material.dart';
 
@@ -58,7 +59,7 @@ class ImageToImageTab extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Checkbox(
-                    activeColor: Colors.amber,
+                    activeColor: CustomTheme.primaryColor,
                     value: turboMode.value,
                     onChanged: (val) => turboMode.value = val!),
                 const Text("Turbo Mode (ControlNet)"),
@@ -76,8 +77,8 @@ class ImageToImageTab extends StatelessWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(15),
                 ),
-                side: const BorderSide(
-                  color: Colors.amber,
+                side: BorderSide(
+                  color: CustomTheme.primaryColor,
                   width: 1,
                 ),
               ),

@@ -1,4 +1,5 @@
 import 'package:ai_pencil/model/drawing/drawing_layer.dart';
+import 'package:ai_pencil/utils/dialog_helper.dart';
 import 'package:ai_pencil/utils/event_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
@@ -49,8 +50,17 @@ class LayerPopover extends HookWidget {
           ),
         ),
         onTap: () {
-          MixPanelAnalyticsManager().trackEvent("Delete layer", {});
-          onRemoveLayer(index);
+          DialogHelper.showConfirmDialog(
+            context,
+            "Delete layer",
+            "This cannot be undone.",
+            "Delete",
+            "Cancel",
+            () {
+              MixPanelAnalyticsManager().trackEvent("Delete layer", {});
+              onRemoveLayer(index);
+            },
+          );
         },
       );
     }
@@ -184,7 +194,7 @@ class LayerPopover extends HookWidget {
                       onMoveLayer(oldIndex, newIndex);
                     },
                     header: Card(
-                      color: Colors.grey[800],
+                      color: Colors.grey[850],
                       child: ListTile(
                         leading: Container(
                           width: 40,
@@ -193,7 +203,6 @@ class LayerPopover extends HookWidget {
                             color: backgroundColor.value,
                             borderRadius: BorderRadius.circular(5),
                             border: Border.all(
-                              color: Colors.grey,
                               width: 1,
                             ),
                           ),
@@ -249,7 +258,7 @@ class LayerPopover extends HookWidget {
                           key: Key('$index'),
                           color: index == activeLayerIndex.value
                               ? Colors.blue
-                              : Colors.grey[800],
+                              : Colors.grey[850],
                           child: ListTile(
                             title: Row(children: [
                               Flexible(
@@ -272,10 +281,6 @@ class LayerPopover extends HookWidget {
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(5),
-                                border: Border.all(
-                                  color: Colors.grey,
-                                  width: 1,
-                                ),
                               ),
                               child: getPreviewImage(index),
                             ),

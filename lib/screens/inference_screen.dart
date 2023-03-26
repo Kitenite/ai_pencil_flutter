@@ -5,6 +5,7 @@ import 'package:ai_pencil/sao/api.dart';
 import 'package:ai_pencil/utils/dialog_helper.dart';
 import 'package:ai_pencil/utils/event_analytics.dart';
 import 'package:ai_pencil/utils/prompt_styles_manager.dart';
+import 'package:ai_pencil/utils/themes.dart';
 import 'package:ai_pencil/widgets/inference_screen/image_to_image_tab.dart';
 import 'package:ai_pencil/widgets/inference_screen/inpainting_tab.dart';
 import 'package:ai_pencil/widgets/inference_screen/text_to_image_tab.dart';
@@ -124,15 +125,15 @@ class InferenceScreen extends HookWidget {
 
     return WillPopScope(
       onWillPop: () async => false,
-      child: SafeArea(
-        child: DefaultTabController(
-          length: 3,
-          initialIndex: 0,
-          child: Scaffold(
-            appBar: AppBar(leading: BackButton(onPressed: () {
-              Navigator.pop(context);
-            })),
-            body: TabBarView(
+      child: DefaultTabController(
+        length: 3,
+        initialIndex: 0,
+        child: Scaffold(
+          appBar: AppBar(leading: BackButton(onPressed: () {
+            Navigator.pop(context);
+          })),
+          body: SafeArea(
+            child: TabBarView(
               physics: const NeverScrollableScrollPhysics(),
               children: [
                 ImageToImageTab(
@@ -158,14 +159,14 @@ class InferenceScreen extends HookWidget {
                 ),
               ],
             ),
-            bottomNavigationBar: const TabBar(
-              indicatorColor: Colors.amber,
-              tabs: [
-                Tab(icon: Icon(FontAwesomeIcons.image)),
-                Tab(icon: Icon(FontAwesomeIcons.comment)),
-                Tab(icon: Icon(FontAwesomeIcons.wandMagicSparkles)),
-              ],
-            ),
+          ),
+          bottomNavigationBar: TabBar(
+            indicatorColor: CustomTheme.primaryColor,
+            tabs: const [
+              Tab(icon: Icon(FontAwesomeIcons.image)),
+              Tab(icon: Icon(FontAwesomeIcons.comment)),
+              Tab(icon: Icon(FontAwesomeIcons.wandMagicSparkles)),
+            ],
           ),
         ),
       ),

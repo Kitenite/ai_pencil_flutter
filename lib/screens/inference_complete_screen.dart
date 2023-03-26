@@ -2,6 +2,7 @@ import 'package:ai_pencil/utils/dialog_helper.dart';
 import 'package:ai_pencil/utils/event_analytics.dart';
 import 'package:ai_pencil/utils/image_helpers.dart';
 import 'package:ai_pencil/utils/snackbar.dart';
+import 'package:ai_pencil/utils/themes.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -152,8 +153,8 @@ class InferenceCompleteScreen extends HookWidget {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15),
                   ),
-                  side: const BorderSide(
-                    color: Colors.amber,
+                  side: BorderSide(
+                    color: CustomTheme.primaryColor,
                     width: 1,
                   ),
                 ),

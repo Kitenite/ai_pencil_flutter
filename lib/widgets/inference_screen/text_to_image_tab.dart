@@ -1,3 +1,4 @@
+import 'package:ai_pencil/utils/themes.dart';
 import 'package:ai_pencil/widgets/inference_screen/prompt_style_section.dart';
 import 'package:flutter/material.dart';
 
@@ -47,8 +48,8 @@ class TextToImageTab extends StatelessWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(15),
                 ),
-                side: const BorderSide(
-                  color: Colors.amber,
+                side: BorderSide(
+                  color: CustomTheme.primaryColor,
                   width: 1,
                 ),
               ),

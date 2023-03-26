@@ -2,6 +2,7 @@
 import 'package:ai_pencil/screens/premium_signup_screen.dart';
 import 'package:ai_pencil/utils/dialog_helper.dart';
 import 'package:ai_pencil/utils/event_analytics.dart';
+import 'package:ai_pencil/utils/themes.dart';
 import 'package:flutter/material.dart';
 
 class PremiumScreen extends StatelessWidget {
@@ -9,9 +10,9 @@ class PremiumScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Color featureTextColor = Color.fromARGB(255, 198, 198, 198);
-    return SafeArea(
-      child: Scaffold(
-        body: Center(
+    return Scaffold(
+      body: SafeArea(
+        child: Center(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -175,17 +176,17 @@ class PremiumScreen extends StatelessWidget {
                               );
                             },
                             style: OutlinedButton.styleFrom(
-                              side: const BorderSide(color: Colors.amber),
+                              side: BorderSide(color: CustomTheme.primaryColor),
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 16.0, vertical: 10.0),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8.0),
                               ),
                             ),
-                            child: const Text(
+                            child: Text(
                               'Sign up for 1 month',
                               style: TextStyle(
-                                color: Colors.amber,
+                                color: CustomTheme.primaryColor,
                                 fontSize: 18.0,
                               ),
                             ),

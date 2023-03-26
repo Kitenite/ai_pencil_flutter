@@ -1,5 +1,6 @@
 import 'package:ai_pencil/utils/dialog_helper.dart';
 import 'package:ai_pencil/utils/event_analytics.dart';
+import 'package:ai_pencil/utils/themes.dart';
 import 'package:flutter/material.dart';
 
 class PremiumSignUpScreen extends StatefulWidget {
@@ -61,7 +62,7 @@ class _PremiumSignUpScreenState extends State<PremiumSignUpScreen> {
                 CheckboxListTile(
                   title: Text(titles[i]),
                   value: checkedList[i],
-                  activeColor: Colors.amber,
+                  activeColor: CustomTheme.primaryColor,
                   onChanged: (value) {
                     setState(() {
                       checkedList[i] = value!;

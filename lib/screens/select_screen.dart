@@ -320,6 +320,7 @@ class _SelectProjectScreenState extends State<SelectProjectScreen> {
     );
 
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         title: titleDropdown,
         actions: [
@@ -386,10 +387,6 @@ class _SelectProjectScreenState extends State<SelectProjectScreen> {
                                   ),
                                   child: Container(
                                     decoration: BoxDecoration(
-                                      border: Border.all(
-                                        color: Colors.black,
-                                        width: 1,
-                                      ),
                                       borderRadius: BorderRadius.circular(3.0),
                                     ),
                                     child: project.thumbnailImageBytes != null

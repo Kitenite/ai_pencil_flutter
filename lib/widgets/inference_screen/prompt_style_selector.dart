@@ -13,6 +13,9 @@ class PromptStyleSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ExpansionTile(
+      shape: const RoundedRectangleBorder(
+        side: BorderSide(color: Colors.transparent),
+      ),
       title: Text(title),
       children: [
         SizedBox(

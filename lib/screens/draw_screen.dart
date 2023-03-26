@@ -10,6 +10,7 @@ import 'package:ai_pencil/utils/dialog_helper.dart';
 import 'package:ai_pencil/utils/event_analytics.dart';
 import 'package:ai_pencil/utils/image_helpers.dart';
 import 'package:ai_pencil/utils/snackbar.dart';
+import 'package:ai_pencil/utils/themes.dart';
 import 'package:ai_pencil/widgets/drawing_canvas/drawing_canvas.dart';
 import 'package:ai_pencil/widgets/draw_screen/icon_box.dart';
 import 'package:ai_pencil/widgets/draw_screen/slider_preview_modal.dart';
@@ -275,10 +276,12 @@ class DrawScreen extends HookWidget {
       }
       return TextButton(
         onPressed: navigateToInferenceScreen,
-        child: const Text(
+        child: Text(
           "AI",
           style: TextStyle(
-              fontSize: 22, fontWeight: FontWeight.bold, color: Colors.amber),
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: CustomTheme.primaryColor),
         ),
       );
     }
