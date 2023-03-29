@@ -24,6 +24,7 @@ import 'package:ai_pencil/widgets/draw_screen/tools_sliders.dart';
 import 'package:flutter/material.dart';
 import 'package:ai_pencil/model/drawing_canvas/drawing_mode.dart';
 import 'package:ai_pencil/model/drawing_canvas/sketch.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:logging/logging.dart';
@@ -313,65 +314,45 @@ class DrawScreen extends HookWidget {
       getInferenceButton(),
     ];
 
-    void addImageFromDevice() async {
-      Uint8List imageBytes = await ImageHelper.getImageFromDevice(
+    void onAddImageButtonPressed() {
+      ImageHelper.getImageFromDevice(
         project.aspectWidth,
         project.aspectHeight,
         context,
-      );
-      addImageAsLayer(imageBytes, "Imported image");
-    }
-
-    void onAddImageButtonPressed() {
-      Permission.photos.status.then((status) {
-        if (status.isGranted) {
-          addImageFromDevice();
-        } else {
-          Permission.photos.request().then((status) {
-            if (status.isGranted) {
-              addImageFromDevice();
-            } else {
-              DialogHelper.showInfoDialog(context, "Failed to import image",
-                  "Please allow access to photos.", "OK");
-            }
-          });
-        }
+      ).then((imageBytes) {
+        MixPanelAnalyticsManager().trackEvent("Add image from device", {});
+        addImageAsLayer(imageBytes, "Imported image");
+      }).catchError((error) {
+        MixPanelAnalyticsManager()
+            .trackEvent("Add image from device failed", {});
+        DialogHelper.showInfoDialog(context, "Failed to import image",
+            "Please pick an image or allow access to photos.", "OK");
       });
-    }
-
-    void downloadImageToDevice() {
-      MixPanelAnalyticsManager().trackEvent("Download image to device", {});
-      SnackBarHelper.showSnackBar(context, 'Drawing saved');
-      ImageHelper.downloadDrawingImage(
-        layers.value,
-        ImageHelper.getDrawingSize(canvasGlobalKey),
-        backgroundColor.value,
-        layers.value[activeLayerIndex.value].backgroundImage,
-      );
     }
 
     void onDownloadImageButtonPressed() {
-      Permission.photos.status.then((status) {
-        if (status.isGranted) {
-          downloadImageToDevice();
-        } else {
-          Permission.photos.request().then((status) {
-            if (status.isGranted) {
-              downloadImageToDevice();
-            } else {
-              DialogHelper.showInfoDialog(context, "Failed to download image",
-                  "Please allow access to photos.", "OK");
-            }
-          });
-        }
-      });
+      try {
+        MixPanelAnalyticsManager().trackEvent("Download image to device", {});
+        ImageHelper.downloadDrawingImage(
+          layers.value,
+          ImageHelper.getDrawingSize(canvasGlobalKey),
+          backgroundColor.value,
+          layers.value[activeLayerIndex.value].backgroundImage,
+        );
+        SnackBarHelper.showSnackBar(context, 'Drawing saved');
+      } catch (e) {
+        MixPanelAnalyticsManager()
+            .trackEvent("Download image to device failed", {
+          "error": e.toString(),
+        });
+        DialogHelper.showInfoDialog(context, "Failed to download image",
+            "Please try again later.", "OK");
+      }
     }
 
     return WillPopScope(
       onWillPop: () async => false,
       child: Scaffold(
-        extendBodyBehindAppBar: true,
-        extendBody: true,
         appBar: AppBar(
           leading: BackButton(onPressed: () {
             ImageHelper.getCanvasScreenshot(
@@ -401,26 +382,13 @@ class DrawScreen extends HookWidget {
           ),
           actions: trailingActions,
         ),
-        bottomNavigationBar: Wrap(
-          children: [
-            Row(
-              children: [
-                ToolsSliders(
-                  sliderModalVisible: sliderModalVisible,
-                  drawingTools: drawingTools,
-                  activeSlider: activeSlider,
-                ),
-              ],
-            ),
-            DrawingToolBar(
-              allSketches: allSketches,
-              undoRedoStack: undoRedoStack,
-              drawingMode: drawingTools.drawingMode,
-              selectedColor: drawingTools.getSelectedColorNotifier(),
-              colorHistory: drawingTools.colorHistory,
-              drawingTools: drawingTools,
-            ),
-          ],
+        bottomNavigationBar: DrawingToolBar(
+          allSketches: allSketches,
+          undoRedoStack: undoRedoStack,
+          drawingMode: drawingTools.drawingMode,
+          selectedColor: drawingTools.getSelectedColorNotifier(),
+          colorHistory: drawingTools.colorHistory,
+          drawingTools: drawingTools,
         ),
         body: SizedBox(
           width: MediaQuery.of(context).size.width,
@@ -512,6 +480,14 @@ class DrawScreen extends HookWidget {
                 sliderModalVisible: sliderModalVisible,
                 drawingTools: drawingTools,
                 activeSlider: activeSlider,
+              ),
+              Positioned(
+                bottom: 0,
+                child: ToolsSliders(
+                  sliderModalVisible: sliderModalVisible,
+                  drawingTools: drawingTools,
+                  activeSlider: activeSlider,
+                ),
               )
             ],
           ),

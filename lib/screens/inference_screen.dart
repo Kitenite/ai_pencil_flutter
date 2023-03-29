@@ -132,35 +132,38 @@ class InferenceScreen extends HookWidget {
           appBar: AppBar(leading: BackButton(onPressed: () {
             Navigator.pop(context);
           })),
-          body: SafeArea(
-            child: TabBarView(
-              physics: const NeverScrollableScrollPhysics(),
-              children: [
-                ImageToImageTab(
-                  project: project,
-                  promptInputTextField: promptInputTextField,
-                  turboMode: turboMode,
-                  selectedArtType: selectedArtType,
-                  selectedSubstyleKeys: selectedSubstyleKeys,
-                  onGenerateImage: generateImage,
-                ),
-                TextToImageTab(
-                  promptInputTextField: promptInputTextField,
-                  selectedArtType: selectedArtType,
-                  selectedSubstyleKeys: selectedSubstyleKeys,
-                  onGenerateImage: generateImage,
-                ),
-                InpaintingTab(
-                  project: project,
-                  promptInputTextField: promptInputTextField,
-                  selectedArtType: selectedArtType,
-                  selectedSubstyleKeys: selectedSubstyleKeys,
-                  onGenerateImage: generateImage,
-                ),
-              ],
-            ),
+          body: TabBarView(
+            physics: const NeverScrollableScrollPhysics(),
+            children: [
+              ImageToImageTab(
+                project: project,
+                promptInputTextField: promptInputTextField,
+                turboMode: turboMode,
+                selectedArtType: selectedArtType,
+                selectedSubstyleKeys: selectedSubstyleKeys,
+                onGenerateImage: generateImage,
+              ),
+              TextToImageTab(
+                promptInputTextField: promptInputTextField,
+                selectedArtType: selectedArtType,
+                selectedSubstyleKeys: selectedSubstyleKeys,
+                onGenerateImage: generateImage,
+              ),
+              InpaintingTab(
+                project: project,
+                promptInputTextField: promptInputTextField,
+                selectedArtType: selectedArtType,
+                selectedSubstyleKeys: selectedSubstyleKeys,
+                onGenerateImage: generateImage,
+              ),
+            ],
           ),
           bottomNavigationBar: TabBar(
+            indicator: UnderlineTabIndicator(
+              borderSide:
+                  BorderSide(color: CustomTheme.primaryColor, width: 2.0),
+              insets: const EdgeInsets.only(bottom: 50),
+            ),
             indicatorColor: CustomTheme.primaryColor,
             tabs: const [
               Tab(icon: Icon(FontAwesomeIcons.image)),

@@ -89,7 +89,7 @@ class _PremiumSignUpScreenState extends State<PremiumSignUpScreen> {
                     onPressed: () {
                       // Perform signup action here
                       MixPanelAnalyticsManager().trackEvent(
-                        'premium_signup',
+                        'Sign up to Pro',
                         {
                           'reasons': getCheckedList(),
                           'other_reasons': _inputText,

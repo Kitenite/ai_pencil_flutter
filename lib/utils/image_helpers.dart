@@ -114,14 +114,13 @@ class ImageHelper {
     Size? size,
     Color? backgroundColor,
     PngImageBytes? backgroundImage,
-  ) async {
-    PngImageBytes? pngBytes = await ImageHelper.getDrawingAsPngBytes(
+  ) {
+    ImageHelper.getDrawingAsPngBytes(
       layers,
       size,
       backgroundColor,
       backgroundImage,
-    );
-    if (pngBytes != null) ImageHelper.saveFile(pngBytes, 'png');
+    ).then((pngBytes) => ImageHelper.saveFile(pngBytes!, 'png'));
   }
 
   static Future<PngImageBytes?> getDrawingAsPngBytes(
@@ -129,30 +128,19 @@ class ImageHelper {
     Size? size,
     Color? backgroundColor,
     PngImageBytes? backgroundImage,
-  ) async {
+  ) {
     if (size == null) {
       Logger("ImageHelper::getDrawingAsPngBytes")
           .severe('Size is null, returning null');
-      return null;
+      return Future.value(null);
     }
     List<Sketch> allSketches = [];
     for (DrawingLayer layer in layers) {
       allSketches.addAll(layer.sketches);
     }
-    var ret = await getPngBytesFromSketches(
+    return getPngBytesFromSketches(
         allSketches, size, backgroundColor, backgroundImage);
-    return ret;
   }
-
-  // static Future<PngImageBytes?> getCanvasAsBytes(
-  //     GlobalKey canvasGlobalKey) async {
-  //   RenderRepaintBoundary boundary = canvasGlobalKey.currentContext
-  //       ?.findRenderObject() as RenderRepaintBoundary;
-  //   ui.Image image = await boundary.toImage();
-  //   ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
-  //   PngImageBytes? pngBytes = byteData?.buffer.asUint8List();
-  //   return pngBytes;
-  // }
 
   static Future<PngImageBytes?> getPngBytesFromSketches(List<Sketch> sketches,
       Size size, Color? backgroundColor, PngImageBytes? backgroundImage) async {
@@ -230,18 +218,14 @@ class ImageHelper {
     return imageFile;
   }
 
-  static void saveFile(Uint8List bytes, String extension) async {
-    if (kIsWeb) {
-      html.AnchorElement()
-        ..href = '${Uri.dataFromBytes(bytes, mimeType: 'image/$extension')}'
-        ..download =
-            'FlutterLetsDraw-${DateTime.now().toIso8601String()}.$extension'
-        ..style.display = 'none'
-        ..click();
-    } else {
-      File image = await createTempImageFile(bytes);
-      GallerySaver.saveImage(image.path);
-    }
+  static void saveFile(Uint8List bytes, String extension) {
+    createTempImageFile(bytes).then((image) {
+      GallerySaver.saveImage(image.path).then((success) {
+        if (success == null || !success) {
+          throw Exception("Error saving image");
+        }
+      });
+    });
   }
 
   static Future<Uint8List> getImageFromDevice(

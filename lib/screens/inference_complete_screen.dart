@@ -38,27 +38,18 @@ class InferenceCompleteScreen extends HookWidget {
       });
     }
 
-    void downloadImageToDevice() {
-      MixPanelAnalyticsManager().trackEvent("Download inference to device", {});
-      ImageHelper.saveFile(imageBytes, ".png");
-      SnackBarHelper.showSnackBar(context, "Image saved!");
-    }
-
     void onDownloadImageButtonPressed() {
-      Permission.photos.status.then((status) {
-        if (status.isGranted) {
-          downloadImageToDevice();
-        } else {
-          Permission.photos.request().then((status) {
-            if (status.isGranted) {
-              downloadImageToDevice();
-            } else {
-              DialogHelper.showInfoDialog(context, "Failed to download image",
-                  "Please allow access to photos.", "OK");
-            }
-          });
-        }
-      });
+      try {
+        MixPanelAnalyticsManager()
+            .trackEvent("Download inference to device", {});
+        ImageHelper.saveFile(imageBytes, ".png");
+        SnackBarHelper.showSnackBar(context, "Image saved!");
+      } catch (e) {
+        MixPanelAnalyticsManager()
+            .trackEvent("Download image to device failed", {});
+        DialogHelper.showInfoDialog(context, "Failed to download image",
+            "Please allow access to photos.", "OK");
+      }
     }
 
     void onAddToProjectButtonPressed() {

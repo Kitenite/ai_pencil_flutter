@@ -31,7 +31,7 @@
 	<key>NSCameraUsageDescription</key>
 	<string>Need camera access to upload photos to projects</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Need photos access to upload photos to projects</string>
+	<string>Need gallery access to upload and download project photos</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

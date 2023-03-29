@@ -65,20 +65,25 @@ class DrawingToolBar extends StatelessWidget {
           ),
           IconBox(
             iconData: FontAwesomeIcons.trash,
-            selected: true,
-            onTap: () {
-              DialogHelper.showConfirmDialog(
-                context,
-                "Clear drawing",
-                "This will all drawings from the layer. This cannot be undone.",
-                "Clear",
-                "Cancel",
-                () {
-                  MixPanelAnalyticsManager().trackEvent("Clear drawing", {});
-                  undoRedoStack.value.clear();
-                },
-              );
-            },
+            selected: allSketches.value.isNotEmpty ||
+                undoRedoStack.value.canRedo.value,
+            onTap: allSketches.value.isNotEmpty ||
+                    undoRedoStack.value.canRedo.value
+                ? () {
+                    DialogHelper.showConfirmDialog(
+                      context,
+                      "Clear drawing",
+                      "This will all drawings from the layer. This cannot be undone.",
+                      "Clear",
+                      "Cancel",
+                      () {
+                        MixPanelAnalyticsManager()
+                            .trackEvent("Clear drawing", {});
+                        undoRedoStack.value.clear();
+                      },
+                    );
+                  }
+                : () {},
             tooltip: 'Clear',
           ),
           const Spacer(),
