@@ -82,16 +82,17 @@ class DrawScreen extends HookWidget {
       layers.value = tempLayers.toList(); // notify listeners of change
     }
 
-    void updateBackgroundImage() async {
+    void updateBackgroundImage() {
       Uint8List? activeBackgroundImage =
           layers.value[activeLayerIndex.value].backgroundImage;
       if (activeBackgroundImage != null) {
-        backgroundImage.value =
-            await decodeImageFromList(activeBackgroundImage);
+        decodeImageFromList(activeBackgroundImage)
+            .then((value) => backgroundImage.value = value);
       } else {
         backgroundImage.value = null;
       }
       saveActiveLayer();
+      layers.value = layers.value.toList();
     }
 
     useEffect(() {

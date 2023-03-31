@@ -38,6 +38,15 @@ class _SelectProjectScreenState extends State<SelectProjectScreen> {
     });
   }
 
+  void saveProjectAndUpdateState(List<String> projects) {
+    setState(() {
+      _jsonEncodedProjects =
+          SharedPreferenceHelper.setProjects(projects).then((bool success) {
+        return projects;
+      });
+    });
+  }
+
   void addProject(double aspectWidth, double aspectHeight) async {
     MixPanelAnalyticsManager().trackEvent("Create project", {
       "aspect_width": aspectWidth,
@@ -54,12 +63,7 @@ class _SelectProjectScreenState extends State<SelectProjectScreen> {
       backgroundColor: CustomColors.canvasColor.value,
     );
     projects.add(jsonEncode(newProject.toJson()));
-    setState(() {
-      _jsonEncodedProjects =
-          SharedPreferenceHelper.setProjects(projects).then((bool success) {
-        return projects;
-      });
-    });
+    saveProjectAndUpdateState(projects);
     navigateToProject(projects.length - 1, newProject);
   }
 
@@ -77,12 +81,7 @@ class _SelectProjectScreenState extends State<SelectProjectScreen> {
           return;
         }
         projects.removeAt(idx);
-        setState(() {
-          _jsonEncodedProjects =
-              SharedPreferenceHelper.setProjects(projects).then((bool success) {
-            return projects;
-          });
-        });
+        saveProjectAndUpdateState(projects);
       },
     );
   }
@@ -97,12 +96,7 @@ class _SelectProjectScreenState extends State<SelectProjectScreen> {
     var project = jsonDecode(projects[idx]);
     project['title'] = newName;
     projects[idx] = jsonEncode(project);
-    setState(() {
-      _jsonEncodedProjects =
-          SharedPreferenceHelper.setProjects(projects).then((bool success) {
-        return projects;
-      });
-    });
+    saveProjectAndUpdateState(projects);
   }
 
   void navigateToProject(int idx, DrawingProject project) {

@@ -139,10 +139,16 @@ class LayerPopover extends HookWidget {
     }
 
     Widget getPreviewImage(index) {
-      if (layers.value[index].image.isEmpty) {
-        return const SizedBox.shrink();
+      if (layers.value[index].image.isNotEmpty) {
+        return Image.memory(layers.value[index].image);
       }
-      return Image.memory(layers.value[index].image);
+
+      if (layers.value[index].backgroundImage != null &&
+          layers.value[index].backgroundImage!.isNotEmpty) {
+        return Image.memory(layers.value[index].backgroundImage!);
+      }
+
+      return const SizedBox.shrink();
     }
 
     return ValueListenableBuilder(
