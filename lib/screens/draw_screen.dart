@@ -26,6 +26,7 @@ import 'package:ai_pencil/model/drawing_canvas/sketch.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:in_app_review/in_app_review.dart';
 import 'package:logging/logging.dart';
 
 class DrawScreen extends HookWidget {
@@ -173,11 +174,26 @@ class DrawScreen extends HookWidget {
       layers.value = layers.value.toList(); // notify listeners of change
     }
 
+    void checkForReview() {
+      // Check for multiple of 5 inference count or uploaded image. If so, ask for a review.
+      int inferenceCount = SharedPreferenceHelper.getInferenceCount();
+      int newInferenceCount = inferenceCount + 1;
+
+      if (newInferenceCount % 5 == 0) {
+        InAppReview.instance.isAvailable().then((value) {
+          if (value) {
+            InAppReview.instance.requestReview();
+          }
+        });
+      }
+      SharedPreferenceHelper.setInferenceCount(newInferenceCount);
+    }
+
     void addImageAsLayer(Uint8List imageBytes, String? title) {
       addLayer(title);
       layers.value[activeLayerIndex.value].backgroundImage = imageBytes;
       updateBackgroundImage();
-      // TODO: Check if done this 5 times, then ask for a review
+      checkForReview();
     }
 
     void cropThenAddImageAsLayer(Uint8List imageBytes, String? title) async {
