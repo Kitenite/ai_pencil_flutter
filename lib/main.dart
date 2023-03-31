@@ -6,6 +6,7 @@ import 'package:ai_pencil/utils/constants.dart';
 import 'package:ai_pencil/screens/select_screen.dart';
 import 'package:ai_pencil/utils/event_analytics.dart';
 import 'package:ai_pencil/utils/prompt_styles_manager.dart';
+import 'package:ai_pencil/utils/shared_preference.dart';
 import 'package:ai_pencil/utils/themes.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
@@ -14,12 +15,16 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:logging/logging.dart';
 import 'firebase_options.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   setupFirebase();
   setupLogging();
   setupPromptStyles();
-  MixPanelAnalyticsManager(); // Singleton initiation to start collecting general events
+
+  MixPanelAnalyticsManager
+      .init(); // Singleton initiation to start collecting general events
+  await SharedPreferenceHelper
+      .init(); // Singleton initiation for shared preferences
   runApp(const MainApp());
 }
 

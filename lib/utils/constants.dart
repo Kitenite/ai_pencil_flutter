@@ -1,7 +1,6 @@
 import 'dart:ui';
 
 class Constants {
-  static const String PROJECTS_KEY = 'projects';
   static const String MIX_PANEL_TOKEN = 'ca6ee42ba391f3f318e6e606f31ec283';
 }
 
@@ -35,4 +34,10 @@ class Apis {
 class StableDiffusionStandards {
   static const MAX_DIMENSION = 512;
   static const MULTIPLE = 64;
+}
+
+class SharedPreferenceKeys {
+  static const String INFERENCES_COUNT = "inferences_count";
+  static const String PROMPT_STYLES = "prompt_styles";
+  static const String PROJECTS = "projects";
 }

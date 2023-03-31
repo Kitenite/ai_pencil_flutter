@@ -10,9 +10,9 @@ import 'package:ai_pencil/model/drawing/drawing_project.dart';
 import 'package:ai_pencil/screens/draw_screen.dart';
 import 'package:ai_pencil/utils/dialog_helper.dart';
 import 'package:ai_pencil/utils/event_analytics.dart';
+import 'package:ai_pencil/utils/shared_preference.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class SelectProjectScreen extends StatefulWidget {
@@ -24,26 +24,17 @@ class SelectProjectScreen extends StatefulWidget {
 
 class _SelectProjectScreenState extends State<SelectProjectScreen> {
   bool editMode = false;
-  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   late Future<List<String>> _jsonEncodedProjects;
 
   @override
   void initState() {
     super.initState();
-    _jsonEncodedProjects = _prefs.then((SharedPreferences prefs) {
-      return prefs.getStringList(Constants.PROJECTS_KEY) ?? [];
-    });
+    _jsonEncodedProjects = SharedPreferenceHelper.getProjects();
   }
 
   void updateProjectList() async {
-    SharedPreferences prefs = await _prefs;
-    var projects = prefs.getStringList(Constants.PROJECTS_KEY) ?? [];
     setState(() {
-      _jsonEncodedProjects = prefs
-          .setStringList(Constants.PROJECTS_KEY, projects)
-          .then((bool success) {
-        return projects;
-      });
+      _jsonEncodedProjects = SharedPreferenceHelper.getProjects();
     });
   }
 
@@ -53,8 +44,7 @@ class _SelectProjectScreenState extends State<SelectProjectScreen> {
       "aspect_height": aspectHeight,
     });
 
-    SharedPreferences prefs = await _prefs;
-    var projects = prefs.getStringList(Constants.PROJECTS_KEY) ?? [];
+    List<String> projects = await SharedPreferenceHelper.getProjects();
     DrawingProject newProject = DrawingProject(
       title: 'Project ${projects.length + 1}',
       layers: [DrawingLayer()],
@@ -66,7 +56,7 @@ class _SelectProjectScreenState extends State<SelectProjectScreen> {
     projects.add(jsonEncode(newProject.toJson()));
     setState(() {
       _jsonEncodedProjects =
-          prefs.setStringList('projects', projects).then((bool success) {
+          SharedPreferenceHelper.setProjects(projects).then((bool success) {
         return projects;
       });
     });
@@ -82,15 +72,14 @@ class _SelectProjectScreenState extends State<SelectProjectScreen> {
       "Delete",
       "Cancel",
       () async {
-        SharedPreferences prefs = await _prefs;
-        var projects = prefs.getStringList(Constants.PROJECTS_KEY) ?? [];
+        List<String> projects = await SharedPreferenceHelper.getProjects();
         if (idx >= projects.length) {
           return;
         }
         projects.removeAt(idx);
         setState(() {
           _jsonEncodedProjects =
-              prefs.setStringList('projects', projects).then((bool success) {
+              SharedPreferenceHelper.setProjects(projects).then((bool success) {
             return projects;
           });
         });
@@ -101,8 +90,7 @@ class _SelectProjectScreenState extends State<SelectProjectScreen> {
   void renameProject(int idx, String newName) async {
     MixPanelAnalyticsManager()
         .trackEvent("Rename project", {"new_name": newName});
-    SharedPreferences prefs = await _prefs;
-    var projects = prefs.getStringList(Constants.PROJECTS_KEY) ?? [];
+    List<String> projects = await SharedPreferenceHelper.getProjects();
     if (idx >= projects.length) {
       return;
     }
@@ -111,7 +99,7 @@ class _SelectProjectScreenState extends State<SelectProjectScreen> {
     projects[idx] = jsonEncode(project);
     setState(() {
       _jsonEncodedProjects =
-          prefs.setStringList('projects', projects).then((bool success) {
+          SharedPreferenceHelper.setProjects(projects).then((bool success) {
         return projects;
       });
     });

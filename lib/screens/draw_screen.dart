@@ -1,5 +1,3 @@
-import 'dart:convert';
-import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:ai_pencil/model/drawing_canvas/slider_type.dart';
@@ -9,6 +7,7 @@ import 'package:ai_pencil/screens/inference_complete_screen.dart';
 import 'package:ai_pencil/utils/dialog_helper.dart';
 import 'package:ai_pencil/utils/event_analytics.dart';
 import 'package:ai_pencil/utils/image_helpers.dart';
+import 'package:ai_pencil/utils/shared_preference.dart';
 import 'package:ai_pencil/utils/snackbar.dart';
 import 'package:ai_pencil/utils/themes.dart';
 import 'package:ai_pencil/widgets/drawing_canvas/drawing_canvas.dart';
@@ -28,8 +27,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:logging/logging.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class DrawScreen extends HookWidget {
   final DrawingProject project;
@@ -102,10 +99,8 @@ class DrawScreen extends HookWidget {
       return null;
     }, []);
 
-    Future<void> persistProject() async {
+    persistProject() {
       // TODO: this logic should be a callback passed by select project screen
-      // TODO: Add prompt
-      var prefs = await SharedPreferences.getInstance();
       var updatedProject = DrawingProject(
         title: project.title,
         layers: layers.value,
@@ -117,9 +112,7 @@ class DrawScreen extends HookWidget {
         backgroundColor: backgroundColor.value.value,
         thumbnailImageBytes: project.thumbnailImageBytes,
       );
-      var projects = prefs.getStringList('projects') ?? [];
-      projects[projectIndex] = jsonEncode(updatedProject.toJson());
-      prefs.setStringList('projects', projects);
+      SharedPreferenceHelper.addProjectToIndex(projectIndex, updatedProject);
     }
 
     void selectLayer(int idx) {
@@ -183,6 +176,7 @@ class DrawScreen extends HookWidget {
       addLayer(title);
       layers.value[activeLayerIndex.value].backgroundImage = imageBytes;
       updateBackgroundImage();
+      // TODO: Check if done this 5 times, then ask for a review
     }
 
     void cropThenAddImageAsLayer(Uint8List imageBytes, String? title) async {

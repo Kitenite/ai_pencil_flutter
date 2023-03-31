@@ -4,13 +4,16 @@ import 'package:logging/logging.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 
 class MixPanelAnalyticsManager {
-  static final MixPanelAnalyticsManager _instance =
-      MixPanelAnalyticsManager._internal();
+  static late final _instance;
+
   late Mixpanel _mixpanel;
 
   factory MixPanelAnalyticsManager() {
     return _instance;
   }
+
+  static Future<MixPanelAnalyticsManager> init() async =>
+      _instance = MixPanelAnalyticsManager._internal();
 
   MixPanelAnalyticsManager._internal() {
     if (kDebugMode) {
